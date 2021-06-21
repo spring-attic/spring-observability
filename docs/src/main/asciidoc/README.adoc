@@ -1,0 +1,52 @@
+image::https://github.com/spring-projects/spring-observability/workflows/Build/badge.svg?branch=main&style=svg["Build",link="https://github.com/spring-projects/spring-observability/actions"]
+
+== Building and Deploying
+
+To install locally:
+
+----
+
+$ mvn install
+----
+
+and to deploy snapshots to repo.spring.io:
+
+----
+$ mvn deploy -DaltSnapshotDeploymentRepository=repo.spring.io::default::https://repo.spring.io/snapshot
+----
+
+for a RELEASE build use
+
+----
+$ mvn deploy -DaltReleaseDeploymentRepository=repo.spring.io::default::https://repo.spring.io/release
+----
+
+and for Maven Central use
+
+----
+$ mvn deploy -P central -DaltReleaseDeploymentRepository=sonatype-nexus-staging::default::https://oss.sonatype.org/service/local/staging/deploy/maven2
+----
+
+(the "central" profile is available for all projects in Spring Observability and it sets up the gpg jar signing, and the repository has to be specified separately for this project because it is a parent of the starter parent which users in turn have as their own parent).
+
+== Contributing
+
+include::https://raw.githubusercontent.com/spring-projects/spring-observability/main/docs/src/main/asciidoc/contributing.adoc[]
+
+== Flattening the POMs
+
+To avoid propagating build setup that is required to build a Spring Observability project, we're using the maven flatten plugin. It has the advantage of letting you use whatever features you need while publishing "clean" pom to the repository.
+
+In order to add it, add the `org.codehaus.mojo:flatten-maven-plugin` to your `pom.xml`.
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>flatten-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+----

@@ -1,0 +1,3 @@
+:jdkversion: 16
+
+include::https://raw.githubusercontent.com/spring-projects/spring-observability/main/docs/src/main/asciidoc/building-base.adoc[]
