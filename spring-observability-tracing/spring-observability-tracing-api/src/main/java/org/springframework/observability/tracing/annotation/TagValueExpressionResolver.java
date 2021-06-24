@@ -20,7 +20,7 @@ package org.springframework.observability.tracing.annotation;
  * Resolves the tag value for the given parameter and the provided expression.
  *
  * @author Marcin Grzejszczak
- * @since 1.2.0
+ * @since 1.0.0
  */
 public interface TagValueExpressionResolver {
 

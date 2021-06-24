@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * @author OpenTelemetry Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface BaggageManager {
 

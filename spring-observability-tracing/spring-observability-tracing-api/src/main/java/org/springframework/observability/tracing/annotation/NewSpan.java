@@ -35,7 +35,7 @@ import org.springframework.core.annotation.AliasFor;
  *
  *
  * @author Christian Schwerdtfeger
- * @since 1.2.0
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

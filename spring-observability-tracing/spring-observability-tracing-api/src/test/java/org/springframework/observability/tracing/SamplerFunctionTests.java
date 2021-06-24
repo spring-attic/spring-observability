@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.exporter;
+package org.springframework.observability.tracing;
 
-/**
- * An interface that allows to process spans after they got finished.
- *
- * @author Marcin Grzejszczak
- * @since 1.0.0
- */
-public interface SpanReporter {
+import org.junit.jupiter.api.Test;
 
-	/**
-	 * Reports the finished span.
-	 * @param span a span that was ended and is ready to be reported.
-	 */
-	void report(FinishedSpan span);
+import static org.assertj.core.api.BDDAssertions.then;
+
+class SamplerFunctionTests {
+
+	@Test
+	void should_defer_decision() {
+		then(SamplerFunction.deferDecision()).isSameAs(SamplerFunction.Constants.DEFER_DECISION);
+	}
+
+	@Test
+	void should_never_sample() {
+		then(SamplerFunction.neverSample()).isSameAs(SamplerFunction.Constants.NEVER_SAMPLE);
+	}
+
+	@Test
+	void should_always_decision() {
+		then(SamplerFunction.alwaysSample()).isSameAs(SamplerFunction.Constants.ALWAYS_SAMPLE);
+	}
 
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * instead of creating a new one.
  *
  * @author Marcin Grzejszczak
- * @since 1.2.0
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

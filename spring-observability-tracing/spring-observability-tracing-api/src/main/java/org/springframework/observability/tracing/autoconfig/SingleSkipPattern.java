@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * pattern
  *
  * @author Marcin Grzejszczak
- * @since 2.1.0
+ * @since 1.0.0
  */
 public interface SingleSkipPattern {
 

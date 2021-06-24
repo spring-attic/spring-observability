@@ -31,13 +31,12 @@ import org.springframework.util.StringUtils;
  */
 final class DocumentedSpanAssertions {
 
-	static boolean SLEUTH_SPAN_ASSERTIONS_ON = Boolean.parseBoolean(System.getProperty(
-			"spring.cloud.sleuth.assertions.enabled", System.getenv("SPRING_CLOUD_SLEUTH_ASSERTIONS_ENABLED") != null
-					? System.getenv("SPRING_CLOUD_SLEUTH_ASSERTIONS_ENABLED") : "false"));
-
 	private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
 
 	private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
+	static boolean SLEUTH_SPAN_ASSERTIONS_ON = Boolean.parseBoolean(System.getProperty(
+			"spring.cloud.sleuth.assertions.enabled", System.getenv("SPRING_CLOUD_SLEUTH_ASSERTIONS_ENABLED") != null
+					? System.getenv("SPRING_CLOUD_SLEUTH_ASSERTIONS_ENABLED") : "false"));
 
 	private DocumentedSpanAssertions() {
 		throw new IllegalStateException("Can't instantiate utility class");

@@ -16,9 +16,9 @@
 
 package org.springframework.observability.tracing.http;
 
+import org.springframework.lang.Nullable;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
-import org.springframework.lang.Nullable;
 
 /**
  * This API is taken from OpenZipkin Brave.
@@ -29,7 +29,7 @@ import org.springframework.lang.Nullable;
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface HttpClientHandler {
 

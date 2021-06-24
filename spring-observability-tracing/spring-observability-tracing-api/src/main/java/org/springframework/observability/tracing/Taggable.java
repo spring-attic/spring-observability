@@ -21,7 +21,7 @@ package org.springframework.observability.tracing;
  * Describes the behaviour of an object that can be tagged.
  *
  * @author Marcin Grzejszczak
- * @since 3.0.3
+ * @since 1.0.0
  */
 public interface Taggable {
 

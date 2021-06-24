@@ -30,7 +30,7 @@ import org.springframework.lang.Nullable;
  * Represents a single baggage entry.
  *
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface BaggageInScope extends Closeable {
 

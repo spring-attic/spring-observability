@@ -18,8 +18,8 @@ package org.springframework.observability.tracing;
 
 import java.io.Closeable;
 
-import org.springframework.observability.tracing.propagation.Propagator;
 import org.springframework.lang.Nullable;
+import org.springframework.observability.tracing.propagation.Propagator;
 
 /**
  * This API was heavily influenced by Brave. Parts of its documentation were taken
@@ -61,7 +61,7 @@ import org.springframework.lang.Nullable;
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  * @see Span
  * @see ScopedSpan
  * @see Propagator

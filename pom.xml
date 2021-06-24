@@ -15,6 +15,7 @@
 		<relativePath>spring-observability-build</relativePath>
 	</parent>
 	<modules>
+		<module>spring-observability-build</module>
 		<module>spring-observability-dependencies</module>
 		<module>spring-observability-api</module>
 		<module>spring-observability-metrics</module>

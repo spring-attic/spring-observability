@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
  * Contains trace and span data.
  *
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface TraceContext {
 
@@ -54,7 +54,7 @@ public interface TraceContext {
 	/**
 	 * Builder for {@link TraceContext}.
 	 *
-	 * @since 3.1.0
+	 * @since 1.0.0
 	 */
 	interface Builder {
 

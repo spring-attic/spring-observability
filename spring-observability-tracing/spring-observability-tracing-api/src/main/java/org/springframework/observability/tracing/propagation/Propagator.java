@@ -18,9 +18,9 @@ package org.springframework.observability.tracing.propagation;
 
 import java.util.List;
 
+import org.springframework.lang.Nullable;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
-import org.springframework.lang.Nullable;
 
 /**
  * Inspired by OpenZipkin Brave and OpenTelemetry. Most of the documentation is taken
@@ -33,7 +33,7 @@ import org.springframework.lang.Nullable;
  * @author OpenZipkin Brave Authors
  * @author OpenTelemetry Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface Propagator {
 

@@ -28,7 +28,7 @@ import org.springframework.observability.tracing.propagation.Propagator;
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface Span extends SpanCustomizer {
 
@@ -93,22 +93,18 @@ public interface Span extends SpanCustomizer {
 	 * Sets the remote service name for the span.
 	 * @param remoteServiceName remote service name
 	 * @return this span
-	 * @since 3.0.3
+	 * @since 1.0.0
 	 */
-	default Span remoteServiceName(String remoteServiceName) {
-		return this;
-	}
+	Span remoteServiceName(String remoteServiceName);
 
 	/**
 	 * Sets the remote url on the span.
 	 * @param ip remote ip
 	 * @param port remote port
 	 * @return this span
-	 * @since 3.1.0
+	 * @since 1.0.0
 	 */
-	default Span remoteIpAndPort(String ip, int port) {
-		return this;
-	}
+	Span remoteIpAndPort(String ip, int port);
 
 	/**
 	 * Type of span. Can be used to specify additional relationships between spans in
@@ -219,9 +215,7 @@ public interface Span extends SpanCustomizer {
 		 * @param port remote service port
 		 * @return this
 		 */
-		default Builder remoteIpAndPort(String ip, int port) {
-			return this;
-		}
+		Builder remoteIpAndPort(String ip, int port);
 
 		/**
 		 * Builds and starts the span.

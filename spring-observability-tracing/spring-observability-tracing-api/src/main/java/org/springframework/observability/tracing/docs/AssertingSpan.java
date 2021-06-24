@@ -28,9 +28,40 @@ import org.springframework.observability.tracing.TraceContext;
  * information.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public interface AssertingSpan extends Span {
+
+	/**
+	 * @param documentedSpan span configuration
+	 * @param span span to wrap in assertions
+	 * @return asserting span
+	 */
+	static AssertingSpan of(DocumentedSpan documentedSpan, Span span) {
+		if (span == null) {
+			return null;
+		}
+		else if (span instanceof AssertingSpan) {
+			return (AssertingSpan) span;
+		}
+		return new ImmutableAssertingSpan(documentedSpan, span);
+	}
+
+	/**
+	 * Returns the underlying delegate. Used when casting is necessary.
+	 * @param span span to check for wrapping
+	 * @param <T> type extending a span
+	 * @return unwrapped object
+	 */
+	static <T extends Span> T unwrap(Span span) {
+		if (span == null) {
+			return null;
+		}
+		else if (span instanceof AssertingSpan) {
+			return (T) ((AssertingSpan) span).getDelegate();
+		}
+		return (T) span;
+	}
 
 	/**
 	 * @return a {@link DocumentedSpan} with span configuration
@@ -136,37 +167,6 @@ public interface AssertingSpan extends Span {
 	default Span remoteIpAndPort(String ip, int port) {
 		getDelegate().remoteIpAndPort(ip, port);
 		return this;
-	}
-
-	/**
-	 * @param documentedSpan span configuration
-	 * @param span span to wrap in assertions
-	 * @return asserting span
-	 */
-	static AssertingSpan of(DocumentedSpan documentedSpan, Span span) {
-		if (span == null) {
-			return null;
-		}
-		else if (span instanceof AssertingSpan) {
-			return (AssertingSpan) span;
-		}
-		return new ImmutableAssertingSpan(documentedSpan, span);
-	}
-
-	/**
-	 * Returns the underlying delegate. Used when casting is necessary.
-	 * @param span span to check for wrapping
-	 * @param <T> type extending a span
-	 * @return unwrapped object
-	 */
-	static <T extends Span> T unwrap(Span span) {
-		if (span == null) {
-			return null;
-		}
-		else if (span instanceof AssertingSpan) {
-			return (T) ((AssertingSpan) span).getDelegate();
-		}
-		return (T) span;
 	}
 
 }

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Container object for {@link Span} and its corresponding {@link Tracer.SpanInScope}.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public class SpanAndScope implements Closeable {
 

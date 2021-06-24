@@ -25,7 +25,7 @@ import org.springframework.observability.tracing.Span;
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public interface HttpClientRequest extends HttpRequest {
 

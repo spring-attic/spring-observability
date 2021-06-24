@@ -22,7 +22,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * Contract for processing Sleuth annotations.
  *
  * @author Marcin Grzejszczak
- * @since 2.1.0
+ * @since 1.0.0
  */
 public interface SleuthMethodInvocationProcessor {
 

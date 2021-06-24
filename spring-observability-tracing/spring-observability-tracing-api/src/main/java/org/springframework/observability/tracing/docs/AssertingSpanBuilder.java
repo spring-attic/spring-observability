@@ -23,9 +23,24 @@ import org.springframework.observability.tracing.TraceContext;
  * A {@link Span.Builder} that can perform assertions on itself.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public interface AssertingSpanBuilder extends Span.Builder {
+
+	/**
+	 * @param documentedSpan span configuration
+	 * @param builder builder to wrap in assertions
+	 * @return asserting span builder
+	 */
+	static AssertingSpanBuilder of(DocumentedSpan documentedSpan, Span.Builder builder) {
+		if (builder == null) {
+			return null;
+		}
+		else if (builder instanceof AssertingSpanBuilder) {
+			return (AssertingSpanBuilder) builder;
+		}
+		return new ImmutableAssertingSpanBuilder(documentedSpan, builder);
+	}
 
 	/**
 	 * @return a {@link DocumentedSpan} with span configuration
@@ -142,21 +157,6 @@ public interface AssertingSpanBuilder extends Span.Builder {
 				return getDelegate().toString();
 			}
 		};
-	}
-
-	/**
-	 * @param documentedSpan span configuration
-	 * @param builder builder to wrap in assertions
-	 * @return asserting span builder
-	 */
-	static AssertingSpanBuilder of(DocumentedSpan documentedSpan, Span.Builder builder) {
-		if (builder == null) {
-			return null;
-		}
-		else if (builder instanceof AssertingSpanBuilder) {
-			return (AssertingSpanBuilder) builder;
-		}
-		return new ImmutableAssertingSpanBuilder(documentedSpan, builder);
 	}
 
 }

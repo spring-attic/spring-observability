@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Represents a {@link Span} stored in thread local.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public class ThreadLocalSpan {
 
@@ -55,6 +55,7 @@ public class ThreadLocalSpan {
 		SpanAndScope newSpanAndScope = new SpanAndScope(span, spanInScope);
 		SpanAndScope scope = this.threadLocalSpan.get();
 		if (scope != null) {
+			log.trace("Putting previous scope to stack [{}]", scope);
 			this.spans.addFirst(scope);
 		}
 		this.threadLocalSpan.set(newSpanAndScope);

@@ -39,26 +39,31 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 @AnalyzeClasses(packagesOf = ArchitectureTests.class, importOptions = ArchitectureTests.ProductionCode.class)
 public class ArchitectureTests {
 
-	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(
-			Nullable.class, StringUtils.class, AliasFor.class
-	);
+	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(Nullable.class,
+			StringUtils.class, AliasFor.class);
 
 	@ArchTest
-	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses().should()
-			.dependOnClassesThat(new DescribedPredicate<>("You may only depend on " + ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().map(Class::getName).collect(Collectors.toList()) + " classes from Spring Framework dependency") {
+	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()
+			.should()
+			.dependOnClassesThat(new DescribedPredicate<>("You may only depend on "
+					+ ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().map(Class::getName).collect(Collectors.toList())
+					+ " classes from Spring Framework dependency") {
 				@Override
 				public boolean apply(JavaClass javaClass) {
 					JavaPackage aPackage = javaClass.getPackage();
 					String packageName = aPackage.getName();
-					if (!packageName.startsWith("org.springframework") || packageName.startsWith("org.springframework.observability")) {
+					if (!packageName.startsWith("org.springframework")
+							|| packageName.startsWith("org.springframework.observability")) {
 						return false;
 					}
-					return ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().noneMatch(aClass -> aClass.getName().equals(javaClass.getFullName()));
+					return ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream()
+							.noneMatch(aClass -> aClass.getName().equals(javaClass.getFullName()));
 				}
 			});
 
 	@ArchTest
-	public static final ArchRule should_not_introduce_package_cycles = slices().matching("org.springframework.observability.(*)..").should().beFreeOfCycles();
+	public static final ArchRule should_not_introduce_package_cycles = slices()
+			.matching("org.springframework.observability.(*)..").should().beFreeOfCycles();
 
 	static class ProductionCode implements ImportOption {
 

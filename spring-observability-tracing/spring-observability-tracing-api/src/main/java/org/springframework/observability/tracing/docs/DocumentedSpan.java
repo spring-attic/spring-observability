@@ -35,7 +35,7 @@ import org.springframework.observability.tracing.SpanCustomizer;
  * method to retrieve the array of allowed keys / events
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public interface DocumentedSpan {
 

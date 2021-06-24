@@ -32,17 +32,17 @@ import org.springframework.util.StringUtils;
  * {@link SpanFilter} that ignores spans via names.
  *
  * @author Marcin Grzejszczak
- * @since 3.0.0
+ * @since 1.0.0
  */
 public class SpanIgnoringSpanFilter implements SpanFilter {
+
+	static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
 
 	private static final Logger log = LoggerFactory.getLogger(SpanIgnoringSpanFilter.class);
 
 	private final List<String> spanNamePatternsToSkip;
 
 	private final List<String> additionalSpanNamePatternsToIgnore;
-
-	static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
 
 	/**
 	 * @param spanNamePatternsToSkip default span name patterns to skip

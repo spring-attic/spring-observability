@@ -22,9 +22,37 @@ import org.springframework.observability.tracing.SpanCustomizer;
  * A {@link SpanCustomizer} that can perform assertions on itself.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public interface AssertingSpanCustomizer extends SpanCustomizer {
+
+	/**
+	 * @param documentedSpan span configuration
+	 * @param span span to wrap in assertions
+	 * @return asserting span customizer
+	 */
+	static AssertingSpanCustomizer of(DocumentedSpan documentedSpan, SpanCustomizer span) {
+		if (span instanceof AssertingSpanCustomizer) {
+			return (AssertingSpanCustomizer) span;
+		}
+		return new ImmutableAssertingSpanCustomizer(documentedSpan, span);
+	}
+
+	/**
+	 * Returns the underlying delegate. Used when casting is necessary.
+	 * @param span span to check for wrapping
+	 * @param <T> type extending a span
+	 * @return unwrapped object
+	 */
+	static <T extends SpanCustomizer> T unwrap(SpanCustomizer span) {
+		if (span == null) {
+			return null;
+		}
+		else if (span instanceof AssertingSpanCustomizer) {
+			return (T) ((AssertingSpanCustomizer) span).getDelegate();
+		}
+		return (T) span;
+	}
 
 	/**
 	 * @return a {@link DocumentedSpan} with span configuration
@@ -78,34 +106,6 @@ public interface AssertingSpanCustomizer extends SpanCustomizer {
 		DocumentedSpanAssertions.assertThatNameIsValid(name, getDocumentedSpan());
 		getDelegate().name(name);
 		return this;
-	}
-
-	/**
-	 * @param documentedSpan span configuration
-	 * @param span span to wrap in assertions
-	 * @return asserting span customizer
-	 */
-	static AssertingSpanCustomizer of(DocumentedSpan documentedSpan, SpanCustomizer span) {
-		if (span instanceof AssertingSpanCustomizer) {
-			return (AssertingSpanCustomizer) span;
-		}
-		return new ImmutableAssertingSpanCustomizer(documentedSpan, span);
-	}
-
-	/**
-	 * Returns the underlying delegate. Used when casting is necessary.
-	 * @param span span to check for wrapping
-	 * @param <T> type extending a span
-	 * @return unwrapped object
-	 */
-	static <T extends SpanCustomizer> T unwrap(SpanCustomizer span) {
-		if (span == null) {
-			return null;
-		}
-		else if (span instanceof AssertingSpanCustomizer) {
-			return (T) ((AssertingSpanCustomizer) span).getDelegate();
-		}
-		return (T) span;
 	}
 
 }

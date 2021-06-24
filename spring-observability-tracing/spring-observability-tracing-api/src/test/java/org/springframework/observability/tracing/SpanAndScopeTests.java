@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.exporter;
+package org.springframework.observability.tracing;
 
-/**
- * An interface that allows to process spans after they got finished.
- *
- * @author Marcin Grzejszczak
- * @since 1.0.0
- */
-public interface SpanReporter {
+import org.junit.jupiter.api.Test;
 
-	/**
-	 * Reports the finished span.
-	 * @param span a span that was ended and is ready to be reported.
-	 */
-	void report(FinishedSpan span);
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
+
+class SpanAndScopeTests {
+
+	@Test
+	void should_close_span_and_scope() {
+		Span span = mock(Span.class);
+		Tracer.SpanInScope scope = mock(Tracer.SpanInScope.class);
+		SpanAndScope spanAndScope = new SpanAndScope(span, scope);
+
+		spanAndScope.close();
+
+		then(span).should().end();
+		then(scope).should().close();
+	}
 
 }

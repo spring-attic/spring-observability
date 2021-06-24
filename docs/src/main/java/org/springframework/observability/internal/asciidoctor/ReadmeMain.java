@@ -28,10 +28,11 @@ import org.asciidoctor.SafeMode;
 /**
  * Creates a merged README.adoc file.
  *
- * @since 1.0.0
  * @author Marcin Grzejszczak
+ * @since 1.0.0
  */
 public class ReadmeMain {
+
 	/**
 	 * Main method.
 	 * @param args program arguments
@@ -55,7 +56,8 @@ public class ReadmeMain {
 			String fileAsString = new String(Files.readAllBytes(input.toPath()));
 			asciidoctor.convert(fileAsString, options);
 			System.out.println("Successfully converted the Readme file!\n");
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException("Failed to convert the file", ex);
 		}
 	}
@@ -72,4 +74,5 @@ public class ReadmeMain {
 		options.setParseHeaderOnly(true);
 		return options;
 	}
+
 }

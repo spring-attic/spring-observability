@@ -54,7 +54,8 @@ import java.lang.annotation.Target;
  * }</pre>
  *
  * Starting with version {@code 1.3.0} you can also put the annotation on an
- * {@code @Async} annotated method and the value of that annotation will be used as the span name.
+ * {@code @Async} annotated method and the value of that annotation will be used as the
+ * span name.
  *
  * @author Marcin Grzejszczak
  * @since 1.0.0

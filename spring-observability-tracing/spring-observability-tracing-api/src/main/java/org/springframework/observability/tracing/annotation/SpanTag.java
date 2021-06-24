@@ -33,7 +33,7 @@ import org.springframework.core.annotation.AliasFor;
  * {@code toString()} value of the parameter
  *
  * @author Christian Schwerdtfeger
- * @since 1.2.0
+ * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

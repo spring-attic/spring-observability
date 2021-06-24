@@ -22,14 +22,9 @@ import java.util.Arrays;
  * Represents a tag key.
  *
  * @author Marcin Grzejszczak
- * @since 3.1.0
+ * @since 1.0.0
  */
 public interface TagKey {
-
-	/**
-	 * @return tag key
-	 */
-	String getKey();
 
 	/**
 	 * Merges arrays of tags.
@@ -39,5 +34,10 @@ public interface TagKey {
 	static TagKey[] merge(TagKey[]... tags) {
 		return Arrays.stream(tags).flatMap(Arrays::stream).toArray(TagKey[]::new);
 	}
+
+	/**
+	 * @return tag key
+	 */
+	String getKey();
 
 }
