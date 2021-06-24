@@ -1,0 +1,25 @@
+:doctype: book
+:idprefix:
+:idseparator: -
+:toc: left
+:toclevels: 4
+:tabsize: 4
+:numbered:
+:sectanchors:
+:sectnums:
+:icons: font
+:hide-uri-scheme:
+:docinfo: shared,private
+
+:sc-ext: java
+:project-full-name: Spring Observability
+
+// project-specific attributes
+:core_path: {project-root}
+:docs_path: {project-root}/docs
+:autoconfig_path: {project-root}/spring-cloud-sleuth-autoconfigure
+:api_path: {project-root}/spring-cloud-sleuth-api
+:brave_path: {project-root}/spring-cloud-sleuth-brave
+:tests_path: {core_path}/tests
+:common_tests_path: {tests_path}/common
+:brave_tests_path: {tests_path}/brave

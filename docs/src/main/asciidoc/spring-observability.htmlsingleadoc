@@ -1,0 +1,8 @@
+[[spring-observability-reference-documentation]]
+= Spring Observability Reference Documentation
+Marcin Grzejszczak, Jonatan Ivanov, Tommy Ludwig
+
+:docinfo: shared
+include::_attributes.adoc[]
+
+include::legal.adoc[leveloffset=+1]
