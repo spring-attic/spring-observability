@@ -28,23 +28,21 @@
 
 		<!-- Spring docs and formatting-->
 		<!-- TODO: We might have a cycle on this -->
-		<spring-doc-resources.version>0.2.2.RELEASE</spring-doc-resources.version>
-		<spring-asciidoctor-extensions-boot.version>0.5.0
+		<spring-doc-resources.version>0.2.5</spring-doc-resources.version>
+		<spring-asciidoctor-extensions-boot.version>0.6.0
 		</spring-asciidoctor-extensions-boot.version>
-		<spring-asciidoctor-extensions-block.version>0.5.0
+		<spring-asciidoctor-extensions-block.version>0.6.0
 		</spring-asciidoctor-extensions-block.version>
-		<spring-javaformat.version>0.0.25</spring-javaformat.version>
-		<spring-javaformat-checkstyle.version>0.0.25</spring-javaformat-checkstyle.version>
-		<nohttp-checkstyle.version>0.0.5.RELEASE</nohttp-checkstyle.version>
-		<disable.nohttp.checks>true</disable.nohttp.checks>
+		<spring-javaformat.version>0.0.28</spring-javaformat.version>
+		<spring-javaformat-checkstyle.version>0.0.28</spring-javaformat-checkstyle.version>
+		<nohttp-checkstyle.version>0.0.7</nohttp-checkstyle.version>
+		<disable.nohttp.checks>false</disable.nohttp.checks>
 
-		<asciidoctorj-pdf.version>1.5.3</asciidoctorj-pdf.version>
-		<asciidoctorj-diagram.version>2.0.2</asciidoctorj-diagram.version>
-		<guides-project.version>${project.version}</guides-project.version>
-		<guides-update.phase>deploy</guides-update.phase>
+		<asciidoctorj-pdf.version>1.6.0</asciidoctorj-pdf.version>
+		<asciidoctorj-diagram.version>2.1.2</asciidoctorj-diagram.version>
 		<revision>${project.version}</revision>
-		<asciidoctorj.version>2.4.1</asciidoctorj.version>
-		<jruby-complete.version>9.2.7.0</jruby-complete.version>
+		<asciidoctorj.version>2.5.1</asciidoctorj.version>
+		<jruby-complete.version>9.2.19.0</jruby-complete.version>
 
 		<!-- Sonar -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -57,27 +55,28 @@
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
 		<checkstyle.version>${maven-checkstyle-plugin.version}</checkstyle.version>
-		<puppycrawl-tools-checkstyle.version>8.29</puppycrawl-tools-checkstyle.version>
-		<maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
-		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+		<puppycrawl-tools-checkstyle.version>8.43</puppycrawl-tools-checkstyle.version>
+		<maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
+		<maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
 		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
 		<maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
 		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>3.0.0-M5</maven-surefire-report-plugin.version><!-- @releaser:version-check-off -->
-		<maven-war-plugin.version>3.3.1</maven-war-plugin.version>
-		<exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
-		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-		<git-commit-id-plugin.version>3.0.0</git-commit-id-plugin.version>
-		<maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version><!-- @releaser:version-check-off -->
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
+		<exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+		<git-commit-id-plugin.version>4.0.5</git-commit-id-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version><!-- @releaser:version-check-off -->
+		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+		<maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
 		<asciidoctor-maven-plugin.version>2.1.0</asciidoctor-maven-plugin.version>
-		<build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-		<license-maven-plugin.version>1.16</license-maven-plugin.version>
-		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+		<license-maven-plugin.version>2.0.0</license-maven-plugin.version>
+		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
 		<pitest-maven.version>1.6.7</pitest-maven.version>
 		<pitest-junit5-plugin.version>0.14</pitest-junit5-plugin.version>
+		<maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
+		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
+		<maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
 
 		<disable.checks>false</disable.checks>
 		<maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
@@ -107,15 +106,11 @@
 		<generated-docs-pdf-output.dir>${project.build.directory}/generated-docs/reference/pdf</generated-docs-pdf-output.dir>
 		<javadoc.failOnError>true</javadoc.failOnError>
 		<javadoc.failOnWarnings>true</javadoc.failOnWarnings>
-		<maven-deploy-plugin.version>2.7</maven-deploy-plugin.version>
 		<maven-deploy-plugin.deployZipRepositoryId>repo.spring.io</maven-deploy-plugin.deployZipRepositoryId>
 		<maven-deploy-plugin.deployZipUrl>https://repo.spring.io/libs-snapshot-local</maven-deploy-plugin.deployZipUrl>
 		<upload-docs-zip.phase>none</upload-docs-zip.phase>
 		<readme.main.classpath>${docs.classes.dir}</readme.main.classpath>
 		<readme.class.path>readme.class.path</readme.class.path>
-		<flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
-		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-		<maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
 	</properties>
 	<organization>
 		<name>VMware</name>
