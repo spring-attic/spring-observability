@@ -38,18 +38,18 @@
 			<groupId>org.asciidoctor</groupId>
 			<artifactId>asciidoctorj</artifactId>
 			<version>${asciidoctorj.version}</version>
-            <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
-        </dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit-jupiter-engine.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.20.2</version>
+			<version>${assertj-core.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -69,7 +69,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>		
+	<profiles>
 		<profile>
 			<id>docs</id>
 			<build>
@@ -338,7 +338,7 @@
 											<pathelement location="${readme.main.classpath}"/>
 										</path>
 										<java classname="org.springframework.observability.internal.asciidoctor.ReadmeMain"
-												failonerror="yes" classpathref="${readme.class.path}">
+											  failonerror="yes" classpathref="${readme.class.path}">
 											<!-- Input -->
 											<arg value="${project.basedir}/src/main/asciidoc/README.adoc"/>
 											<!-- Output -->
@@ -356,14 +356,14 @@
 								<configuration>
 									<target>
 										<fileset id="unresolved.file" dir="${basedir}/target/generated-docs/"
-													includes="**/*.html">
+												 includes="**/*.html">
 											<contains text="Unresolved"/>
 										</fileset>
 										<fail message="[Unresolved] Found...failing">
 											<condition>
 												<resourcecount when="greater"
-																count="0"
-																refid="unresolved.file"/>
+															   count="0"
+															   refid="unresolved.file"/>
 											</condition>
 										</fail>
 									</target>
@@ -397,21 +397,21 @@
 										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask"/>
 										<var name="version-type" value="${revision}"/>
 										<propertyregex property="version-type" override="true"
-														input="${version-type}" regexp=".*\.(.*)" replace="\1"/>
+													   input="${version-type}" regexp=".*\.(.*)" replace="\1"/>
 										<propertyregex property="version-type" override="true"
-														input="${version-type}" regexp="(M)\d+" replace="MILESTONE"/>
+													   input="${version-type}" regexp="(M)\d+" replace="MILESTONE"/>
 										<propertyregex property="version-type" override="true"
-														input="${version-type}" regexp="(RC)\d+"
-														replace="MILESTONE"/>
+													   input="${version-type}" regexp="(RC)\d+"
+													   replace="MILESTONE"/>
 										<propertyregex property="version-type" override="true"
-														input="${version-type}" regexp="BUILD-(.*)"
-														replace="SNAPSHOT"/>
+													   input="${version-type}" regexp="BUILD-(.*)"
+													   replace="SNAPSHOT"/>
 										<stringutil string="${version-type}" property="spring-cloud-repo">
 											<lowercase/>
 										</stringutil>
 										<propertyregex property="git.branch" override="true"
-														input="${git.branch}" regexp="origin/(.*)"
-														replace="\1"/>
+													   input="${git.branch}" regexp="origin/(.*)"
+													   replace="\1"/>
 										<var name="github-tag" value="${git.branch}"/>
 									</target>
 								</configuration>

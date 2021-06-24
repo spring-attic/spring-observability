@@ -25,7 +25,17 @@ import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
 
+/**
+ * Creates a merged README.adoc file.
+ *
+ * @since 1.0.0
+ * @author Marcin Grzejszczak
+ */
 public class ReadmeMain {
+	/**
+	 * Main method.
+	 * @param args program arguments
+	 */
 	public static void main(String... args) {
 		File inputFile = new File(args[0]);
 		File outputFile = new File(args[1]);
