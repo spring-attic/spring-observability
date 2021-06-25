@@ -47,6 +47,16 @@ public class ThreadLocalSpan {
 	}
 
 	/**
+	 * Creates a new span and sets it in scope.
+	 * @return new thread local span
+	 */
+	public Span nextSpan() {
+		Span span = this.tracer.nextSpan();
+		set(span);
+		return span;
+	}
+
+	/**
 	 * Sets given span and scope.
 	 * @param span - span to be put in scope
 	 */
