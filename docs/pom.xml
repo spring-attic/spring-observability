@@ -19,19 +19,22 @@
 		<docs.resources.dir>${project.basedir}/src/main/</docs.resources.dir>
 		<upload-docs-zip.phase>deploy</upload-docs-zip.phase>
 		<readme.class.path>maven.compile.classpath</readme.class.path>
+
+		<!-- Script -->
+		<jackson-databind.version>2.12.3</jackson-databind.version>
+		<commons-logging.version>1.2</commons-logging.version>
 	</properties>
 	<dependencies>
-		<!-- Script -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
+			<version>${commons-logging.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.12.3</version>
+			<version>${jackson-databind.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -62,12 +65,6 @@
 				</excludes>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.8.2</version>
-			</plugin>
-		</plugins>
 	</build>
 	<profiles>
 		<profile>

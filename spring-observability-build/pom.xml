@@ -654,7 +654,7 @@
 			<id>mutation</id>
 			<properties>
 				<mutation.skip>false</mutation.skip>
-				<mutation.threshold>25</mutation.threshold>
+				<mutation.threshold>0</mutation.threshold>
 				<mutation.fail-when-no-mutations>false</mutation.fail-when-no-mutations>
 			</properties>
 			<build>

@@ -28,16 +28,22 @@
 		<javadoc.failOnWarnings>true</javadoc.failOnWarnings>
 
 		<!-- Use as few imports as possible so as not to have cycles -->
-		<spring-core.version>5.3.8</spring-core.version>
+		<spring.version>5.3.8</spring.version>
 
+		<!-- Production dependencies -->
+		<jsr305.version>3.0.2</jsr305.version>
+		<logback-classic.version>1.2.3</logback-classic.version>
+		<aopalliance.version>1.0</aopalliance.version>
+		<brave.version>5.13.2</brave.version>
+		<brave-propagation-aws.version>0.21.3</brave-propagation-aws.version>
+		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+
+		<!-- Test dependencies -->
 		<junit-jupiter-engine.version>5.7.2</junit-jupiter-engine.version>
 		<assertj-core.version>3.20.2</assertj-core.version>
 		<awaitility.version>4.1.0</awaitility.version>
-		<jsr305.version>3.0.2</jsr305.version>
 		<archunit-junit5.version>0.19.0</archunit-junit5.version>
 		<testcontainers.version>1.15.3</testcontainers.version>
-		<logback-classic.version>1.2.3</logback-classic.version>
-		<aopalliance.version>1.0</aopalliance.version>
 		<mockito.version>3.11.2</mockito.version>
 	</properties>
 	<dependencyManagement>
@@ -50,17 +56,31 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback-classic.version}</version>
-			</dependency>
+			<!-- Spring versions -->
 			<!-- Scope must be provided so that we don't have a dependency cycle -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>${spring-core.version}</version>
+				<version>${spring.version}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<!-- Tracer dependencies -->
+			<dependency>
+				<groupId>io.zipkin.aws</groupId>
+				<artifactId>brave-propagation-aws</artifactId>
+				<version>${brave-propagation-aws.version}</version>
+			</dependency>
+			<!-- Other dependencies -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback-classic.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>aopalliance</groupId>
@@ -72,7 +92,12 @@
 				<artifactId>jsr305</artifactId>
 				<version>${jsr305.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>${javax.servlet-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
 			<!-- Test -->
 			<dependency>
 				<groupId>org.mockito</groupId>

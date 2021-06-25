@@ -78,9 +78,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 	<distributionManagement>
 		<downloadUrl>https://github.com/spring-projects/spring-observability/</downloadUrl>
 		<site>
@@ -100,6 +97,15 @@
 			<url>https://repo.spring.io/libs-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- TODO: Do we want to enforce the Brave version when e.g. only Metrics are used? -->
+		<brave.version>5.13.2</brave.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -136,6 +142,13 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-tracing-test</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.zipkin.brave</groupId>
+				<artifactId>brave-bom</artifactId>
+				<version>${brave.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
