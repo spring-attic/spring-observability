@@ -16,7 +16,7 @@
 	</parent>
 	<modules>
 		<module>spring-observability-build</module>
-		<module>spring-observability-dependencies</module>
+		<module>spring-observability-bom</module>
 		<module>spring-observability-api</module>
 		<module>spring-observability-metrics</module>
 		<module>spring-observability-starter</module>
@@ -51,7 +51,7 @@
 			<!-- Production -->
 			<dependency>
 				<groupId>org.springframework</groupId>
-				<artifactId>spring-observability-dependencies</artifactId>
+				<artifactId>spring-observability-bom</artifactId>
 				<version>${spring-observability.version}</version>
 				<type>pom</type>
 				<scope>import</scope>

@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<artifactId>spring-observability-dependencies</artifactId>
+	<artifactId>spring-observability-bom</artifactId>
 	<packaging>pom</packaging>
-	<name>spring-observability-dependencies</name>
+	<name>spring-observability-bom</name>
 	<description>Spring Observability Dependencies</description>
 	<url>https://projects.spring.io/spring-observability/</url>
 	<organization>
