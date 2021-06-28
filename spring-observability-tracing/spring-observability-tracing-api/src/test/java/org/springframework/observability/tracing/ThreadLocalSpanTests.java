@@ -60,4 +60,16 @@ class ThreadLocalSpanTests {
 		then(spanAndScope).isNull();
 	}
 
+	@Test
+	void should_create_a_new_thread_local_span() {
+		// given
+		ThreadLocalSpan span = new ThreadLocalSpan(new WithMockSpanTracer());
+
+		// when
+		Span firstSpan = span.nextSpan();
+
+		// then
+		then(span.get().getSpan()).isSameAs(firstSpan);
+	}
+
 }
