@@ -73,7 +73,8 @@ public class ReadmeMain {
 				.baseDir(input.getParentFile())
 				.attributes(attributes)
 				.safe(SafeMode.UNSAFE)
-				.parseHeaderOnly(true).build();
+				.parseHeaderOnly(true)
+				.build();
 	}
 
 }
