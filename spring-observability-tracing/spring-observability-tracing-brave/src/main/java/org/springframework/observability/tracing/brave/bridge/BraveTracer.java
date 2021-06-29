@@ -49,6 +49,14 @@ public class BraveTracer implements Tracer {
 		this.braveBaggageManager = braveBaggageManager;
 	}
 
+	/**
+	 * @param tracer Brave delegate
+	 */
+	public BraveTracer(brave.Tracer tracer) {
+		this.tracer = tracer;
+		this.braveBaggageManager = new BraveBaggageManager();
+	}
+
 	@Override
 	public Span nextSpan(Span parent) {
 		if (parent == null) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing;
+package org.springframework.observability.tracing.reporter.zipkin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,14 +29,19 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestTemplate;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -45,10 +50,9 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 public class ArchitectureTests {
 
 	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(Nullable.class,
-			StringUtils.class, AliasFor.class, BeanFactory.class, Assert.class, ObjectProvider.class, ClassUtils.class,
-			ServerHttpRequest.class);
+			StringUtils.class, AliasFor.class, Assert.class, RestTemplate.class, MediaType.class, HttpHeaders.class, HttpRequest.class, ClientHttpRequestExecution.class, RequestCallback.class, ResponseExtractor.class, ClientHttpResponse.class, ClientHttpRequestFactory.class);
 
-	@ArchTest
+	// @ArchTest
 	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()
 			.should()
 			.dependOnClassesThat(new DescribedPredicate<JavaClass>("You may only depend on "

@@ -83,7 +83,7 @@
 		<site>
 			<id>spring-docs</id>
 			<url>
-				https://docs.spring.io/spring-observability/docs/${project.version}/reference/html/
+				https://docs.spring.io/spring-observability/docs/1.0.0-SNAPSHOT/reference/html/
 			</url>
 		</site>
 		<repository>
@@ -111,37 +111,47 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-api</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-metrics-api</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-metrics-micrometer</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-metrics-test</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-tracing-api</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-tracing-brave</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-observability-tracing-reporters-zipkin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-observability-tracing-test-utils</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-observability-tracing-test</artifactId>
-				<version>${project.version}</version>
+				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.zipkin.brave</groupId>

@@ -46,7 +46,7 @@ public class ArchitectureTests {
 	@ArchTest
 	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()
 			.should()
-			.dependOnClassesThat(new DescribedPredicate<>("You may only depend on "
+			.dependOnClassesThat(new DescribedPredicate<JavaClass>("You may only depend on "
 					+ ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().map(Class::getName).collect(Collectors.toList())
 					+ " classes from Spring Framework dependency") {
 				@Override

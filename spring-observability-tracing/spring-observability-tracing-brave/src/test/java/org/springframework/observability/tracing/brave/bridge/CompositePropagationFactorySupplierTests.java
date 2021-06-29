@@ -17,6 +17,7 @@
 package org.springframework.observability.tracing.brave.bridge;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,13 +38,20 @@ class CompositePropagationFactorySupplierTests {
 
 	@Test
 	void should_pick_custom_registered_propagation_when_custom_mode_picked() {
-		StaticListableBeanFactory beanFactory = new StaticListableBeanFactory(Map.of("braveBaggageManager",
-				new BraveBaggageManager(), "customTracePropagation", new CustomTracePropagation()));
+		StaticListableBeanFactory beanFactory = new StaticListableBeanFactory(beans());
 
 		CompositePropagationFactorySupplier supplier = new CompositePropagationFactorySupplier(beanFactory,
 				Collections.emptyList(), Collections.singletonList(PropagationType.CUSTOM));
 
 		BDDAssertions.then(supplier.get().get().keys()).containsExactly(CustomTraceExtractor.CUSTOM_TRACE_HEADER);
+	}
+
+	// TODO: Migrate to Map.of
+	private Map<String, Object> beans() {
+		Map<String, Object> beans = new HashMap<>();
+		beans.put("braveBaggageManager", new BraveBaggageManager());
+		beans.put("customTracePropagation", new CustomTracePropagation());
+		return beans;
 	}
 
 }

@@ -16,6 +16,8 @@
 	<modules>
 		<module>spring-observability-tracing-api</module>
 		<module>spring-observability-tracing-brave</module>
+		<module>spring-observability-tracing-reporters</module>
+		<module>spring-observability-tracing-test-utils</module>
 		<module>spring-observability-tracing-test</module>
 	</modules>
 </project>

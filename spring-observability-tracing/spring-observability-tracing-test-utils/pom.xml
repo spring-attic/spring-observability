@@ -3,10 +3,10 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spring-observability-tracing-test</artifactId>
-	<name>spring-observability-tracing-test</name>
+	<artifactId>spring-observability-tracing-test-utils</artifactId>
+	<name>spring-observability-tracing-test-utils</name>
 	<packaging>jar</packaging>
-	<description>Spring Observability Tracing Test</description>
+	<description>Spring Observability Tracing Test Utils</description>
 	<parent>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-observability-tracing-parent</artifactId>
@@ -16,7 +16,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-observability-tracing-test-utils</artifactId>
+			<artifactId>spring-observability-tracing-brave</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.brave</groupId>
+			<artifactId>brave-tests</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
 	</dependencies>
 </project>

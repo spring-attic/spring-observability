@@ -3,20 +3,18 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spring-observability-tracing-test</artifactId>
-	<name>spring-observability-tracing-test</name>
-	<packaging>jar</packaging>
-	<description>Spring Observability Tracing Test</description>
+	<artifactId>spring-observability-tracing-reporters-parent</artifactId>
+	<name>spring-observability-tracing-reporters-parent</name>
+	<packaging>pom</packaging>
+	<description>Spring Observability Tracing Reporters Parent</description>
 	<parent>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-observability-tracing-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-observability-tracing-test-utils</artifactId>
-		</dependency>
-	</dependencies>
+
+	<modules>
+		<module>spring-observability-tracing-reporters-zipkin</module>
+	</modules>
 </project>
