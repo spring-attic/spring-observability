@@ -96,4 +96,16 @@ public class ThreadLocalSpan {
 		}
 	}
 
+	/**
+	 * Ends the current span and puts the previous one as the current span if present.
+	 */
+	public void end() {
+		SpanAndScope spanAndScope = get();
+		if (spanAndScope == null) {
+			return;
+		}
+		spanAndScope.close();
+		remove();
+	}
+
 }
