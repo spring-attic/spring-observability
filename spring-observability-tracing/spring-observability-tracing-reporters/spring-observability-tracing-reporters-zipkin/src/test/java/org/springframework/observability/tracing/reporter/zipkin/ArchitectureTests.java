@@ -50,7 +50,9 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 public class ArchitectureTests {
 
 	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(Nullable.class,
-			StringUtils.class, AliasFor.class, Assert.class, RestTemplate.class, MediaType.class, HttpHeaders.class, HttpRequest.class, ClientHttpRequestExecution.class, RequestCallback.class, ResponseExtractor.class, ClientHttpResponse.class, ClientHttpRequestFactory.class);
+			StringUtils.class, AliasFor.class, Assert.class, RestTemplate.class, MediaType.class, HttpHeaders.class,
+			HttpRequest.class, ClientHttpRequestExecution.class, RequestCallback.class, ResponseExtractor.class,
+			ClientHttpResponse.class, ClientHttpRequestFactory.class);
 
 	// @ArchTest
 	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()
