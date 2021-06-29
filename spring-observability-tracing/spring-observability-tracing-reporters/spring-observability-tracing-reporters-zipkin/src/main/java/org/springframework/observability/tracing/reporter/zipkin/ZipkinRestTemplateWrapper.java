@@ -20,9 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.Supplier;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.springframework.core.log.LogAccessor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -41,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class ZipkinRestTemplateWrapper extends RestTemplate {
 
-	private static final Log log = LogFactory.getLog(ZipkinRestTemplateWrapper.class);
+	private static final LogAccessor log = new LogAccessor(ZipkinRestTemplateWrapper.class);
 
 	private static final int DEFAULT_TIMEOUT = 500;
 
@@ -81,10 +79,8 @@ public class ZipkinRestTemplateWrapper extends RestTemplate {
 					originalUrl.getFragment());
 		}
 		catch (URISyntaxException e) {
-			if (log.isDebugEnabled()) {
-				log.debug("Failed to create the new URI from original [" + originalUrl + "] and new one ["
-						+ resolvedZipkinUri + "]");
-			}
+			log.debug(() -> "Failed to create the new URI from original [" + originalUrl + "] and new one ["
+					+ resolvedZipkinUri + "]");
 			return originalUrl;
 		}
 	}

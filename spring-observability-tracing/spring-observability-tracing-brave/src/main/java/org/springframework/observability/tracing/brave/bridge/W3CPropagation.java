@@ -33,9 +33,8 @@ import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogAccessor;
 import org.springframework.observability.tracing.BaggageInScope;
 import org.springframework.observability.tracing.internal.EncodingUtils;
 
@@ -56,7 +55,7 @@ class W3CPropagation extends Propagation.Factory implements Propagation<String> 
 	static final String TRACE_PARENT = "traceparent";
 	static final String TRACE_STATE = "tracestate";
 
-	private static final Log logger = LogFactory.getLog(W3CPropagation.class.getName());
+	private static final LogAccessor log = new LogAccessor(W3CPropagation.class);
 
 	private static final List<String> FIELDS = Collections.unmodifiableList(Arrays.asList(TRACE_PARENT, TRACE_STATE));
 
@@ -141,7 +140,7 @@ class W3CPropagation extends Propagation.Factory implements Propagation<String> 
 				&& traceparent.charAt(SPAN_ID_OFFSET - 1) == TRACEPARENT_DELIMITER
 				&& traceparent.charAt(TRACE_OPTION_OFFSET - 1) == TRACEPARENT_DELIMITER;
 		if (!isValid) {
-			logger.info("Unparseable traceparent header. Returning INVALID span context.");
+			log.info("Unparseable traceparent header. Returning INVALID span context.");
 			return null;
 		}
 
@@ -169,7 +168,7 @@ class W3CPropagation extends Propagation.Factory implements Propagation<String> 
 			return null;
 		}
 		catch (IllegalArgumentException e) {
-			logger.info("Unparseable traceparent header. Returning INVALID span context.");
+			log.info("Unparseable traceparent header. Returning INVALID span context.");
 			return null;
 		}
 	}
@@ -265,7 +264,7 @@ class W3CPropagation extends Propagation.Factory implements Propagation<String> 
 							.sampled(contextFromParentHeader.sampled()).shared(true).build());
 		}
 		catch (IllegalArgumentException e) {
-			logger.info("Unparseable tracestate header. Returning span context without state.");
+			log.info("Unparseable tracestate header. Returning span context without state.");
 			return TraceContextOrSamplingFlags.create(contextFromParentHeader);
 		}
 	}
@@ -277,7 +276,7 @@ class W3CPropagation extends Propagation.Factory implements Propagation<String> 
  */
 class W3CBaggagePropagator {
 
-	private static final Log log = LogFactory.getLog(W3CBaggagePropagator.class);
+	private static final LogAccessor log = new LogAccessor(W3CBaggagePropagator.class);
 
 	private static final String FIELD = "baggage";
 
@@ -360,10 +359,8 @@ class W3CBaggagePropagator {
 					pairs.add(new AbstractMap.SimpleEntry<>(field, value));
 				}
 				catch (Exception e) {
-					if (log.isDebugEnabled()) {
-						log.debug("Exception occurred while trying to parse baggage with key value ["
-								+ Arrays.toString(keyAndValue) + "]. Will ignore that entry.", e);
-					}
+					log.debug(e, () -> "Exception occurred while trying to parse baggage with key value ["
+							+ Arrays.toString(keyAndValue) + "]. Will ignore that entry.");
 				}
 			}
 		}

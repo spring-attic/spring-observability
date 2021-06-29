@@ -23,9 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.springframework.core.log.LogAccessor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,7 +36,7 @@ public class SpanIgnoringSpanFilter implements SpanFilter {
 
 	static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
 
-	private static final Logger log = LoggerFactory.getLogger(SpanIgnoringSpanFilter.class);
+	private static final LogAccessor log = new LogAccessor(SpanIgnoringSpanFilter.class);
 
 	private final List<String> spanNamePatternsToSkip;
 
@@ -70,7 +68,7 @@ public class SpanIgnoringSpanFilter implements SpanFilter {
 		List<Pattern> spanNamesToIgnore = spanNamesToIgnore();
 		String name = span.getName();
 		if (StringUtils.hasText(name) && spanNamesToIgnore.stream().anyMatch(p -> p.matcher(name).matches())) {
-			log.debug("Will ignore a span with name [{}]", name);
+			log.debug(() -> "Will ignore a span with name [" + name + "]");
 			return false;
 		}
 		return true;

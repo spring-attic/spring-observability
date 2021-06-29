@@ -32,7 +32,6 @@
 
 		<!-- Production dependencies -->
 		<jsr305.version>3.0.2</jsr305.version>
-		<logback-classic.version>1.2.3</logback-classic.version>
 		<aopalliance.version>1.0</aopalliance.version>
 		<brave.version>5.13.2</brave.version>
 		<brave-propagation-aws.version>0.21.3</brave-propagation-aws.version>
@@ -67,6 +66,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-jcl</artifactId>
+				<version>${spring.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
 				<scope>provided</scope>
@@ -78,11 +83,6 @@
 				<version>${brave-propagation-aws.version}</version>
 			</dependency>
 			<!-- Other dependencies -->
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback-classic.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>aopalliance</groupId>
 				<artifactId>aopalliance</artifactId>

@@ -20,8 +20,7 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.core.log.LogAccessor;
 
 /**
  * {@link ZipkinUrlExtractor} with caching mechanism.
@@ -31,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CachingZipkinUrlExtractor implements ZipkinUrlExtractor {
 
-	private static final Log log = LogFactory.getLog(CachingZipkinUrlExtractor.class);
+	private static final LogAccessor log = new LogAccessor(CachingZipkinUrlExtractor.class);
 
 	final AtomicInteger zipkinPort = new AtomicInteger();
 
@@ -49,16 +48,12 @@ public class CachingZipkinUrlExtractor implements ZipkinUrlExtractor {
 	public URI zipkinUrl(Supplier<String> baseUrl) {
 		int cachedZipkinPort = zipkinPort(baseUrl);
 		if (cachedZipkinPort == -1) {
-			if (log.isDebugEnabled()) {
-				log.debug("The port in Zipkin's URL [" + baseUrl
-						+ "] wasn't provided - that means that load balancing might take place");
-			}
+			log.debug(() -> "The port in Zipkin's URL [" + baseUrl
+					+ "] wasn't provided - that means that load balancing might take place");
 			return this.zipkinLoadBalancer.instance();
 		}
-		if (log.isDebugEnabled()) {
-			log.debug("The port in Zipkin's URL [" + baseUrl
-					+ "] is provided - that means that load balancing will not take place");
-		}
+		log.debug(() -> "The port in Zipkin's URL [" + baseUrl
+				+ "] is provided - that means that load balancing will not take place");
 		return noOpZipkinLoadBalancer(baseUrl).instance();
 	}
 

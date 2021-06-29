@@ -32,6 +32,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.log.LogAccessor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -46,7 +47,7 @@ public class ArchitectureTests {
 
 	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(Nullable.class,
 			StringUtils.class, AliasFor.class, BeanFactory.class, Assert.class, ObjectProvider.class, ClassUtils.class,
-			ServerHttpRequest.class);
+			ServerHttpRequest.class, LogAccessor.class);
 
 	@ArchTest
 	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()

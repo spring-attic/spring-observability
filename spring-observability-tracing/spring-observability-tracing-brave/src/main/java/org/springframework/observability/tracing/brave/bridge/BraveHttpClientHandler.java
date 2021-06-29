@@ -16,9 +16,7 @@
 
 package org.springframework.observability.tracing.brave.bridge;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.springframework.core.log.LogAccessor;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
 import org.springframework.observability.tracing.http.HttpClientHandler;
@@ -33,7 +31,7 @@ import org.springframework.observability.tracing.http.HttpClientResponse;
  */
 public class BraveHttpClientHandler implements HttpClientHandler {
 
-	private static final Log log = LogFactory.getLog(BraveHttpClientHandler.class);
+	private static final LogAccessor log = new LogAccessor(BraveHttpClientHandler.class);
 
 	final brave.http.HttpClientHandler<brave.http.HttpClientRequest, brave.http.HttpClientResponse> delegate;
 
@@ -63,9 +61,7 @@ public class BraveHttpClientHandler implements HttpClientHandler {
 	@Override
 	public void handleReceive(HttpClientResponse response, Span span) {
 		if (response == null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Response is null, will not handle receiving of span [" + span + "]");
-			}
+			log.debug(() -> "Response is null, will not handle receiving of span [" + span + "]");
 			return;
 		}
 		this.delegate.handleReceive(BraveHttpClientResponse.toBrave(response), BraveSpan.toBrave(span));

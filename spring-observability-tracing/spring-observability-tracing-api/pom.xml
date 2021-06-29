@@ -20,8 +20,8 @@
 			<artifactId>spring-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jcl</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>aopalliance</groupId>

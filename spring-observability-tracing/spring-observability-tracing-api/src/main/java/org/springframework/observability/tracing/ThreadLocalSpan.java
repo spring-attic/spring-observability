@@ -20,8 +20,7 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.core.log.LogAccessor;
 
 /**
  * Represents a {@link Span} stored in thread local.
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ThreadLocalSpan {
 
-	private static final Logger log = LoggerFactory.getLogger(ThreadLocalSpan.class);
+	private static final LogAccessor log = new LogAccessor(ThreadLocalSpan.class);
 
 	private final ThreadLocal<SpanAndScope> threadLocalSpan = new ThreadLocal<>();
 
@@ -65,7 +64,7 @@ public class ThreadLocalSpan {
 		SpanAndScope newSpanAndScope = new SpanAndScope(span, spanInScope);
 		SpanAndScope scope = this.threadLocalSpan.get();
 		if (scope != null) {
-			log.trace("Putting previous scope to stack [{}]", scope);
+			log.trace(() -> "Putting previous scope to stack [" + scope + "]");
 			this.spans.addFirst(scope);
 		}
 		this.threadLocalSpan.set(newSpanAndScope);
@@ -89,11 +88,11 @@ public class ThreadLocalSpan {
 		}
 		try {
 			SpanAndScope span = this.spans.removeFirst();
-			log.debug("Took span [{}] from thread local", span);
+			log.debug(() -> "Took span [" + span + "] from thread local");
 			this.threadLocalSpan.set(span);
 		}
 		catch (NoSuchElementException ex) {
-			log.trace("Failed to remove a span from the queue", ex);
+			log.trace(ex, () -> "Failed to remove a span from the queue");
 		}
 	}
 
