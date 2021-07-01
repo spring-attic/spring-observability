@@ -51,6 +51,13 @@ public interface Span extends SpanCustomizer {
 	Span start();
 
 	/**
+	 * Starts this span except with a given timestamp in microseconds.
+	 * @param timestamp in microseconds
+	 * @return this span
+	 */
+	Span start(long timestamp);
+
+	/**
 	 * Sets a name on this span.
 	 * @param name name to set on the span
 	 * @return this span
@@ -83,6 +90,13 @@ public interface Span extends SpanCustomizer {
 	 * Ends the span. The span gets stopped and recorded if not noop.
 	 */
 	void end();
+
+	/**
+	 * Ends the span with a given timestamp in microseconds. The span gets stopped and
+	 * recorded if not noop.
+	 * @param timestamp in microseconds
+	 */
+	void end(long timestamp);
 
 	/**
 	 * Ends the span. The span gets stopped but does not get recorded.

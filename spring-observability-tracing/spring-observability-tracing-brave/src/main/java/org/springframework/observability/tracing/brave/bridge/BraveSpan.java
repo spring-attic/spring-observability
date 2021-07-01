@@ -77,6 +77,12 @@ public class BraveSpan implements Span {
 	}
 
 	@Override
+	public Span start(long timestamp) {
+		this.delegate.start(timestamp);
+		return this;
+	}
+
+	@Override
 	public Span name(String name) {
 		this.delegate.name(name);
 		return this;
@@ -105,6 +111,11 @@ public class BraveSpan implements Span {
 	@Override
 	public void end() {
 		this.delegate.finish();
+	}
+
+	@Override
+	public void end(long timestamp) {
+		this.delegate.finish(timestamp);
 	}
 
 	@Override
