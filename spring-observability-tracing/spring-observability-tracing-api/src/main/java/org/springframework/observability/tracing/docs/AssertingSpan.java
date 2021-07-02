@@ -141,6 +141,12 @@ public interface AssertingSpan extends Span {
 	}
 
 	@Override
+	default Span start(long timestamp) {
+		getDelegate().start(timestamp);
+		return this;
+	}
+
+	@Override
 	default AssertingSpan error(Throwable throwable) {
 		getDelegate().error(throwable);
 		return this;
@@ -150,6 +156,12 @@ public interface AssertingSpan extends Span {
 	default void end() {
 		DocumentedSpanAssertions.assertThatSpanStartedBeforeEnd(this);
 		getDelegate().end();
+	}
+
+	@Override
+	default void end(long timestamp) {
+		DocumentedSpanAssertions.assertThatSpanStartedBeforeEnd(this);
+		getDelegate().end(timestamp);
 	}
 
 	@Override

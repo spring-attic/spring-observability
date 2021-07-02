@@ -16,5 +16,6 @@
 
 	<modules>
 		<module>spring-observability-tracing-reporters-zipkin</module>
+		<module>spring-observability-tracing-reporters-wavefront</module>
 	</modules>
 </project>

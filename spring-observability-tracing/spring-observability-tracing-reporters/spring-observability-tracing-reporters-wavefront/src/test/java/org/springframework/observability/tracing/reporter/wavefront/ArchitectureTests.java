@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.reporter.zipkin;
+package org.springframework.observability.tracing.reporter.wavefront;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +29,6 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.log.LogAccessor;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
@@ -41,18 +37,13 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 @AnalyzeClasses(packagesOf = ArchitectureTests.class, importOptions = ArchitectureTests.ProductionCode.class)
 public class ArchitectureTests {
 
-	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(Nullable.class,
-			StringUtils.class, AliasFor.class, Assert.class, LogAccessor.class);
-
-	private static final List<String> ALLOWED_SPRING_FRAMEWORK_PACKAGES = Arrays.asList("org.springframework.http",
-			"org.springframework.web");
+	private static final List<Class<?>> ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES = Arrays.asList(StringUtils.class);
 
 	@ArchTest
 	public static final ArchRule should_not_contain_any_spring_reference_in_module_other_than_the_allowed_ones = noClasses()
 			.should()
 			.dependOnClassesThat(new DescribedPredicate<JavaClass>("You may only depend on "
-					+ (ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().map(Class::getName).collect(Collectors.toList())
-							+ " and the following packages " + ALLOWED_SPRING_FRAMEWORK_PACKAGES)
+					+ ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream().map(Class::getName).collect(Collectors.toList())
 					+ " classes from Spring Framework dependency") {
 				@Override
 				public boolean apply(JavaClass javaClass) {
@@ -60,9 +51,6 @@ public class ArchitectureTests {
 					String packageName = aPackage.getName();
 					if (!packageName.startsWith("org.springframework")
 							|| packageName.startsWith("org.springframework.observability")) {
-						return false;
-					}
-					if (ALLOWED_SPRING_FRAMEWORK_PACKAGES.stream().anyMatch(packageName::startsWith)) {
 						return false;
 					}
 					return ALLOWED_SPRING_FRAMEWORK_DEPENDENCIES.stream()

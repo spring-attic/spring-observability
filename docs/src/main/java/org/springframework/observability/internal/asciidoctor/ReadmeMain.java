@@ -63,18 +63,11 @@ public class ReadmeMain {
 	}
 
 	private Options options(File input, File output) {
-		Attributes attributes = Attributes.builder()
-				.allowUriRead(true)
-				.attribute("project-root", output.getParent())
+		Attributes attributes = Attributes.builder().allowUriRead(true).attribute("project-root", output.getParent())
 				.build();
 
-		return Options.builder()
-				.sourceDir(input.getParentFile())
-				.baseDir(input.getParentFile())
-				.attributes(attributes)
-				.safe(SafeMode.UNSAFE)
-				.parseHeaderOnly(true)
-				.build();
+		return Options.builder().sourceDir(input.getParentFile()).baseDir(input.getParentFile()).attributes(attributes)
+				.safe(SafeMode.UNSAFE).parseHeaderOnly(true).build();
 	}
 
 }

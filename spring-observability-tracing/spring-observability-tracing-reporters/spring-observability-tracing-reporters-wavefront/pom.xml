@@ -3,10 +3,10 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spring-observability-tracing-reporters-zipkin</artifactId>
-	<name>spring-observability-tracing-reporters-zipkin</name>
+	<artifactId>spring-observability-tracing-reporters-wavefront</artifactId>
+	<name>spring-observability-tracing-reporters-wavefront</name>
 	<packaging>jar</packaging>
-	<description>Spring Observability Tracing Reporters Zipkin</description>
+	<description>Spring Observability Tracing Reporters Wavefront</description>
 	<parent>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-observability-tracing-reporters-parent</artifactId>
@@ -21,16 +21,20 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>io.zipkin.zipkin2</groupId>
-			<artifactId>zipkin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.zipkin.reporter2</groupId>
-			<artifactId>zipkin-reporter</artifactId>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-runtime-sdk-jvm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.wavefront</groupId>
+			<artifactId>wavefront-sdk-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -48,8 +52,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>mockwebserver</artifactId>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
