@@ -39,9 +39,9 @@ public class ImmutableTag implements Tag {
 	 * @param cardinality The cardinality of the tag, it mustn't be null.
 	 */
 	public ImmutableTag(String key, String value, Cardinality cardinality) {
-		this.key = requireNonNull(key);
-		this.value = requireNonNull(value);
-		this.cardinality = requireNonNull(cardinality);
+		this.key = requireNonNull(key, "key can't be null");
+		this.value = requireNonNull(value, "value can't be null");
+		this.cardinality = requireNonNull(cardinality, "cardinality can't be null");
 	}
 
 	@Override
