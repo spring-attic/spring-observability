@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Clock abstraction to guide users and simplify testing.
  *
- * Some of the code is copied from:
+ * Mostly from:
  * https://github.com/micrometer-metrics/micrometer/blob/main/micrometer-core/src/main/java/io/micrometer/core/instrument/Clock.java
  *
  * @author Jon Schneider
