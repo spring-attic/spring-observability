@@ -78,7 +78,7 @@ class ImmutableTagTest {
 
 	@Test
 	void toStringShouldWork() {
-		assertThat(new ImmutableTag("testKey", "testValue", LOW).toString()).isEqualTo("tag{testKey=testValue}");
+		assertThat(new ImmutableTag("testKey", "testValue", LOW)).hasToString("tag{testKey=testValue}");
 	}
 
 }
