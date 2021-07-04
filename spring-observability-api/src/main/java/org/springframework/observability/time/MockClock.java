@@ -48,15 +48,28 @@ public class MockClock implements Clock {
 		return this.time;
 	}
 
+	/**
+	 * @param amount The amount to add to the current time.
+	 * @param unit The unit of the amount to add to the current time.
+	 * @return The new time (wallTime and monotonicTime are the same).
+	 */
 	public long add(long amount, TimeUnit unit) {
 		time += unit.toNanos(amount);
 		return time;
 	}
 
+	/**
+	 * @param duration The duration to add to the current time.
+	 * @return The new time (wallTime and monotonicTime are the same).
+	 */
 	public long add(Duration duration) {
 		return add(duration.toNanos(), NANOSECONDS);
 	}
 
+	/**
+	 * @param amount The amount of seconds to add to the current time.
+	 * @return The new time (wallTime and monotonicTime are the same).
+	 */
 	public long addSeconds(long amount) {
 		return add(amount, SECONDS);
 	}
