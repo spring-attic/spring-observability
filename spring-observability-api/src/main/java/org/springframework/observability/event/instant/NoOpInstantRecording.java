@@ -51,6 +51,11 @@ public class NoOpInstantRecording implements InstantRecording {
 	public void record() {
 	}
 
+	@Override
+	public String toString() {
+		return "NoOpInstantRecording";
+	}
+
 	static class NoOpInstantEvent implements InstantEvent {
 
 		@Override

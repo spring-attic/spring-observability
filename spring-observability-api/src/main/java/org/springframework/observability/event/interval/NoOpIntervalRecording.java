@@ -93,6 +93,11 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		return "NoOpIntervalRecording";
+	}
+
 	static class NoOpIntervalEvent implements IntervalEvent {
 
 		@Override
