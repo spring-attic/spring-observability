@@ -16,6 +16,7 @@
 
 package org.springframework.observability.event.listener.composite;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,10 @@ import org.springframework.observability.event.listener.RecordingListener;
 public class CompositeContext {
 
 	private final Map<RecordingListener<?>, Object> contexts = new HashMap<>();
+
+	CompositeContext(RecordingListener<?>... listeners) {
+		this(Arrays.asList(listeners));
+	}
 
 	CompositeContext(List<RecordingListener<?>> listeners) {
 		// Could be a .stream().collect(toMap(...)) but toMap fails on null values:
