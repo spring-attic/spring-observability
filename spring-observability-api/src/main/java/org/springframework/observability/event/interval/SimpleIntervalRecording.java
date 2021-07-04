@@ -103,10 +103,8 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public void stop() {
-		if (this.started == 0) {
-			throw new IllegalStateException("IntervalRecording hasn't been started");
-		}
-		checkIfStopped();
+		verifyIfHasStarted();
+		verifyIfHasNotStopped();
 		this.stopped = clock.monotonicTime();
 		this.duration = Duration.ofNanos(this.stopped - this.started);
 		this.listener.onStop(this);
@@ -119,7 +117,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public IntervalRecording<T> tag(Tag tag) {
-		checkIfStopped();
+		verifyIfHasNotStopped();
 		this.tags.add(tag);
 		return this;
 	}
@@ -131,7 +129,12 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public IntervalRecording<T> error(Throwable error) {
-		checkIfStopped();
+		verifyIfHasStarted();
+		verifyIfHasNotStopped();
+		if (this.error != null) {
+			throw new IllegalStateException("Only one error can be attached");
+		}
+
 		this.error = error;
 		this.listener.onError(this);
 		return this;
@@ -148,7 +151,13 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 				+ ", error=" + error + '}';
 	}
 
-	private void checkIfStopped() {
+	private void verifyIfHasStarted() {
+		if (this.started == 0) {
+			throw new IllegalStateException("IntervalRecording hasn't been started");
+		}
+	}
+
+	private void verifyIfHasNotStopped() {
 		if (this.stopped != 0) {
 			throw new IllegalStateException("IntervalRecording has already been stopped");
 		}

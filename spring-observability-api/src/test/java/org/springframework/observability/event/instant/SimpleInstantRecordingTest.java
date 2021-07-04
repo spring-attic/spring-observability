@@ -33,7 +33,7 @@ import static org.springframework.observability.test.TestInstantEvent.INSTANT_EV
  */
 class SimpleInstantRecordingTest {
 
-	private RecordingListener<Void> listener = mock(RecordingListener.class);
+	private final RecordingListener<Void> listener = mock(RecordingListener.class);
 
 	private final InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener);
 
