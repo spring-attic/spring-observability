@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -58,6 +59,13 @@ class MockClockTest {
 		assertThat(clock.monotonicTime())
 				.isEqualTo(initMonotonicTime + 100 + MILLISECONDS.toNanos(100) + SECONDS.toNanos(1));
 		assertThat(clock.wallTime()).isEqualTo(initWallTime + 100 + MILLISECONDS.toNanos(100) + SECONDS.toNanos(1));
+	}
+
+	@Test
+	void shouldReturnTimeWithCorrectUnit() {
+		clock.add(1, SECONDS);
+		assertThat(clock.monotonicTimeIn(MICROSECONDS)).isEqualTo(NANOSECONDS.toMicros(clock.monotonicTime()));
+		assertThat(clock.wallTimeIn(MICROSECONDS)).isEqualTo(NANOSECONDS.toMicros(clock.wallTime()));
 	}
 
 }

@@ -49,6 +49,28 @@ public class MockClock implements Clock {
 	}
 
 	/**
+	 * Returns the wallTime in the desired unit.
+	 * @param unit The {@link TimeUnit} you want the {@link Clock#wallTime()} to be
+	 * converted.
+	 * @return {@link Clock#wallTime()} in the desired {@link TimeUnit}.
+	 * @see Clock#wallTime()
+	 */
+	public long wallTimeIn(TimeUnit unit) {
+		return unit.convert(this.time, NANOSECONDS);
+	}
+
+	/**
+	 * Returns the monotonicTime in the desired unit.
+	 * @param unit The {@link TimeUnit} you want the {@link Clock#monotonicTime()} to be
+	 * converted.
+	 * @return {@link Clock#monotonicTime()} in the desired {@link TimeUnit}.
+	 * @see Clock#monotonicTime()
+	 */
+	public long monotonicTimeIn(TimeUnit unit) {
+		return unit.convert(this.time, NANOSECONDS);
+	}
+
+	/**
 	 * @param amount The amount to add to the current time.
 	 * @param unit The unit of the amount to add to the current time.
 	 * @return The new time (wallTime and monotonicTime are the same).
