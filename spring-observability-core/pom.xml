@@ -3,36 +3,25 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spring-observability-tracing-api</artifactId>
-	<name>spring-observability-tracing-api</name>
+	<artifactId>spring-observability-core</artifactId>
+	<name>spring-observability-core</name>
 	<packaging>jar</packaging>
-	<description>Spring Observability Tracing API</description>
+	<description>Spring Observability Core Implementation</description>
 	<parent>
 		<groupId>org.springframework</groupId>
-		<artifactId>spring-observability-tracing-parent</artifactId>
+		<artifactId>spring-observability-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<artifactId>spring-observability-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-jcl</artifactId>
+			<artifactId>spring-observability-tracing-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>aopalliance</groupId>
-			<artifactId>aopalliance</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<optional>true</optional>
-		</dependency>
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -53,15 +42,5 @@
 			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.awaitility</groupId>
-			<artifactId>awaitility</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.tngtech.archunit</groupId>
-			<artifactId>archunit-junit5</artifactId>
-			<scope>test</scope>
-		</dependency>
-    </dependencies>
+	</dependencies>
 </project>
