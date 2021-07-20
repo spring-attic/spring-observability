@@ -39,7 +39,7 @@
 		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 		<wavefront-runtime-sdk-jvm.version>1.3.5</wavefront-runtime-sdk-jvm.version>
 		<wavefront-sdk-java.version>2.6.4</wavefront-sdk-java.version>
-		<micrometer.version>1.7.1</micrometer.version>
+		<micrometer.version>1.7.2</micrometer.version>
 
 		<!-- Test dependencies -->
 		<junit-jupiter-engine.version>5.7.2</junit-jupiter-engine.version>
