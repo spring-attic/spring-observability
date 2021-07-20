@@ -18,6 +18,7 @@
 		<module>spring-observability-build</module>
 		<module>spring-observability-bom</module>
 		<module>spring-observability-api</module>
+		<module>spring-observability-core</module>
 		<module>spring-observability-metrics</module>
 		<module>spring-observability-starter</module>
 		<module>spring-observability-tracing</module>
