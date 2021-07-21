@@ -24,6 +24,7 @@ import static java.util.Objects.requireNonNull;
  * Simple, immutable implementation of the {@link Tag} interface.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class ImmutableTag implements Tag {
 

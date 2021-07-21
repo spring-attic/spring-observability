@@ -32,6 +32,7 @@ import org.springframework.observability.event.tag.Tag;
  * listener.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class CompositeRecordingListener implements RecordingListener<CompositeContext> {
 

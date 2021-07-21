@@ -27,6 +27,7 @@ import org.springframework.observability.event.tag.Tag;
  *
  * @param <T> Context Type
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 

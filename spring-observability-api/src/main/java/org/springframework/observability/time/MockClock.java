@@ -31,6 +31,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  *
  * @author Jon Schneider
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class MockClock implements Clock {
 

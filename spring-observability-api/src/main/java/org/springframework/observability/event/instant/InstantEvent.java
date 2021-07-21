@@ -23,6 +23,7 @@ import org.springframework.observability.event.Event;
  * about the duration of the event.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface InstantEvent extends Event {
 

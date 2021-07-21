@@ -26,6 +26,7 @@ package org.springframework.observability.event.tag;
  * https://en.wikipedia.org/wiki/Cardinality
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public enum Cardinality {
 

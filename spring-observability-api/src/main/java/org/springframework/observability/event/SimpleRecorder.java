@@ -30,6 +30,7 @@ import org.springframework.observability.time.Clock;
 /**
  * @param <T> Context Type
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class SimpleRecorder<T> implements Recorder<T> {
 

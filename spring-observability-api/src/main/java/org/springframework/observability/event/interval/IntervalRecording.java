@@ -25,6 +25,7 @@ import org.springframework.observability.event.Recording;
  *
  * @param <T> Context Type
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalRecording<T>> {
 

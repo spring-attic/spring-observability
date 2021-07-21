@@ -25,6 +25,7 @@ import org.springframework.observability.event.tag.Tag;
  * case recording is turned off.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class NoOpInstantRecording implements InstantRecording {
 

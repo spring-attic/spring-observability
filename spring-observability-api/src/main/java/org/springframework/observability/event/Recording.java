@@ -29,6 +29,7 @@ import org.springframework.observability.event.tag.Tag;
  * @param <E> Event Type
  * @param <R> Recording Type
  * @author Jonatan Ivanov
+ * @since 1.0.0
  * @see InstantRecording
  * @see IntervalRecording
  */

@@ -29,6 +29,7 @@ import org.springframework.observability.event.listener.RecordingListener;
  * listener by passing a listener instance.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  * @see CompositeRecordingListener
  */
 public class CompositeContext {

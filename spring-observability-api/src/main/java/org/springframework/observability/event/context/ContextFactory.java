@@ -21,6 +21,7 @@ package org.springframework.observability.event.context;
  * that the factory can't return null.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface ContextFactory<T> {

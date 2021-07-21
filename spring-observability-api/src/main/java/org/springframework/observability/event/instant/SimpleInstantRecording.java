@@ -25,6 +25,7 @@ import org.springframework.observability.event.tag.Tag;
 
 /**
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public class SimpleInstantRecording implements InstantRecording {
 

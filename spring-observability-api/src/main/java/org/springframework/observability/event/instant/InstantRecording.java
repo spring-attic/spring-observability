@@ -25,6 +25,7 @@ import org.springframework.observability.event.listener.RecordingListener;
  * {@link RecordingListener#record(InstantRecording)}.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface InstantRecording extends Recording<InstantEvent, InstantRecording> {
 

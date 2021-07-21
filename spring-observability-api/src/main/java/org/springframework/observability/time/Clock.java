@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Jon Schneider
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface Clock {
 

@@ -23,6 +23,7 @@ import org.springframework.observability.event.Recording;
  * Implementations must make sure that none of the methods return null.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface Tag {
 

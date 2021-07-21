@@ -28,6 +28,7 @@ import org.springframework.observability.event.interval.IntervalRecording;
  *
  * @param <T> Context Type
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface Recorder<T> {
 

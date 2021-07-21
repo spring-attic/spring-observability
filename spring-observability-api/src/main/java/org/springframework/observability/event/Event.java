@@ -21,6 +21,7 @@ package org.springframework.observability.event;
  * should provide a meaningful description if you can.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface Event {
 

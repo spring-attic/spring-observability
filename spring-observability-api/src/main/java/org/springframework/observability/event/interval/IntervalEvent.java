@@ -23,6 +23,7 @@ import org.springframework.observability.event.Event;
  * a duration in time.
  *
  * @author Jonatan Ivanov
+ * @since 1.0.0
  */
 public interface IntervalEvent extends Event {
 
