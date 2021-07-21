@@ -18,8 +18,6 @@ package org.springframework.observability.tracing;
 
 import java.io.Closeable;
 
-import org.springframework.core.log.LogAccessor;
-
 /**
  * Container object for {@link Span} and its corresponding {@link Tracer.SpanInScope}.
  *
@@ -27,8 +25,6 @@ import org.springframework.core.log.LogAccessor;
  * @since 1.0.0
  */
 public class SpanAndScope implements Closeable {
-
-	private static final LogAccessor log = new LogAccessor(SpanAndScope.class);
 
 	private final Span span;
 
@@ -64,7 +60,6 @@ public class SpanAndScope implements Closeable {
 
 	@Override
 	public void close() {
-		log.trace(() -> "Closing span [" + this.span + "]");
 		this.scope.close();
 		this.span.end();
 	}

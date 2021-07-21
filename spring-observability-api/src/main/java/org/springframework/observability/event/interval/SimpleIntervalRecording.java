@@ -52,6 +52,8 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	private Throwable error = null;
 
+	private String name;
+
 	/**
 	 * @param event The event this recording belongs to.
 	 * @param listener The listener that needs to be notified about the recordings.
@@ -62,6 +64,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 		this.listener = listener;
 		this.context = listener.createContext();
 		this.clock = clock;
+		this.name = event.getName();
 	}
 
 	@Override
@@ -72,6 +75,11 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	@Override
 	public Duration getDuration() {
 		return this.duration;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
 	}
 
 	@Override
@@ -89,6 +97,12 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 		this.started = clock.monotonicTime();
 		this.listener.onStart(this);
 
+		return this;
+	}
+
+	@Override
+	public IntervalRecording<T> name(String name) {
+		this.name = name;
 		return this;
 	}
 
@@ -148,8 +162,8 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", duration=" + duration.toMillis() + "ms" + ", tags=" + tags
-				+ ", error=" + error + '}';
+		return "{" + "event=" + name + ", duration=" + duration.toMillis() + "ms" + ", tags=" + tags + ", error="
+				+ error + '}';
 	}
 
 	private void verifyIfHasStarted() {

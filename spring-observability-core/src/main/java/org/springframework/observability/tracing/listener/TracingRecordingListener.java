@@ -22,6 +22,7 @@ import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.tracing.Span;
+import org.springframework.observability.tracing.SpanAndScope;
 import org.springframework.observability.tracing.Tracer;
 
 /**
@@ -40,26 +41,37 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 
 	@Override
 	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
-		Span span = this.tracer.nextSpan().name(intervalRecording.getEvent().getName())
+		Span span = this.tracer.nextSpan().name(intervalRecording.getName())
 				.start(getStartTimeInMicros(intervalRecording));
-		intervalRecording.getContext().setSpanInScope(this.tracer.withSpan(span));
+		intervalRecording.getContext().setSpanAndScope(span, this.tracer.withSpan(span));
 	}
 
 	@Override
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
-		Span span = this.tracer.currentSpan();
+		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
+		if (spanAndScope == null) {
+			return;
+		}
+		Span span = spanAndScope.getSpan();
+		span.name(intervalRecording.getName());
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
-		intervalRecording.getContext().getSpanInScope().close();
+		intervalRecording.getContext().getSpanAndScope().close();
 		span.end(getStopTimeInMicros(intervalRecording));
 	}
 
 	@Override
 	public void onError(IntervalRecording<TracingContext> intervalRecording) {
-		this.tracer.currentSpan().error(intervalRecording.getError());
+		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
+		if (spanAndScope == null) {
+			return;
+		}
+		Span span = spanAndScope.getSpan();
+		span.error(intervalRecording.getError());
 	}
 
 	@Override
 	public void record(InstantRecording instantRecording) {
+		// TODO: Context is not shared between instant and interval
 		Span span = this.tracer.currentSpan();
 		if (span != null) {
 			span.event(instantRecording.getEvent().getName());
@@ -81,14 +93,18 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 
 	static class TracingContext {
 
-		private Tracer.SpanInScope spanInScope;
+		private SpanAndScope spanAndScope;
 
-		Tracer.SpanInScope getSpanInScope() {
-			return this.spanInScope;
+		SpanAndScope getSpanAndScope() {
+			return this.spanAndScope;
 		}
 
-		void setSpanInScope(Tracer.SpanInScope spanInScope) {
-			this.spanInScope = spanInScope;
+		void setSpanAndScope(Span span, Tracer.SpanInScope spanInScope) {
+			this.spanAndScope = new SpanAndScope(span, spanInScope);
+		}
+
+		void clear() {
+			this.spanAndScope = null;
 		}
 
 	}

@@ -80,7 +80,7 @@ class TracingRecordingListenerTests {
 		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
 		intervalRecording.start();
 
-		assertThat(intervalRecording.getContext().getSpanInScope()).isSameAs(spanInScope);
+		assertThat(intervalRecording.getContext().getSpanAndScope().getScope()).isSameAs(spanInScope);
 		verify(tracer).nextSpan();
 		verify(span).name(INTERVAL_EVENT.getName());
 		verify(span).start(CLOCK.wallTimeIn(MICROSECONDS));
@@ -90,7 +90,6 @@ class TracingRecordingListenerTests {
 	void onStopShouldEndTheSpan() {
 		basicTracerAndSpanBehavior();
 		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
-		when(tracer.currentSpan()).thenReturn(span);
 
 		intervalRecording.start().tag(Tag.of("foo", "bar", LOW)).tag(Tag.of("userId", "12345", HIGH));
 		CLOCK.addSeconds(1);
@@ -98,7 +97,7 @@ class TracingRecordingListenerTests {
 
 		verify(span).tag("foo", "bar");
 		verify(span).tag("userId", "12345");
-		verify(intervalRecording.getContext().getSpanInScope()).close();
+		verify(intervalRecording.getContext().getSpanAndScope().getScope()).close();
 		verify(span).end(CLOCK.wallTimeIn(MICROSECONDS));
 	}
 
@@ -106,7 +105,6 @@ class TracingRecordingListenerTests {
 	void onErrorShouldAddTheErrorToTheSpan() {
 		basicTracerAndSpanBehavior();
 		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
-		when(tracer.currentSpan()).thenReturn(span);
 		Throwable error = new IOException("simulated");
 
 		intervalRecording.start().error(error);
@@ -121,7 +119,6 @@ class TracingRecordingListenerTests {
 		instantRecording.record();
 
 		verifyNoInteractions(span);
-		verify(tracer).currentSpan();
 		verifyNoMoreInteractions(tracer);
 	}
 
