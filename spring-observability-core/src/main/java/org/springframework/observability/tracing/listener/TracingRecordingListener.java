@@ -52,7 +52,7 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 		Span span = spanAndScope.getSpan();
 		span.name(intervalRecording.getName());
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
-		intervalRecording.getContext().getSpanAndScope().close();
+		spanAndScope.getScope().close();
 		span.end(getStopTimeInMicros(intervalRecording));
 	}
 
@@ -68,7 +68,13 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 		// TODO: Context is not shared between instant and interval
 		Span span = this.tracer.currentSpan();
 		if (span != null) {
-			span.event(instantRecording.getEvent().getName());
+			String name = instantRecording.getEvent().getName();
+			if (instantRecording.eventNanos() != null) {
+				span.event(instantRecording.eventNanos(), name);
+			}
+			else {
+				span.event(name);
+			}
 		}
 	}
 

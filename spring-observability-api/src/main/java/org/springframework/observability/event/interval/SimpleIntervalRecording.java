@@ -92,11 +92,21 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 		if (this.started != 0) {
 			throw new IllegalStateException("IntervalRecording has already been started");
 		}
-
 		this.startWallTime = clock.wallTime();
 		this.started = clock.monotonicTime();
+		// System.out.println("NAME [" + name + "] BOOM START");
 		this.listener.onStart(this);
+		return this;
+	}
 
+	@Override
+	public IntervalRecording<T> start(long nanos) {
+		if (this.started != 0) {
+			throw new IllegalStateException("IntervalRecording has already been started");
+		}
+		this.startWallTime = nanos;
+		this.started = nanos;
+		this.listener.onStart(this);
 		return this;
 	}
 
@@ -104,6 +114,16 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	public IntervalRecording<T> name(String name) {
 		this.name = name;
 		return this;
+	}
+
+	@Override
+	public void stop(long nanos) {
+		verifyIfHasStarted();
+		verifyIfHasNotStopped();
+		this.stopped = nanos;
+		this.duration = Duration.ofNanos(this.stopped - this.started);
+		// System.out.println("NAME [" + name + "] duration [" + this.duration + "]");
+		this.listener.onStop(this);
 	}
 
 	@Override
@@ -118,11 +138,8 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public void stop() {
-		verifyIfHasStarted();
-		verifyIfHasNotStopped();
-		this.stopped = clock.monotonicTime();
-		this.duration = Duration.ofNanos(this.stopped - this.started);
-		this.listener.onStop(this);
+		// System.out.println("NAME [" + name + "] BOOM STOP");
+		stop(clock.monotonicTime());
 	}
 
 	@Override

@@ -34,4 +34,16 @@ public interface InstantRecording extends Recording<InstantEvent, InstantRecordi
 	 */
 	void record();
 
+	/**
+	 * Signals that an {@link InstantEvent} happened at a given time.
+	 * @param nanos time in nanos when the event happened
+	 */
+	void record(long nanos);
+
+	/**
+	 * @return time in nanos when the event happened. Might be null in which case the time
+	 * will be calculated from the Clock.
+	 */
+	Long eventNanos();
+
 }

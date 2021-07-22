@@ -17,6 +17,7 @@
 package org.springframework.observability.tracing.brave.bridge;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
@@ -91,6 +92,12 @@ public class BraveSpan implements Span {
 	@Override
 	public Span event(String value) {
 		this.delegate.annotate(value);
+		return this;
+	}
+
+	@Override
+	public Span event(long nanos, String value) {
+		this.delegate.annotate(TimeUnit.NANOSECONDS.toMicros(nanos), value);
 		return this;
 	}
 

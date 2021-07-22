@@ -57,7 +57,7 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public String getName() {
-		return null;
+		return "";
 	}
 
 	@Override
@@ -81,8 +81,18 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
+	public IntervalRecording<T> start(long nanos) {
+		return this;
+	}
+
+	@Override
 	public IntervalRecording<T> name(String name) {
 		return this;
+	}
+
+	@Override
+	public void stop(long nanos) {
+
 	}
 
 	@Override
@@ -91,7 +101,7 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public Throwable getError() {
-		return null;
+		return new RuntimeException();
 	}
 
 	@Override
@@ -101,6 +111,7 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public T getContext() {
+		// TODO: This might lead to NPE
 		return null;
 	}
 

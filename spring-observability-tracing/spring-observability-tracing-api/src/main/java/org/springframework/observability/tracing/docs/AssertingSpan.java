@@ -106,6 +106,13 @@ public interface AssertingSpan extends Span {
 		return this;
 	}
 
+	@Override
+	default AssertingSpan event(long nanos, String value) {
+		DocumentedSpanAssertions.assertThatEventIsValid(value, getDocumentedSpan());
+		getDelegate().event(nanos, value);
+		return this;
+	}
+
 	/**
 	 * Annotates with an event via {@link EventValue}.
 	 * @param value event value

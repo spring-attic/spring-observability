@@ -64,11 +64,24 @@ public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalR
 	IntervalRecording<T> start();
 
 	/**
+	 * Signals the beginning of an {@link IntervalEvent} at a given time.
+	 * @param nanos the start time in nanos
+	 * @return itself.
+	 */
+	IntervalRecording<T> start(long nanos);
+
+	/**
 	 * Renames the {@link IntervalEvent}.
 	 * @param name updated name
 	 * @return itself.
 	 */
 	IntervalRecording<T> name(String name);
+
+	/**
+	 * Signals the end of an {@link IntervalEvent}.
+	 * @param nanos the stop time in nanos
+	 */
+	void stop(long nanos);
 
 	/**
 	 * Signals the end of an {@link IntervalEvent}.

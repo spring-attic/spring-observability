@@ -72,6 +72,14 @@ public interface Span extends SpanCustomizer {
 	Span event(String value);
 
 	/**
+	 * Sets an event on this span.
+	 * @param nanos event timestamp in nanoseconds
+	 * @param value event name to set on the span
+	 * @return this span
+	 */
+	Span event(long nanos, String value);
+
+	/**
 	 * Sets a tag on this span.
 	 * @param key tag key
 	 * @param value tag value
