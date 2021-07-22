@@ -49,9 +49,6 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 	@Override
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
 		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
-		if (spanAndScope == null) {
-			return;
-		}
 		Span span = spanAndScope.getSpan();
 		span.name(intervalRecording.getName());
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
@@ -62,9 +59,6 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 	@Override
 	public void onError(IntervalRecording<TracingContext> intervalRecording) {
 		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
-		if (spanAndScope == null) {
-			return;
-		}
 		Span span = spanAndScope.getSpan();
 		span.error(intervalRecording.getError());
 	}
@@ -101,10 +95,6 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 
 		void setSpanAndScope(Span span, Tracer.SpanInScope spanInScope) {
 			this.spanAndScope = new SpanAndScope(span, spanInScope);
-		}
-
-		void clear() {
-			this.spanAndScope = null;
 		}
 
 	}
