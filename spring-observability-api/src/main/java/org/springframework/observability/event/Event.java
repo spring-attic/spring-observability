@@ -17,7 +17,7 @@
 package org.springframework.observability.event;
 
 /**
- * An Event represents that something happened. You must always name your events ans
+ * An Event represents that something happened. You must always name your events and
  * should provide a meaningful description if you can.
  *
  * @author Jonatan Ivanov
