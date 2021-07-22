@@ -26,7 +26,7 @@ package org.springframework.observability.event;
 public interface Event {
 
 	/**
-	 * @return The name of the event, the method mustn't return null.
+	 * @return The original name of the event, the method mustn't return null.
 	 */
 	String getName();
 

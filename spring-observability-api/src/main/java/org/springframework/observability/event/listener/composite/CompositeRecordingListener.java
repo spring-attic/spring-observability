@@ -127,6 +127,11 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
+		public String getName() {
+			return this.delegate.getName();
+		}
+
+		@Override
 		public long getStartNanos() {
 			return this.delegate.getStartNanos();
 		}
@@ -145,6 +150,11 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		@SuppressWarnings("unchecked")
 		public IntervalRecording<T> start() {
 			return (IntervalRecording<T>) this.delegate.start();
+		}
+
+		@Override
+		public IntervalRecording<T> name(String name) {
+			return (IntervalRecording<T>) this.delegate.name(name);
 		}
 
 		@Override
