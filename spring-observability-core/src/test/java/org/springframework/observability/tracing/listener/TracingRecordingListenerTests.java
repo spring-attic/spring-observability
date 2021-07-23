@@ -38,6 +38,7 @@ import org.springframework.observability.tracing.Tracer;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -98,6 +99,7 @@ class TracingRecordingListenerTests {
 		verify(span).tag("foo", "bar");
 		verify(span).tag("userId", "12345");
 		verify(intervalRecording.getContext().getSpanAndScope().getScope()).close();
+		verify(span, times(0)).end();
 		verify(span).end(CLOCK.wallTimeIn(MICROSECONDS));
 	}
 
@@ -113,7 +115,7 @@ class TracingRecordingListenerTests {
 	}
 
 	@Test
-	void recordShouldNotDoAnythingWHenThereIsNoSpan() {
+	void recordShouldNotDoAnythingWhenThereIsNoSpan() {
 		when(tracer.currentSpan()).thenReturn(null);
 
 		instantRecording.record();

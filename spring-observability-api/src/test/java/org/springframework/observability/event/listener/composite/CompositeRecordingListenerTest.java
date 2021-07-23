@@ -163,6 +163,8 @@ class CompositeRecordingListenerTest {
 			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		assertThatGetEventDelegates(recordingView, recording);
+		assertThatGetDetailedNameDelegates(recordingView, recording);
+		assertThatDetailedNameDelegates(recordingView, recording);
 		assertThatGetTagsDelegates(recordingView, recording);
 		assertThatTagsDelegates(recordingView, recording);
 		assertThatGetDurationDelegates(recordingView, recording);
@@ -186,6 +188,26 @@ class CompositeRecordingListenerTest {
 
 		verify(recording).getEvent();
 		assertThat(actualEvent).isSameAs(recording.getEvent());
+	}
+
+	private <T> void assertThatGetDetailedNameDelegates(
+			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+			IntervalRecording<CompositeContext> recording) {
+		when(recording.getDetailedName()).thenReturn("12345");
+		String actualDetailedName = recordingView.getDetailedName();
+
+		verify(recording).getDetailedName();
+		assertThat(actualDetailedName).isEqualTo("12345");
+	}
+
+	private <T> void assertThatDetailedNameDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+			IntervalRecording<CompositeContext> recording) {
+		String detailedName = "12345";
+		when(recording.detailedName(detailedName)).thenReturn(recording);
+
+		IntervalRecording<T> actualRecording = recordingView.detailedName(detailedName);
+		verify(recording).detailedName(detailedName);
+		assertThat(actualRecording).isSameAs(recording);
 	}
 
 	private <T> void assertThatGetTagsDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,

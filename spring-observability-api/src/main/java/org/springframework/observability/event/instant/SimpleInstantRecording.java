@@ -31,6 +31,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final InstantEvent event;
 
+	private String detailedName;
+
 	private final RecordingListener<?> listener;
 
 	private final Set<Tag> tags = new LinkedHashSet<>();
@@ -41,12 +43,24 @@ public class SimpleInstantRecording implements InstantRecording {
 	 */
 	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener) {
 		this.event = event;
+		this.detailedName = event.getName();
 		this.listener = listener;
 	}
 
 	@Override
 	public InstantEvent getEvent() {
 		return this.event;
+	}
+
+	@Override
+	public String getDetailedName() {
+		return this.detailedName;
+	}
+
+	@Override
+	public InstantRecording detailedName(String detailedName) {
+		this.detailedName = detailedName;
+		return this;
 	}
 
 	@Override
@@ -67,7 +81,7 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", tags=" + tags + '}';
+		return "{" + "event=" + event.getName() + ", detailedName=" + detailedName + ", tags=" + tags + '}';
 	}
 
 }

@@ -54,6 +54,15 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
+	void shouldReturnTheDetailedRecording() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
+		assertThat(recording.getDetailedName()).isSameAs(INTERVAL_EVENT.getName());
+		String detailedName = INTERVAL_EVENT.getName() + "-123456";
+		recording.detailedName(detailedName);
+		assertThat(recording.getDetailedName()).isSameAs(detailedName);
+	}
+
+	@Test
 	void shouldHaveTagsWhenAdded() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
 		assertThat(recording.getTags()).isEmpty();
@@ -101,11 +110,11 @@ class SimpleIntervalRecordingTest {
 				.tag(Tag.of("testKey3", "testValue3", LOW)).start().error(new IOException("simulated"));
 
 		assertThat(recording).hasToString(
-				"{event=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+				"{event=test-interval-event, detailedName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 		clock.addSeconds(1);
-		recording.stop();
+		recording.detailedName(INTERVAL_EVENT.getName() + "-123").stop();
 		assertThat(recording).hasToString(
-				"{event=test-interval-event, duration=1000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+				"{event=test-interval-event, detailedName=test-interval-event-123, duration=1000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 	}
 
 	@Test

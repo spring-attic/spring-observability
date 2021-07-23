@@ -41,6 +41,18 @@ public interface Recording<E extends Event, R extends Recording<E, R>> {
 	E getEvent();
 
 	/**
+	 * @return The detailed name of the recording. Unlike {@link Event#getName()}, this
+	 * method can return high cardinality values and can be overwritten on-the-fly.
+	 */
+	String getDetailedName();
+
+	/**
+	 * @param detailedName the new detailed name
+	 * @return itself.
+	 */
+	R detailedName(String detailedName);
+
+	/**
 	 * @return The {@link Tag Tags} added to this recording.
 	 */
 	Iterable<Tag> getTags();

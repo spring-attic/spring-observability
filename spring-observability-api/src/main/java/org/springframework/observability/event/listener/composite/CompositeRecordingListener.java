@@ -111,6 +111,17 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
+		public String getDetailedName() {
+			return this.delegate.getDetailedName();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public IntervalRecording<T> detailedName(String detailedName) {
+			return (IntervalRecording<T>) this.delegate.detailedName(detailedName);
+		}
+
+		@Override
 		public Iterable<Tag> getTags() {
 			return this.delegate.getTags();
 		}
@@ -124,11 +135,6 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		@Override
 		public Duration getDuration() {
 			return this.delegate.getDuration();
-		}
-
-		@Override
-		public String getName() {
-			return this.delegate.getName();
 		}
 
 		@Override
@@ -150,11 +156,6 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		@SuppressWarnings("unchecked")
 		public IntervalRecording<T> start() {
 			return (IntervalRecording<T>) this.delegate.start();
-		}
-
-		@Override
-		public IntervalRecording<T> name(String name) {
-			return (IntervalRecording<T>) this.delegate.name(name);
 		}
 
 		@Override

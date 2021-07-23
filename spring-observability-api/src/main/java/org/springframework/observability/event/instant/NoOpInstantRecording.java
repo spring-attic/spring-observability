@@ -31,11 +31,23 @@ public class NoOpInstantRecording implements InstantRecording {
 
 	private static final InstantEvent EVENT = new NoOpInstantEvent();
 
+	private static final String DETAILED_NAME = EVENT.getName();
+
 	private static final Iterable<Tag> TAGS = Collections.emptyList();
 
 	@Override
 	public InstantEvent getEvent() {
 		return EVENT;
+	}
+
+	@Override
+	public String getDetailedName() {
+		return DETAILED_NAME;
+	}
+
+	@Override
+	public InstantRecording detailedName(String detailedName) {
+		return this;
 	}
 
 	@Override
