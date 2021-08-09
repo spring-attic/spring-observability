@@ -163,8 +163,8 @@ class CompositeRecordingListenerTest {
 			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		assertThatGetEventDelegates(recordingView, recording);
-		assertThatGetDetailedNameDelegates(recordingView, recording);
-		assertThatDetailedNameDelegates(recordingView, recording);
+		assertThatGetHighCardinalityNameDelegates(recordingView, recording);
+		assertThatHighCardinalityNameDelegates(recordingView, recording);
 		assertThatGetTagsDelegates(recordingView, recording);
 		assertThatTagsDelegates(recordingView, recording);
 		assertThatGetDurationDelegates(recordingView, recording);
@@ -190,23 +190,24 @@ class CompositeRecordingListenerTest {
 		assertThat(actualEvent).isSameAs(recording.getEvent());
 	}
 
-	private <T> void assertThatGetDetailedNameDelegates(
+	private <T> void assertThatGetHighCardinalityNameDelegates(
 			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
-		when(recording.getDetailedName()).thenReturn("12345");
-		String actualDetailedName = recordingView.getDetailedName();
+		when(recording.getHighCardinalityName()).thenReturn("12345");
+		String actualHighCardinalityName = recordingView.getHighCardinalityName();
 
-		verify(recording).getDetailedName();
-		assertThat(actualDetailedName).isEqualTo("12345");
+		verify(recording).getHighCardinalityName();
+		assertThat(actualHighCardinalityName).isEqualTo("12345");
 	}
 
-	private <T> void assertThatDetailedNameDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatHighCardinalityNameDelegates(
+			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
-		String detailedName = "12345";
-		when(recording.detailedName(detailedName)).thenReturn(recording);
+		String highCardinalityName = "12345";
+		when(recording.highCardinalityName(highCardinalityName)).thenReturn(recording);
 
-		IntervalRecording<T> actualRecording = recordingView.detailedName(detailedName);
-		verify(recording).detailedName(detailedName);
+		IntervalRecording<T> actualRecording = recordingView.highCardinalityName(highCardinalityName);
+		verify(recording).highCardinalityName(highCardinalityName);
 		assertThat(actualRecording).isSameAs(recording);
 	}
 

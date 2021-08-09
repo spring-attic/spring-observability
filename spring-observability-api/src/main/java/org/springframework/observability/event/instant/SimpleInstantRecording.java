@@ -31,7 +31,7 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final InstantEvent event;
 
-	private String detailedName;
+	private String highCardinalityName;
 
 	private final RecordingListener<?> listener;
 
@@ -43,7 +43,7 @@ public class SimpleInstantRecording implements InstantRecording {
 	 */
 	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener) {
 		this.event = event;
-		this.detailedName = event.getName();
+		this.highCardinalityName = event.getName();
 		this.listener = listener;
 	}
 
@@ -53,13 +53,13 @@ public class SimpleInstantRecording implements InstantRecording {
 	}
 
 	@Override
-	public String getDetailedName() {
-		return this.detailedName;
+	public String getHighCardinalityName() {
+		return this.highCardinalityName;
 	}
 
 	@Override
-	public InstantRecording detailedName(String detailedName) {
-		this.detailedName = detailedName;
+	public InstantRecording highCardinalityName(String highCardinalityName) {
+		this.highCardinalityName = highCardinalityName;
 		return this;
 	}
 
@@ -81,7 +81,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", detailedName=" + detailedName + ", tags=" + tags + '}';
+		return "{" + "event=" + event.getName() + ", highCardinalityName=" + highCardinalityName + ", tags=" + tags
+				+ '}';
 	}
 
 }

@@ -34,7 +34,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	private final IntervalEvent event;
 
-	private String detailedName;
+	private String highCardinalityName;
 
 	private final RecordingListener<T> listener;
 
@@ -61,7 +61,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	 */
 	public SimpleIntervalRecording(IntervalEvent event, RecordingListener<T> listener, Clock clock) {
 		this.event = event;
-		this.detailedName = event.getName();
+		this.highCardinalityName = event.getName();
 		this.listener = listener;
 		this.context = listener.createContext();
 		this.clock = clock;
@@ -73,13 +73,13 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public String getDetailedName() {
-		return this.detailedName;
+	public String getHighCardinalityName() {
+		return this.highCardinalityName;
 	}
 
 	@Override
-	public IntervalRecording<T> detailedName(String detailedName) {
-		this.detailedName = detailedName;
+	public IntervalRecording<T> highCardinalityName(String highCardinalityName) {
+		this.highCardinalityName = highCardinalityName;
 		return this;
 	}
 
@@ -162,8 +162,8 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", detailedName=" + detailedName + ", duration=" + duration.toMillis()
-				+ "ms" + ", tags=" + tags + ", error=" + error + '}';
+		return "{" + "event=" + event.getName() + ", highCardinalityName=" + highCardinalityName + ", duration="
+				+ duration.toMillis() + "ms" + ", tags=" + tags + ", error=" + error + '}';
 	}
 
 	private void verifyIfHasStarted() {

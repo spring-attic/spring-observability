@@ -43,11 +43,11 @@ class SimpleInstantRecordingTest {
 	}
 
 	@Test
-	void shouldReturnTheDetailedRecording() {
-		assertThat(recording.getDetailedName()).isSameAs(INSTANT_EVENT.getName());
-		String detailedName = INSTANT_EVENT.getName() + "-123456";
-		recording.detailedName(detailedName);
-		assertThat(recording.getDetailedName()).isSameAs(detailedName);
+	void shouldReturnTheRecordingWithHighCardinalityName() {
+		assertThat(recording.getHighCardinalityName()).isSameAs(INSTANT_EVENT.getName());
+		String highCardinalityName = INSTANT_EVENT.getName() + "-123456";
+		recording.highCardinalityName(highCardinalityName);
+		assertThat(recording.getHighCardinalityName()).isSameAs(highCardinalityName);
 	}
 
 	@Test
@@ -77,11 +77,11 @@ class SimpleInstantRecordingTest {
 	@Test
 	void toStringShouldWork() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener)
-				.detailedName(INSTANT_EVENT.getName() + "-123").tag(Tag.of("testKey1", "testValue1", LOW))
+				.highCardinalityName(INSTANT_EVENT.getName() + "-123").tag(Tag.of("testKey1", "testValue1", LOW))
 				.tag(Tag.of("testKey2", "testValue2", HIGH)).tag(Tag.of("testKey3", "testValue3", LOW));
 
 		assertThat(recording).hasToString(
-				"{event=test-instant-event, detailedName=test-instant-event-123, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]}");
+				"{event=test-instant-event, highCardinalityName=test-instant-event-123, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]}");
 	}
 
 }

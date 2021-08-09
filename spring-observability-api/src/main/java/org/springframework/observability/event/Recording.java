@@ -41,16 +41,18 @@ public interface Recording<E extends Event, R extends Recording<E, R>> {
 	E getEvent();
 
 	/**
-	 * @return The detailed name of the recording. Unlike {@link Event#getName()}, this
-	 * method can return high cardinality values and can be overwritten on-the-fly.
+	 * @return The high-cardinality (detailed) name of the recording. Unlike
+	 * {@link Event#getName()}, this method can return high-cardinality values and can be
+	 * overwritten on-the-fly.
 	 */
-	String getDetailedName();
+	String getHighCardinalityName();
 
 	/**
-	 * @param detailedName the new detailed name
+	 * @param highCardinalityName the new high-cardinality (detailed) name of the
+	 * recording.
 	 * @return itself.
 	 */
-	R detailedName(String detailedName);
+	R highCardinalityName(String highCardinalityName);
 
 	/**
 	 * @return The {@link Tag Tags} added to this recording.

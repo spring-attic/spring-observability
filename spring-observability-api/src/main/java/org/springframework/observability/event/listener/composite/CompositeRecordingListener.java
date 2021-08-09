@@ -111,14 +111,14 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
-		public String getDetailedName() {
-			return this.delegate.getDetailedName();
+		public String getHighCardinalityName() {
+			return this.delegate.getHighCardinalityName();
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public IntervalRecording<T> detailedName(String detailedName) {
-			return (IntervalRecording<T>) this.delegate.detailedName(detailedName);
+		public IntervalRecording<T> highCardinalityName(String highCardinalityName) {
+			return (IntervalRecording<T>) this.delegate.highCardinalityName(highCardinalityName);
 		}
 
 		@Override

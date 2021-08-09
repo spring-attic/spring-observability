@@ -33,7 +33,7 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 
 	private static final IntervalEvent EVENT = new NoOpIntervalEvent();
 
-	private static final String DETAILED_NAME = EVENT.getName();
+	private static final String HIGH_CARDINALITY_NAME = EVENT.getName();
 
 	private static final Iterable<Tag> TAGS = Collections.emptyList();
 
@@ -43,12 +43,12 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public String getDetailedName() {
-		return DETAILED_NAME;
+	public String getHighCardinalityName() {
+		return HIGH_CARDINALITY_NAME;
 	}
 
 	@Override
-	public IntervalRecording<T> detailedName(String detailedName) {
+	public IntervalRecording<T> highCardinalityName(String highCardinalityName) {
 		return this;
 	}
 
