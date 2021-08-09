@@ -29,7 +29,7 @@ public interface Event {
 	 * @return The name of the event, the method mustn't return null. The method must
 	 * return values with low cardinality.
 	 */
-	String getName();
+	String getLowCardinalityName();
 
 	/**
 	 * @return The description of the event, the method shouldn't return null.

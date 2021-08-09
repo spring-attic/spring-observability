@@ -19,7 +19,7 @@ package org.springframework.observability.event.instant;
 import org.springframework.observability.event.Event;
 
 /**
- * An InstantEvent represents that something happened instantaneously or you don't care
+ * An InstantEvent represents that something happened instantaneously, or you don't care
  * about the duration of the event.
  *
  * @author Jonatan Ivanov

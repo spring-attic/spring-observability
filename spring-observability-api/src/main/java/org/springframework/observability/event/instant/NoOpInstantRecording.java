@@ -31,7 +31,7 @@ public class NoOpInstantRecording implements InstantRecording {
 
 	private static final InstantEvent EVENT = new NoOpInstantEvent();
 
-	private static final String HIGH_CARDINALITY_NAME = EVENT.getName();
+	private static final String HIGH_CARDINALITY_NAME = EVENT.getLowCardinalityName();
 
 	private static final Iterable<Tag> TAGS = Collections.emptyList();
 
@@ -72,7 +72,7 @@ public class NoOpInstantRecording implements InstantRecording {
 	static class NoOpInstantEvent implements InstantEvent {
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return "noop";
 		}
 

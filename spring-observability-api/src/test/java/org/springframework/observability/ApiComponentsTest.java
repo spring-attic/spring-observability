@@ -61,7 +61,7 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldRecordInstantEvent() {
-		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getName() + "-12345")
+		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record();
 
 		InstantRecording recording = listener.getInstantRecording();
@@ -76,14 +76,15 @@ class ApiComponentsTest {
 	void shouldNotRecordInstantEventIfRecordingIsDisabled() {
 		recorder.setEnabled(false);
 		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
-				.highCardinalityName(INSTANT_EVENT.getName() + "-12345").tag(Tag.of("testKey1", "testValue1", LOW));
+				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
+				.tag(Tag.of("testKey1", "testValue1", LOW));
 		recording.record();
 
 		assertThat(recorder.isEnabled()).isFalse();
 		assertThat(recording).isExactlyInstanceOf(NoOpInstantRecording.class);
 		assertThat(listener.getInstantRecording()).isNull();
 
-		assertThat(recording.getEvent().getName()).isEqualTo("noop");
+		assertThat(recording.getEvent().getLowCardinalityName()).isEqualTo("noop");
 		assertThat(recording.getEvent().getDescription()).isEqualTo("noop");
 		assertThat(recording.getHighCardinalityName()).isEqualTo("noop");
 		assertThat(recording.getTags()).isEmpty();
@@ -105,7 +106,7 @@ class ApiComponentsTest {
 			verifyOnError();
 		}
 		finally {
-			recording.highCardinalityName(INTERVAL_EVENT.getName() + "-12345").stop();
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-12345").stop();
 			verifyOnStop();
 		}
 	}
@@ -121,7 +122,7 @@ class ApiComponentsTest {
 			recording.error(new IOException("simulated"));
 		}
 		finally {
-			recording.highCardinalityName(INTERVAL_EVENT.getName()).stop();
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName()).stop();
 		}
 
 		assertThat(recorder.isEnabled()).isFalse();
@@ -130,7 +131,7 @@ class ApiComponentsTest {
 		assertThat(listener.getOnStopRecording()).isNull();
 		assertThat(listener.getOnErrorRecording()).isNull();
 
-		assertThat(recording.getEvent().getName()).isSameAs("noop");
+		assertThat(recording.getEvent().getLowCardinalityName()).isSameAs("noop");
 		assertThat(recording.getEvent().getDescription()).isSameAs("noop");
 		assertThat(recording.getHighCardinalityName()).isSameAs("noop");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);

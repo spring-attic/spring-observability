@@ -67,7 +67,7 @@ public class MicrometerRecordingListenerTest {
 		CLOCK.addSeconds(3);
 		intervalRecording.stop();
 
-		Timer timer = registry.find(intervalRecording.getEvent().getName()).tag("foo", "bar").timer();
+		Timer timer = registry.find(intervalRecording.getEvent().getLowCardinalityName()).tag("foo", "bar").timer();
 
 		assertThat(registry.getMeters()).hasSize(1);
 		assertThat(timer).isNotNull();
@@ -80,7 +80,8 @@ public class MicrometerRecordingListenerTest {
 	void recordShouldRegisterCounter() {
 		instantRecording.tag(Tag.of("foo", "bar", LOW)).tag(Tag.of("userId", "12345", HIGH)).record();
 
-		Counter counter = registry.find(instantRecording.getEvent().getName()).tag("foo", "bar").counter();
+		Counter counter = registry.find(instantRecording.getEvent().getLowCardinalityName()).tag("foo", "bar")
+				.counter();
 
 		assertThat(registry.getMeters()).hasSize(1);
 		assertThat(counter).isNotNull();
@@ -107,7 +108,7 @@ public class MicrometerRecordingListenerTest {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 
@@ -132,7 +133,7 @@ public class MicrometerRecordingListenerTest {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 

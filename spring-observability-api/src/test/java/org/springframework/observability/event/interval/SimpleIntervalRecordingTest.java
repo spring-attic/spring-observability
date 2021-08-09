@@ -56,8 +56,8 @@ class SimpleIntervalRecordingTest {
 	@Test
 	void shouldReturnTheRecordingWithHighCardinalityName() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
-		assertThat(recording.getHighCardinalityName()).isSameAs(INTERVAL_EVENT.getName());
-		String highCardinalityName = INTERVAL_EVENT.getName() + "-123456";
+		assertThat(recording.getHighCardinalityName()).isSameAs(INTERVAL_EVENT.getLowCardinalityName());
+		String highCardinalityName = INTERVAL_EVENT.getLowCardinalityName() + "-123456";
 		recording.highCardinalityName(highCardinalityName);
 		assertThat(recording.getHighCardinalityName()).isSameAs(highCardinalityName);
 	}
@@ -112,7 +112,7 @@ class SimpleIntervalRecordingTest {
 		assertThat(recording).hasToString(
 				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 		clock.addSeconds(1);
-		recording.highCardinalityName(INTERVAL_EVENT.getName() + "-123").stop();
+		recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-123").stop();
 		assertThat(recording).hasToString(
 				"{event=test-interval-event, highCardinalityName=test-interval-event-123, duration=1000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 	}

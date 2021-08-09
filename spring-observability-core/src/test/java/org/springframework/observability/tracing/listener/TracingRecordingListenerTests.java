@@ -83,7 +83,7 @@ class TracingRecordingListenerTests {
 
 		assertThat(intervalRecording.getContext().getSpanAndScope().getScope()).isSameAs(spanInScope);
 		verify(tracer).nextSpan();
-		verify(span).name(INTERVAL_EVENT.getName());
+		verify(span).name(INTERVAL_EVENT.getLowCardinalityName());
 		verify(span).start(CLOCK.wallTimeIn(MICROSECONDS));
 	}
 
@@ -133,13 +133,13 @@ class TracingRecordingListenerTests {
 
 		instantRecording.record();
 
-		verify(span).event(instantRecording.getEvent().getName());
+		verify(span).event(instantRecording.getEvent().getLowCardinalityName());
 	}
 
 	private void basicTracerAndSpanBehavior() {
 		when(tracer.nextSpan()).thenReturn(span);
 		when(tracer.withSpan(span)).thenReturn(spanInScope);
-		when(span.name(INTERVAL_EVENT.getName())).thenReturn(span);
+		when(span.name(INTERVAL_EVENT.getLowCardinalityName())).thenReturn(span);
 	}
 
 	enum TestIntervalEvent implements IntervalEvent {
@@ -156,7 +156,7 @@ class TracingRecordingListenerTests {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 
@@ -181,7 +181,7 @@ class TracingRecordingListenerTests {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 

@@ -42,8 +42,8 @@ public interface Recording<E extends Event, R extends Recording<E, R>> {
 
 	/**
 	 * @return The high-cardinality (detailed) name of the recording. Unlike
-	 * {@link Event#getName()}, this method can return high-cardinality values and can be
-	 * overwritten on-the-fly.
+	 * {@link Event#getLowCardinalityName()}, this method can return high-cardinality
+	 * values and can be overwritten on-the-fly.
 	 */
 	String getHighCardinalityName();
 

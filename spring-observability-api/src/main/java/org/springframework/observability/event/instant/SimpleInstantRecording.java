@@ -43,7 +43,7 @@ public class SimpleInstantRecording implements InstantRecording {
 	 */
 	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener) {
 		this.event = event;
-		this.highCardinalityName = event.getName();
+		this.highCardinalityName = event.getLowCardinalityName();
 		this.listener = listener;
 	}
 
@@ -81,8 +81,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", highCardinalityName=" + highCardinalityName + ", tags=" + tags
-				+ '}';
+		return "{" + "event=" + event.getLowCardinalityName() + ", highCardinalityName=" + highCardinalityName
+				+ ", tags=" + tags + '}';
 	}
 
 }
