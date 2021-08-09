@@ -65,13 +65,12 @@ public class NoOpInstantRecording implements InstantRecording {
 	}
 
 	@Override
-	public void record(long nanos) {
-
+	public void record(long wallTime) {
 	}
 
 	@Override
-	public Long eventNanos() {
-		return null;
+	public long getWallTime() {
+		return 0;
 	}
 
 	@Override

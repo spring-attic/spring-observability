@@ -57,7 +57,7 @@ public class MicrometerRecordingListenerTest {
 	@BeforeEach
 	void setUp() {
 		intervalRecording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, CLOCK);
-		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener);
+		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener, CLOCK);
 		registry.forEachMeter(registry::remove);
 	}
 

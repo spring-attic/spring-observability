@@ -160,13 +160,13 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public IntervalRecording<T> start(long nanos) {
-			return (IntervalRecording<T>) this.delegate.start(nanos);
+		public IntervalRecording<T> start(long wallTime, long monotonicTime) {
+			return (IntervalRecording<T>) this.delegate.start(wallTime, monotonicTime);
 		}
 
 		@Override
-		public void stop(long nanos) {
-			this.delegate.stop(nanos);
+		public void stop(long monotonicTime) {
+			this.delegate.stop(monotonicTime);
 		}
 
 		@Override

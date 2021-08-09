@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.time.MockClock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -33,9 +34,11 @@ import static org.springframework.observability.test.TestInstantEvent.INSTANT_EV
  */
 class SimpleInstantRecordingTest {
 
+	private final MockClock clock = new MockClock();
+
 	private final RecordingListener<Void> listener = mock(RecordingListener.class);
 
-	private final InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener);
+	private final InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
 
 	@Test
 	void shouldReturnThePassedEvent() {
@@ -76,7 +79,7 @@ class SimpleInstantRecordingTest {
 
 	@Test
 	void toStringShouldWork() {
-		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener)
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-123")
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
 				.tag(Tag.of("testKey3", "testValue3", LOW));

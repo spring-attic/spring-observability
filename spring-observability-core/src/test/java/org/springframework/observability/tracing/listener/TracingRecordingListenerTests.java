@@ -72,7 +72,7 @@ class TracingRecordingListenerTests {
 	@BeforeEach
 	void setUp() {
 		intervalRecording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, CLOCK);
-		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener);
+		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener, CLOCK);
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class TracingRecordingListenerTests {
 
 		instantRecording.record();
 
-		verify(span).event(instantRecording.getEvent().getLowCardinalityName());
+		verify(span).event(CLOCK.wallTime(), instantRecording.getHighCardinalityName());
 	}
 
 	private void basicTracerAndSpanBehavior() {

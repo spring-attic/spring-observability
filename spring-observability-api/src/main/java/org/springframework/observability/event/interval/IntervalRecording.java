@@ -60,21 +60,25 @@ public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalR
 
 	/**
 	 * Signals the beginning of an {@link IntervalEvent} at a given time.
-	 * @param nanos the start time in nanos
+	 * @param wallTime The wall time (system time) in nanoseconds since the epoch at the
+	 * time the event started.
+	 * @param monotonicTime The start time in nanos. The value is only meaningful when
+	 * compared with another value to determine the elapsed time.
 	 * @return itself.
 	 */
-	IntervalRecording<T> start(long nanos);
-
-	/**
-	 * Signals the end of an {@link IntervalEvent}.
-	 * @param nanos the stop time in nanos
-	 */
-	void stop(long nanos);
+	IntervalRecording<T> start(long wallTime, long monotonicTime);
 
 	/**
 	 * Signals the end of an {@link IntervalEvent}.
 	 */
 	void stop();
+
+	/**
+	 * Signals the end of an {@link IntervalEvent} at a given time.
+	 * @param monotonicTime The stop time in nanos. The value is only meaningful when
+	 * compared with another value to determine the elapsed time.
+	 */
+	void stop(long monotonicTime);
 
 	/**
 	 * @return The {@link Throwable} instance in case there was an error.
