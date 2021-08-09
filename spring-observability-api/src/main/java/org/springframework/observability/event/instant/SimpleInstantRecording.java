@@ -31,6 +31,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final InstantEvent event;
 
+	private String highCardinalityName;
+
 	private final RecordingListener<?> listener;
 
 	private final Set<Tag> tags = new LinkedHashSet<>();
@@ -43,12 +45,24 @@ public class SimpleInstantRecording implements InstantRecording {
 	 */
 	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener) {
 		this.event = event;
+		this.highCardinalityName = event.getLowCardinalityName();
 		this.listener = listener;
 	}
 
 	@Override
 	public InstantEvent getEvent() {
 		return this.event;
+	}
+
+	@Override
+	public String getHighCardinalityName() {
+		return this.highCardinalityName;
+	}
+
+	@Override
+	public InstantRecording highCardinalityName(String highCardinalityName) {
+		this.highCardinalityName = highCardinalityName;
+		return this;
 	}
 
 	@Override
@@ -79,7 +93,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getName() + ", tags=" + tags + '}';
+		return "{" + "event=" + event.getLowCardinalityName() + ", highCardinalityName=" + highCardinalityName
+				+ ", tags=" + tags + '}';
 	}
 
 }

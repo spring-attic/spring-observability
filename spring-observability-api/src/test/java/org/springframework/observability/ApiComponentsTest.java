@@ -50,7 +50,8 @@ class ApiComponentsTest {
 
 	private final TestRecordingListener listener = new TestRecordingListener(clock);
 
-	private Recorder<CompositeContext> recorder = new SimpleRecorder<>(new CompositeRecordingListener(listener), clock);
+	private final Recorder<CompositeContext> recorder = new SimpleRecorder<>(new CompositeRecordingListener(listener),
+			clock);
 
 	@BeforeEach
 	void setUp() {
@@ -60,29 +61,32 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldRecordInstantEvent() {
-		recorder.recordingFor(INSTANT_EVENT).tag(Tag.of("testKey1", "testValue1", LOW))
-				.tag(Tag.of("testKey2", "testValue2", HIGH)).record();
+		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
+				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record();
 
 		InstantRecording recording = listener.getInstantRecording();
 		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", HIGH));
-		assertThat(recording)
-				.hasToString("{event=test-instant-event, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
+		assertThat(recording).hasToString(
+				"{event=test-instant-event, highCardinalityName=test-instant-event-12345, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
 	}
 
 	@Test
 	void shouldNotRecordInstantEventIfRecordingIsDisabled() {
 		recorder.setEnabled(false);
-		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT).tag(Tag.of("testKey1", "testValue1", LOW));
+		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
+				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
+				.tag(Tag.of("testKey1", "testValue1", LOW));
 		recording.record();
 
 		assertThat(recorder.isEnabled()).isFalse();
 		assertThat(recording).isExactlyInstanceOf(NoOpInstantRecording.class);
 		assertThat(listener.getInstantRecording()).isNull();
 
-		assertThat(recording.getEvent().getName()).isEqualTo("noop");
+		assertThat(recording.getEvent().getLowCardinalityName()).isEqualTo("noop");
 		assertThat(recording.getEvent().getDescription()).isEqualTo("noop");
+		assertThat(recording.getHighCardinalityName()).isEqualTo("noop");
 		assertThat(recording.getTags()).isEmpty();
 		assertThat(recording).hasToString("NoOpInstantRecording");
 	}
@@ -102,7 +106,7 @@ class ApiComponentsTest {
 			verifyOnError();
 		}
 		finally {
-			recording.stop();
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-12345").stop();
 			verifyOnStop();
 		}
 	}
@@ -118,7 +122,7 @@ class ApiComponentsTest {
 			recording.error(new IOException("simulated"));
 		}
 		finally {
-			recording.stop();
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName()).stop();
 		}
 
 		assertThat(recorder.isEnabled()).isFalse();
@@ -127,8 +131,9 @@ class ApiComponentsTest {
 		assertThat(listener.getOnStopRecording()).isNull();
 		assertThat(listener.getOnErrorRecording()).isNull();
 
-		assertThat(recording.getEvent().getName()).isSameAs("noop");
+		assertThat(recording.getEvent().getLowCardinalityName()).isSameAs("noop");
 		assertThat(recording.getEvent().getDescription()).isSameAs("noop");
+		assertThat(recording.getHighCardinalityName()).isSameAs("noop");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
 		assertThat(recording.getStartNanos()).isEqualTo(0);
 		assertThat(recording.getStopNanos()).isEqualTo(0);
@@ -157,7 +162,7 @@ class ApiComponentsTest {
 				Tag.of("testKey2", "testValue2", LOW));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
 		assertThat(recording).hasToString(
-				"{event=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}], error=null}");
+				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}], error=null}");
 	}
 
 	private void verifyOnError() {
@@ -177,7 +182,7 @@ class ApiComponentsTest {
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
 		assertThat(recording).hasToString(
-				"{event=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 	}
 
 	private void verifyOnStop() {
@@ -197,7 +202,7 @@ class ApiComponentsTest {
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
 		assertThat(recording).hasToString(
-				"{event=test-interval-event, duration=5000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+				"{event=test-interval-event, highCardinalityName=test-interval-event-12345, duration=5000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 	}
 
 }

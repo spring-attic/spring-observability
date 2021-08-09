@@ -111,6 +111,17 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
+		public String getHighCardinalityName() {
+			return this.delegate.getHighCardinalityName();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public IntervalRecording<T> highCardinalityName(String highCardinalityName) {
+			return (IntervalRecording<T>) this.delegate.highCardinalityName(highCardinalityName);
+		}
+
+		@Override
 		public Iterable<Tag> getTags() {
 			return this.delegate.getTags();
 		}
@@ -124,11 +135,6 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		@Override
 		public Duration getDuration() {
 			return this.delegate.getDuration();
-		}
-
-		@Override
-		public String getName() {
-			return this.delegate.getName();
 		}
 
 		@Override
@@ -153,13 +159,9 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public IntervalRecording<T> start(long nanos) {
 			return (IntervalRecording<T>) this.delegate.start(nanos);
-		}
-
-		@Override
-		public IntervalRecording<T> name(String name) {
-			return (IntervalRecording<T>) this.delegate.name(name);
 		}
 
 		@Override

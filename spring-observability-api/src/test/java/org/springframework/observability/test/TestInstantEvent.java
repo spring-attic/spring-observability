@@ -35,7 +35,7 @@ public enum TestInstantEvent implements InstantEvent {
 	}
 
 	@Override
-	public String getName() {
+	public String getLowCardinalityName() {
 		return this.name;
 	}
 

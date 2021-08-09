@@ -17,7 +17,7 @@
 package org.springframework.observability.event;
 
 /**
- * An Event represents that something happened. You must always name your events ans
+ * An Event represents that something happened. You must always name your events and
  * should provide a meaningful description if you can.
  *
  * @author Jonatan Ivanov
@@ -26,9 +26,10 @@ package org.springframework.observability.event;
 public interface Event {
 
 	/**
-	 * @return The original name of the event, the method mustn't return null.
+	 * @return The name of the event, the method mustn't return null. The method must
+	 * return values with low cardinality.
 	 */
-	String getName();
+	String getLowCardinalityName();
 
 	/**
 	 * @return The description of the event, the method shouldn't return null.

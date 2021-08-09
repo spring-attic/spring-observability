@@ -41,7 +41,7 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 
 	@Override
 	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
-		Span span = this.tracer.nextSpan().name(intervalRecording.getName())
+		Span span = this.tracer.nextSpan().name(intervalRecording.getHighCardinalityName())
 				.start(getStartTimeInMicros(intervalRecording));
 		intervalRecording.getContext().setSpanAndScope(span, this.tracer.withSpan(span));
 	}
@@ -49,8 +49,7 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 	@Override
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
 		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
-		Span span = spanAndScope.getSpan();
-		span.name(intervalRecording.getName());
+		Span span = spanAndScope.getSpan().name(intervalRecording.getHighCardinalityName());
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
 		spanAndScope.getScope().close();
 		span.end(getStopTimeInMicros(intervalRecording));
@@ -58,22 +57,20 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 
 	@Override
 	public void onError(IntervalRecording<TracingContext> intervalRecording) {
-		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
-		Span span = spanAndScope.getSpan();
+		Span span = intervalRecording.getContext().getSpanAndScope().getSpan();
 		span.error(intervalRecording.getError());
 	}
 
 	@Override
 	public void record(InstantRecording instantRecording) {
-		// TODO: Context is not shared between instant and interval
 		Span span = this.tracer.currentSpan();
 		if (span != null) {
-			String name = instantRecording.getEvent().getName();
+			String highCardinalityName = instantRecording.getHighCardinalityName();
 			if (instantRecording.eventNanos() != null) {
-				span.event(instantRecording.eventNanos(), name);
+				span.event(instantRecording.eventNanos(), highCardinalityName);
 			}
 			else {
-				span.event(name);
+				span.event(highCardinalityName);
 			}
 		}
 	}

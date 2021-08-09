@@ -35,11 +35,6 @@ public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalR
 	Duration getDuration();
 
 	/**
-	 * @return The current name of the event.
-	 */
-	String getName();
-
-	/**
 	 * @return The start time in nanos. The value is only meaningful when compared with
 	 * another value to determine the elapsed time.
 	 */
@@ -69,13 +64,6 @@ public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalR
 	 * @return itself.
 	 */
 	IntervalRecording<T> start(long nanos);
-
-	/**
-	 * Renames the {@link IntervalEvent}.
-	 * @param name updated name
-	 * @return itself.
-	 */
-	IntervalRecording<T> name(String name);
 
 	/**
 	 * Signals the end of an {@link IntervalEvent}.
