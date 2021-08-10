@@ -126,6 +126,7 @@ class TracingRecordingListenerTests {
 
 	@Test
 	void recordShouldAddEventToTheSpan() {
+		CLOCK.addSeconds(1);
 		basicTracerAndSpanBehavior();
 		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
 		when(tracer.currentSpan()).thenReturn(span);

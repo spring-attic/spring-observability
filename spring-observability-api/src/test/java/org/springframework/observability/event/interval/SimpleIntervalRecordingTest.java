@@ -118,7 +118,7 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
-	void starAndStopShouldRecordTimeAndEmitEvents() {
+	void startAndStopShouldRecordTimeAndEmitEvents() {
 		long startMonotonicTime = clock.monotonicTime();
 		long startWallTime = clock.wallTime();
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
@@ -142,6 +142,30 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
+	void startAndStopShouldRecordTimeAndEmitEventsWithProvidedTime() {
+		long startMonotonicTime = 100;
+		long stopMonotonicTime = startMonotonicTime + SECONDS.toNanos(3);
+		long startWallTime = 1;
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, null)
+				.start(startWallTime, startMonotonicTime).error(new IOException("simulated"));
+
+		verify(listener).onStart(recording);
+		verify(listener).onError(recording);
+		assertThat(recording.getStartNanos()).isEqualTo(startMonotonicTime);
+		assertThat(recording.getStopNanos()).isEqualTo(0);
+		assertThat(recording.getStartWallTime()).isEqualTo(startWallTime);
+		assertThat(recording.getDuration()).isEqualTo(Duration.ZERO);
+
+		recording.stop(stopMonotonicTime);
+
+		verify(listener).onStop(recording);
+		assertThat(recording.getStartNanos()).isEqualTo(startMonotonicTime);
+		assertThat(recording.getStopNanos()).isEqualTo(stopMonotonicTime);
+		assertThat(recording.getStartWallTime()).isEqualTo(startWallTime);
+		assertThat(recording.getDuration()).isEqualTo(Duration.ofSeconds(3));
+	}
+
+	@Test
 	void doubleStartIsNotAllowed() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
 		assertThatThrownBy(() -> recording.start().start()).isExactlyInstanceOf(IllegalStateException.class)
@@ -149,9 +173,23 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
+	void doubleStartIsNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
+		assertThatThrownBy(() -> recording.start(1, 1).start(1, 1)).isExactlyInstanceOf(IllegalStateException.class)
+				.hasMessage("IntervalRecording has already been started").hasNoCause();
+	}
+
+	@Test
 	void stopBeforeStartIsNotAllowed() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
 		assertThatThrownBy(recording::stop).isExactlyInstanceOf(IllegalStateException.class)
+				.hasMessage("IntervalRecording hasn't been started").hasNoCause();
+	}
+
+	@Test
+	void stopBeforeStartIsNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock);
+		assertThatThrownBy(() -> recording.stop(0)).isExactlyInstanceOf(IllegalStateException.class)
 				.hasMessage("IntervalRecording hasn't been started").hasNoCause();
 	}
 
@@ -166,10 +204,31 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
+	void doubleStopIsNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
+				.start(1, 1);
+		recording.stop(2);
+
+		assertThatThrownBy(() -> recording.stop(3)).isExactlyInstanceOf(IllegalStateException.class)
+				.hasMessage("IntervalRecording has already been stopped").hasNoCause();
+	}
+
+	@Test
 	void tagAfterStopIsNotAllowed() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
 				.start();
 		recording.stop();
+
+		assertThatThrownBy(() -> recording.tag(Tag.of("testKey", "testValue", LOW)))
+				.isExactlyInstanceOf(IllegalStateException.class)
+				.hasMessage("IntervalRecording has already been stopped").hasNoCause();
+	}
+
+	@Test
+	void tagAfterStopIsNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
+				.start(1, 1);
+		recording.stop(2);
 
 		assertThatThrownBy(() -> recording.tag(Tag.of("testKey", "testValue", LOW)))
 				.isExactlyInstanceOf(IllegalStateException.class)
@@ -196,9 +255,30 @@ class SimpleIntervalRecordingTest {
 	}
 
 	@Test
+	void errorAfterStopIsNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
+				.start(1, 1);
+		recording.stop(2);
+
+		assertThatThrownBy(() -> recording.error(new IOException("simulated")))
+				.isExactlyInstanceOf(IllegalStateException.class)
+				.hasMessage("IntervalRecording has already been stopped").hasNoCause();
+	}
+
+	@Test
 	void doubleErrorsAreNotAllowed() {
 		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
 				.start().error(new SocketTimeoutException("simulated"));
+
+		assertThatThrownBy(() -> recording.error(new UnknownHostException("simulated")))
+				.isExactlyInstanceOf(IllegalStateException.class).hasMessage("Only one error can be attached")
+				.hasNoCause();
+	}
+
+	@Test
+	void doubleErrorsAreNotAllowedWithProvidedTime() {
+		IntervalRecording<TestContext> recording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, clock)
+				.start(1, 1).error(new SocketTimeoutException("simulated"));
 
 		assertThatThrownBy(() -> recording.error(new UnknownHostException("simulated")))
 				.isExactlyInstanceOf(IllegalStateException.class).hasMessage("Only one error can be attached")
