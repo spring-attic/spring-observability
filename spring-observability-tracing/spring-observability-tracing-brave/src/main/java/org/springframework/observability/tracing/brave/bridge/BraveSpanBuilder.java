@@ -128,4 +128,10 @@ class BraveSpanBuilder implements Span.Builder {
 		return BraveSpan.fromBrave(this.delegate);
 	}
 
+	@Override
+	public Span start(long micros) {
+		this.startTimestamp = micros;
+		return start();
+	}
+
 }

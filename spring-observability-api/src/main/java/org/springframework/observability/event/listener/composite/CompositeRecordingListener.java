@@ -87,7 +87,7 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 
 	/**
 	 * The sole purpose of this class is being able to return the right context of the
-	 * right listener. All of the implemented methods are just delegating the work. except
+	 * right listener. All the implemented methods are just delegating the work. except
 	 * {@link IntervalRecordingView#getContext()} which looks up the context from the
 	 * {@link CompositeContext}.
 	 *

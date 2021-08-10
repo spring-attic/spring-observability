@@ -65,7 +65,8 @@ public class TracingRecordingListener implements RecordingListener<TracingRecord
 	public void record(InstantRecording instantRecording) {
 		Span span = this.tracer.currentSpan();
 		if (span != null) {
-			span.event(instantRecording.getWallTime(), instantRecording.getHighCardinalityName());
+			span.event(TimeUnit.NANOSECONDS.toMicros(instantRecording.getWallTime()),
+					instantRecording.getHighCardinalityName());
 		}
 	}
 

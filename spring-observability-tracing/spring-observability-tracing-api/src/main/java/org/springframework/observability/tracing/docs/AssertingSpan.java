@@ -107,9 +107,9 @@ public interface AssertingSpan extends Span {
 	}
 
 	@Override
-	default AssertingSpan event(long nanos, String value) {
+	default AssertingSpan event(long micros, String value) {
 		DocumentedSpanAssertions.assertThatEventIsValid(value, getDocumentedSpan());
-		getDelegate().event(nanos, value);
+		getDelegate().event(micros, value);
 		return this;
 	}
 
@@ -148,8 +148,8 @@ public interface AssertingSpan extends Span {
 	}
 
 	@Override
-	default Span start(long timestamp) {
-		getDelegate().start(timestamp);
+	default Span start(long micros) {
+		getDelegate().start(micros);
 		return this;
 	}
 
@@ -166,9 +166,9 @@ public interface AssertingSpan extends Span {
 	}
 
 	@Override
-	default void end(long timestamp) {
+	default void end(long micros) {
 		DocumentedSpanAssertions.assertThatSpanStartedBeforeEnd(this);
-		getDelegate().end(timestamp);
+		getDelegate().end(micros);
 	}
 
 	@Override

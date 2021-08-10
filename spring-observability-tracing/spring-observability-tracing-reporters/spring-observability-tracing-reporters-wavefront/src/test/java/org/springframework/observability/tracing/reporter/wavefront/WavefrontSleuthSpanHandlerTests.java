@@ -45,7 +45,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 class WavefrontSleuthSpanHandlerTests {
 
 	@Test
-	void should_delegate_to_generic_sleuth_span_handler() {
+	void should_delegate_to_generic_sleuth_span_handler() throws InterruptedException {
 		BlockingDeque<SpanRecord> spanRecordQueue = new LinkedBlockingDeque<>();
 		WavefrontSleuthSpanHandler handler = spanHandler(spanRecordQueue, new SimpleMeterRegistry());
 
@@ -67,7 +67,7 @@ class WavefrontSleuthSpanHandlerTests {
 	private void thenEndSpanTimeIsGreaterThanStartTime(SpanRecord spanRecord) {
 		// spot check the unit is valid (millis not micros)
 		long currentTime = System.currentTimeMillis();
-		then(spanRecord.startMillis).isGreaterThan(currentTime - 5000).isLessThan(currentTime);
+		then(spanRecord.startMillis).isGreaterThan(currentTime - 5000).isLessThanOrEqualTo(currentTime);
 		// Less than a millis should round up to 1, but the test could take longer than
 		// 1ms
 		then(spanRecord.durationMillis).isPositive();
