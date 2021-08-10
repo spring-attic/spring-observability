@@ -66,6 +66,7 @@ class ApiComponentsTest {
 
 		InstantRecording recording = listener.getInstantRecording();
 		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
+		assertThat(recording.getHighCardinalityName()).isEqualTo("test-instant-event-12345");
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", HIGH));
 		assertThat(recording).hasToString(
@@ -152,6 +153,7 @@ class ApiComponentsTest {
 		assertThat(listener.getOnStopRecording()).isNull();
 
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
+		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
 		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
 		assertThat(recording.getStopNanos()).isEqualTo(0);
@@ -172,6 +174,7 @@ class ApiComponentsTest {
 		assertThat(listener.getOnStopRecording()).isNull();
 
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
+		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
 		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
 		assertThat(recording.getStopNanos()).isEqualTo(0);
@@ -192,6 +195,7 @@ class ApiComponentsTest {
 		assertThat(listener.getOnErrorRecording()).isNotNull();
 
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
+		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event-12345");
 		assertThat(recording.getDuration()).isEqualTo(Duration.ofSeconds(5));
 		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
 		assertThat(recording.getStopNanos()).isEqualTo(listener.getOnStopSnapshot().monotonicTime());

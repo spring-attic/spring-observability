@@ -284,7 +284,7 @@ class CompositeRecordingListenerTest {
 	private <T> void assertThatStopDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		recordingView.stop();
-		verify(recording).start();
+		verify(recording).stop();
 	}
 
 	private <T> void assertThatGetErrorDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
