@@ -43,6 +43,14 @@ class SimpleInstantRecordingTest {
 	}
 
 	@Test
+	void shouldReturnTheRecordingWithHighCardinalityName() {
+		assertThat(recording.getHighCardinalityName()).isSameAs(INSTANT_EVENT.getLowCardinalityName());
+		String highCardinalityName = INSTANT_EVENT.getLowCardinalityName() + "-123456";
+		recording.highCardinalityName(highCardinalityName);
+		assertThat(recording.getHighCardinalityName()).isSameAs(highCardinalityName);
+	}
+
+	@Test
 	void shouldHaveTagsWhenAdded() {
 		assertThat(recording.getTags()).isEmpty();
 
@@ -69,11 +77,12 @@ class SimpleInstantRecordingTest {
 	@Test
 	void toStringShouldWork() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener)
+				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-123")
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
 				.tag(Tag.of("testKey3", "testValue3", LOW));
 
 		assertThat(recording).hasToString(
-				"{event=test-instant-event, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]}");
+				"{event=test-instant-event, highCardinalityName=test-instant-event-123, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]}");
 	}
 
 }

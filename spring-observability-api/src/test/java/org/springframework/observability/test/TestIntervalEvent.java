@@ -35,7 +35,7 @@ public enum TestIntervalEvent implements IntervalEvent {
 	}
 
 	@Override
-	public String getName() {
+	public String getLowCardinalityName() {
 		return this.name;
 	}
 

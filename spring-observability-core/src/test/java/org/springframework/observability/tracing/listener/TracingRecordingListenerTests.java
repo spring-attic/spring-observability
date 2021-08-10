@@ -38,6 +38,7 @@ import org.springframework.observability.tracing.Tracer;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -82,7 +83,7 @@ class TracingRecordingListenerTests {
 
 		assertThat(intervalRecording.getContext().getSpanAndScope().getScope()).isSameAs(spanInScope);
 		verify(tracer).nextSpan();
-		verify(span).name(INTERVAL_EVENT.getName());
+		verify(span).name(INTERVAL_EVENT.getLowCardinalityName());
 		verify(span).start(CLOCK.wallTimeIn(MICROSECONDS));
 	}
 
@@ -98,6 +99,7 @@ class TracingRecordingListenerTests {
 		verify(span).tag("foo", "bar");
 		verify(span).tag("userId", "12345");
 		verify(intervalRecording.getContext().getSpanAndScope().getScope()).close();
+		verify(span, times(0)).end();
 		verify(span).end(CLOCK.wallTimeIn(MICROSECONDS));
 	}
 
@@ -113,7 +115,7 @@ class TracingRecordingListenerTests {
 	}
 
 	@Test
-	void recordShouldNotDoAnythingWHenThereIsNoSpan() {
+	void recordShouldNotDoAnythingWhenThereIsNoSpan() {
 		when(tracer.currentSpan()).thenReturn(null);
 
 		instantRecording.record();
@@ -131,13 +133,13 @@ class TracingRecordingListenerTests {
 
 		instantRecording.record();
 
-		verify(span).event(instantRecording.getEvent().getName());
+		verify(span).event(instantRecording.getEvent().getLowCardinalityName());
 	}
 
 	private void basicTracerAndSpanBehavior() {
 		when(tracer.nextSpan()).thenReturn(span);
 		when(tracer.withSpan(span)).thenReturn(spanInScope);
-		when(span.name(INTERVAL_EVENT.getName())).thenReturn(span);
+		when(span.name(INTERVAL_EVENT.getLowCardinalityName())).thenReturn(span);
 	}
 
 	enum TestIntervalEvent implements IntervalEvent {
@@ -154,7 +156,7 @@ class TracingRecordingListenerTests {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 
@@ -179,7 +181,7 @@ class TracingRecordingListenerTests {
 		}
 
 		@Override
-		public String getName() {
+		public String getLowCardinalityName() {
 			return this.name;
 		}
 
