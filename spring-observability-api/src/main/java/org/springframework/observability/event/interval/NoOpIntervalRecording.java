@@ -88,6 +88,16 @@ public class NoOpIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
+	public IntervalRecording<T> start(long nanos) {
+		return this;
+	}
+
+	@Override
+	public void stop(long nanos) {
+
+	}
+
+	@Override
 	public void stop() {
 	}
 

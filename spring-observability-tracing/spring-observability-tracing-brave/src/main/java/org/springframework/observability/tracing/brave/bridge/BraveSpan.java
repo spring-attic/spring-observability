@@ -77,8 +77,8 @@ public class BraveSpan implements Span {
 	}
 
 	@Override
-	public Span start(long timestamp) {
-		this.delegate.start(timestamp);
+	public Span start(long micros) {
+		this.delegate.start(micros);
 		return this;
 	}
 
@@ -91,6 +91,12 @@ public class BraveSpan implements Span {
 	@Override
 	public Span event(String value) {
 		this.delegate.annotate(value);
+		return this;
+	}
+
+	@Override
+	public Span event(long micros, String value) {
+		this.delegate.annotate(micros, value);
 		return this;
 	}
 
@@ -114,8 +120,8 @@ public class BraveSpan implements Span {
 	}
 
 	@Override
-	public void end(long timestamp) {
-		this.delegate.finish(timestamp);
+	public void end(long micros) {
+		this.delegate.finish(micros);
 	}
 
 	@Override

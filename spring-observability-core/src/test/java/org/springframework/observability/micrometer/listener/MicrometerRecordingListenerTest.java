@@ -74,6 +74,9 @@ public class MicrometerRecordingListenerTest {
 		assertThat(timer.count()).isEqualTo(1);
 		assertThat(timer.totalTime(NANOSECONDS)).isEqualTo(Duration.ofSeconds(3).toNanos());
 		assertThat(timer.max(NANOSECONDS)).isEqualTo(Duration.ofSeconds(3).toNanos());
+
+		timer = registry.find(intervalRecording.getEvent().getLowCardinalityName()).tagKeys("userId").timer();
+		assertThat(timer).as("High cardinality tags should not be added").isNull();
 	}
 
 	@Test

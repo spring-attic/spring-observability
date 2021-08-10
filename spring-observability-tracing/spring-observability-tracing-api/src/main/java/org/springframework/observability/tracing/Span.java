@@ -52,10 +52,10 @@ public interface Span extends SpanCustomizer {
 
 	/**
 	 * Starts this span except with a given timestamp in microseconds.
-	 * @param timestamp in microseconds
+	 * @param micros timestamp in microseconds
 	 * @return this span
 	 */
-	Span start(long timestamp);
+	Span start(long micros);
 
 	/**
 	 * Sets a name on this span.
@@ -70,6 +70,14 @@ public interface Span extends SpanCustomizer {
 	 * @return this span
 	 */
 	Span event(String value);
+
+	/**
+	 * Sets an event on this span.
+	 * @param micros event timestamp in microseconds
+	 * @param value event name to set on the span
+	 * @return this span
+	 */
+	Span event(long micros, String value);
 
 	/**
 	 * Sets a tag on this span.
@@ -94,9 +102,9 @@ public interface Span extends SpanCustomizer {
 	/**
 	 * Ends the span with a given timestamp in microseconds. The span gets stopped and
 	 * recorded if not noop.
-	 * @param timestamp in microseconds
+	 * @param micros timestamp in microseconds
 	 */
-	void end(long timestamp);
+	void end(long micros);
 
 	/**
 	 * Ends the span. The span gets stopped but does not get recorded.
@@ -236,6 +244,13 @@ public interface Span extends SpanCustomizer {
 		 * @return started span
 		 */
 		Span start();
+
+		/**
+		 * Builds and starts the span.
+		 * @param micros span start time in micros
+		 * @return started span
+		 */
+		Span start(long micros);
 
 	}
 

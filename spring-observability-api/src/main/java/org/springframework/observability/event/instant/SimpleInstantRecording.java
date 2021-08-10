@@ -37,6 +37,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final Set<Tag> tags = new LinkedHashSet<>();
 
+	private Long nanos;
+
 	/**
 	 * @param event The event this recording belongs to.
 	 * @param listener The listener that needs to be notified about the recordings.
@@ -77,6 +79,17 @@ public class SimpleInstantRecording implements InstantRecording {
 	@Override
 	public void record() {
 		this.listener.record(this);
+	}
+
+	@Override
+	public void record(long nanos) {
+		this.nanos = nanos;
+		record();
+	}
+
+	@Override
+	public Long eventNanos() {
+		return this.nanos;
 	}
 
 	@Override

@@ -95,15 +95,31 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public IntervalRecording<T> start() {
+		return start(clock.wallTime(), clock.monotonicTime());
+	}
+
+	@Override
+	public IntervalRecording<T> start(long nanos) {
+		return start(nanos, nanos);
+	}
+
+	private IntervalRecording<T> start(long startWallTime, long started) {
 		if (this.started != 0) {
 			throw new IllegalStateException("IntervalRecording has already been started");
 		}
-
-		this.startWallTime = clock.wallTime();
-		this.started = clock.monotonicTime();
+		this.startWallTime = startWallTime;
+		this.started = started;
 		this.listener.onStart(this);
-
 		return this;
+	}
+
+	@Override
+	public void stop(long nanos) {
+		verifyIfHasStarted();
+		verifyIfHasNotStopped();
+		this.stopped = nanos;
+		this.duration = Duration.ofNanos(this.stopped - this.started);
+		this.listener.onStop(this);
 	}
 
 	@Override
@@ -118,11 +134,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public void stop() {
-		verifyIfHasStarted();
-		verifyIfHasNotStopped();
-		this.stopped = clock.monotonicTime();
-		this.duration = Duration.ofNanos(this.stopped - this.started);
-		this.listener.onStop(this);
+		stop(clock.monotonicTime());
 	}
 
 	@Override
@@ -149,7 +161,6 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 		if (this.error != null) {
 			throw new IllegalStateException("Only one error can be attached");
 		}
-
 		this.error = error;
 		this.listener.onError(this);
 		return this;

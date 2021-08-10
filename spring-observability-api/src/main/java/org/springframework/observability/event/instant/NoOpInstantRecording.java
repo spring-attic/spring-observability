@@ -65,6 +65,16 @@ public class NoOpInstantRecording implements InstantRecording {
 	}
 
 	@Override
+	public void record(long nanos) {
+
+	}
+
+	@Override
+	public Long eventNanos() {
+		return 0L;
+	}
+
+	@Override
 	public String toString() {
 		return "NoOpInstantRecording";
 	}

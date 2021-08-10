@@ -135,6 +135,15 @@ public interface AssertingSpanBuilder extends Span.Builder {
 	@Override
 	default AssertingSpan start() {
 		Span span = getDelegate().start();
+		return assertingDocumentedSpan(span);
+	}
+
+	/**
+	 * Converts a span to an asserting span for the given documented span.
+	 * @param span span to convert
+	 * @return asserting span
+	 */
+	default AssertingSpan assertingDocumentedSpan(Span span) {
 		DocumentedSpan documentedSpan = getDocumentedSpan();
 		return new AssertingSpan() {
 			@Override
@@ -157,6 +166,12 @@ public interface AssertingSpanBuilder extends Span.Builder {
 				return getDelegate().toString();
 			}
 		};
+	}
+
+	@Override
+	default Span start(long micros) {
+		Span span = getDelegate().start(micros);
+		return assertingDocumentedSpan(span);
 	}
 
 }

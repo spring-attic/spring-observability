@@ -159,6 +159,16 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
+		public IntervalRecording<T> start(long nanos) {
+			return (IntervalRecording<T>) this.delegate.start(nanos);
+		}
+
+		@Override
+		public void stop(long nanos) {
+			this.delegate.stop(nanos);
+		}
+
+		@Override
 		public void stop() {
 			this.delegate.stop();
 		}

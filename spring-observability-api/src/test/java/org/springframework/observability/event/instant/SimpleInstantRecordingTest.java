@@ -75,6 +75,14 @@ class SimpleInstantRecordingTest {
 	}
 
 	@Test
+	void listenerShouldBeNotifiedAndEventTimeShouldBeStored() {
+		recording.record(1000L);
+
+		verify(listener).record(recording);
+		assertThat(recording.eventNanos()).isEqualTo(1000L);
+	}
+
+	@Test
 	void toStringShouldWork() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-123")

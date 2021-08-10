@@ -136,6 +136,18 @@ class TracingRecordingListenerTests {
 		verify(span).event(instantRecording.getEvent().getLowCardinalityName());
 	}
 
+	@Test
+	void recordShouldAddEventToTheSpanWithFixedTime() {
+		basicTracerAndSpanBehavior();
+		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
+		when(tracer.currentSpan()).thenReturn(span);
+		intervalRecording.start();
+
+		instantRecording.record(2000L);
+
+		verify(span).event(2L, instantRecording.getEvent().getLowCardinalityName());
+	}
+
 	private void basicTracerAndSpanBehavior() {
 		when(tracer.nextSpan()).thenReturn(span);
 		when(tracer.withSpan(span)).thenReturn(spanInScope);

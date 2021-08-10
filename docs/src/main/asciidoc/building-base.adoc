@@ -22,6 +22,14 @@ the `.mvn` configuration, so if you find you have to do it to make a
 build succeed, please raise a ticket to get the settings added to
 source control.
 
+=== Mutation Tests
+
+Spring Observability uses Pitest to perform mutation tests. To run those please execute the following command
+
+----
+$ ./mvnw clean verify -Pmutation org.pitest:pitest-maven:report-aggregate-module -U
+----
+
 === Documentation
 
 The spring-observability module has a "docs" profile, and if you switch
