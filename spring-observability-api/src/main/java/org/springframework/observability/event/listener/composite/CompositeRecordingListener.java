@@ -87,7 +87,7 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 
 	/**
 	 * The sole purpose of this class is being able to return the right context of the
-	 * right listener. All of the implemented methods are just delegating the work. except
+	 * right listener. All the implemented methods are just delegating the work. except
 	 * {@link IntervalRecordingView#getContext()} which looks up the context from the
 	 * {@link CompositeContext}.
 	 *
@@ -159,13 +159,14 @@ public class CompositeRecordingListener implements RecordingListener<CompositeCo
 		}
 
 		@Override
-		public IntervalRecording<T> start(long nanos) {
-			return (IntervalRecording<T>) this.delegate.start(nanos);
+		@SuppressWarnings("unchecked")
+		public IntervalRecording<T> start(long wallTime, long monotonicTime) {
+			return (IntervalRecording<T>) this.delegate.start(wallTime, monotonicTime);
 		}
 
 		@Override
-		public void stop(long nanos) {
-			this.delegate.stop(nanos);
+		public void stop(long monotonicTime) {
+			this.delegate.stop(monotonicTime);
 		}
 
 		@Override

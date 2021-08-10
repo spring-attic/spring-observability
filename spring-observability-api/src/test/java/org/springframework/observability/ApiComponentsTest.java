@@ -18,6 +18,7 @@ package org.springframework.observability;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,23 @@ class ApiComponentsTest {
 		assertThat(recording.getHighCardinalityName()).isEqualTo("test-instant-event-12345");
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", HIGH));
+		assertThat(recording.getWallTime()).isEqualTo(clock.wallTime());
+		assertThat(recording).hasToString(
+				"{event=test-instant-event, highCardinalityName=test-instant-event-12345, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
+	}
+
+	@Test
+	void shouldRecordInstantEventWithProvidedTime() {
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new CompositeRecordingListener(listener), null);
+		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
+				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record(100);
+
+		InstantRecording recording = listener.getInstantRecording();
+		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
+		assertThat(recording.getHighCardinalityName()).isEqualTo("test-instant-event-12345");
+		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
+				Tag.of("testKey2", "testValue2", HIGH));
+		assertThat(recording.getWallTime()).isEqualTo(100);
 		assertThat(recording).hasToString(
 				"{event=test-instant-event, highCardinalityName=test-instant-event-12345, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
 	}
@@ -89,6 +107,28 @@ class ApiComponentsTest {
 		assertThat(recording.getEvent().getDescription()).isEqualTo("noop");
 		assertThat(recording.getHighCardinalityName()).isEqualTo("noop");
 		assertThat(recording.getTags()).isEmpty();
+		assertThat(recording.getWallTime()).isEqualTo(0);
+		assertThat(recording).hasToString("NoOpInstantRecording");
+	}
+
+	@Test
+	void shouldNotRecordInstantEventWithProvidedTimeIfRecordingIsDisabled() {
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new CompositeRecordingListener(listener), null);
+		recorder.setEnabled(false);
+		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
+				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
+				.tag(Tag.of("testKey1", "testValue1", LOW));
+		recording.record(100);
+
+		assertThat(recorder.isEnabled()).isFalse();
+		assertThat(recording).isExactlyInstanceOf(NoOpInstantRecording.class);
+		assertThat(listener.getInstantRecording()).isNull();
+
+		assertThat(recording.getEvent().getLowCardinalityName()).isEqualTo("noop");
+		assertThat(recording.getEvent().getDescription()).isEqualTo("noop");
+		assertThat(recording.getHighCardinalityName()).isEqualTo("noop");
+		assertThat(recording.getTags()).isEmpty();
+		assertThat(recording.getWallTime()).isEqualTo(0);
 		assertThat(recording).hasToString("NoOpInstantRecording");
 	}
 
@@ -109,6 +149,27 @@ class ApiComponentsTest {
 		finally {
 			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-12345").stop();
 			verifyOnStop();
+		}
+	}
+
+	@Test
+	void shouldRecordIntervalEventWithProvidedTime() {
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new CompositeRecordingListener(listener), null);
+		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
+				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", LOW)).start(1, 2);
+
+		verifyOnStart(1, 2);
+
+		try {
+			recording.tag(Tag.of("testKey3", "testValue3", HIGH));
+			recording.error(new IOException("simulated"));
+
+			verifyOnError(1, 2);
+		}
+		finally {
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-12345")
+					.stop(TimeUnit.MILLISECONDS.toNanos(100) + 2);
+			verifyOnStop(1, 2, TimeUnit.MILLISECONDS.toNanos(100) + 2);
 		}
 	}
 
@@ -146,7 +207,44 @@ class ApiComponentsTest {
 		assertThat(recording).hasToString("NoOpIntervalRecording");
 	}
 
+	@Test
+	void shouldNotRecordIntervalEventWithProvidedTimeIfRecordingIsDisabled() {
+		recorder.setEnabled(false);
+		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
+				.tag(Tag.of("testKey1", "testValue1", LOW)).start(1, 2);
+
+		try {
+			recording.error(new IOException("simulated"));
+		}
+		finally {
+			recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName()).stop();
+		}
+
+		assertThat(recorder.isEnabled()).isFalse();
+		assertThat(recording).isExactlyInstanceOf(NoOpIntervalRecording.class);
+		assertThat(listener.getOnStartRecording()).isNull();
+		assertThat(listener.getOnStopRecording()).isNull();
+		assertThat(listener.getOnErrorRecording()).isNull();
+
+		assertThat(recording.getEvent().getLowCardinalityName()).isSameAs("noop");
+		assertThat(recording.getEvent().getDescription()).isSameAs("noop");
+		assertThat(recording.getHighCardinalityName()).isSameAs("noop");
+		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
+		assertThat(recording.getStartNanos()).isEqualTo(0);
+		assertThat(recording.getStopNanos()).isEqualTo(0);
+		assertThat(recording.getStartWallTime()).isEqualTo(0);
+
+		assertThat(recording.getError()).isNull();
+		assertThat(recording.getTags()).isEmpty();
+		assertThat(recording.getContext()).isNull();
+		assertThat(recording).hasToString("NoOpIntervalRecording");
+	}
+
 	private void verifyOnStart() {
+		verifyOnStart(listener.getOnStartSnapshot().wallTime(), listener.getOnStartSnapshot().monotonicTime());
+	}
+
+	private void verifyOnStart(long startWallTime, long startNanos) {
 		IntervalRecording<TestContext> recording = listener.getOnStartRecording();
 
 		assertThat(listener.getOnErrorRecording()).isNull();
@@ -155,9 +253,9 @@ class ApiComponentsTest {
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
 		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
-		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
+		assertThat(recording.getStartNanos()).isEqualTo(startNanos);
 		assertThat(recording.getStopNanos()).isEqualTo(0);
-		assertThat(recording.getStartWallTime()).isEqualTo(listener.getOnStartSnapshot().wallTime());
+		assertThat(recording.getStartWallTime()).isEqualTo(startWallTime);
 
 		assertThat(recording.getError()).isNull();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
@@ -168,6 +266,10 @@ class ApiComponentsTest {
 	}
 
 	private void verifyOnError() {
+		verifyOnError(listener.getOnStartSnapshot().wallTime(), listener.getOnStartSnapshot().monotonicTime());
+	}
+
+	private void verifyOnError(long startWallTime, long startNanos) {
 		IntervalRecording<TestContext> recording = listener.getOnErrorRecording();
 
 		assertThat(listener.getOnStartRecording()).isNotNull();
@@ -176,9 +278,9 @@ class ApiComponentsTest {
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
 		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event");
 		assertThat(recording.getDuration()).isSameAs(Duration.ZERO);
-		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
+		assertThat(recording.getStartNanos()).isEqualTo(startNanos);
 		assertThat(recording.getStopNanos()).isEqualTo(0);
-		assertThat(recording.getStartWallTime()).isEqualTo(listener.getOnStartSnapshot().wallTime());
+		assertThat(recording.getStartWallTime()).isEqualTo(startWallTime);
 
 		assertThat(recording.getError()).isExactlyInstanceOf(IOException.class).hasMessage("simulated").hasNoCause();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
@@ -189,24 +291,32 @@ class ApiComponentsTest {
 	}
 
 	private void verifyOnStop() {
+		verifyOnStop(listener.getOnStartSnapshot().wallTime(), listener.getOnStartSnapshot().monotonicTime(),
+				listener.getOnStopSnapshot().monotonicTime());
+	}
+
+	private void verifyOnStop(long startWallTime, long startNanos, long stopNanos) {
 		IntervalRecording<TestContext> recording = listener.getOnStopRecording();
+		Duration duration = Duration.ofNanos(stopNanos - startNanos);
 
 		assertThat(listener.getOnStartRecording()).isNotNull();
 		assertThat(listener.getOnErrorRecording()).isNotNull();
 
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);
 		assertThat(recording.getHighCardinalityName()).isEqualTo("test-interval-event-12345");
-		assertThat(recording.getDuration()).isEqualTo(Duration.ofSeconds(5));
-		assertThat(recording.getStartNanos()).isEqualTo(listener.getOnStartSnapshot().monotonicTime());
-		assertThat(recording.getStopNanos()).isEqualTo(listener.getOnStopSnapshot().monotonicTime());
-		assertThat(recording.getStartWallTime()).isEqualTo(listener.getOnStartSnapshot().wallTime());
+		assertThat(recording.getDuration()).isEqualTo(duration);
+		assertThat(recording.getStartNanos()).isEqualTo(startNanos);
+		assertThat(recording.getStopNanos()).isEqualTo(stopNanos);
+		assertThat(recording.getStartWallTime()).isEqualTo(startWallTime);
 
 		assertThat(recording.getError()).isExactlyInstanceOf(IOException.class).hasMessage("simulated").hasNoCause();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
-		assertThat(recording).hasToString(
-				"{event=test-interval-event, highCardinalityName=test-interval-event-12345, duration=5000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+		assertThat(recording)
+				.hasToString("{event=test-interval-event, highCardinalityName=test-interval-event-12345, duration="
+						+ duration.toMillis()
+						+ "ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
 	}
 
 }

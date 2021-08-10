@@ -172,7 +172,9 @@ class CompositeRecordingListenerTest {
 		assertThatGetStopNanosDelegates(recordingView, recording);
 		assertThatGetStartWallTimeDelegates(recordingView, recording);
 		assertThatStartDelegates(recordingView, recording);
+		assertThatStartWithProvidedTimeDelegates(recordingView, recording);
 		assertThatStopDelegates(recordingView, recording);
+		assertThatStopWithProvidedTimeDelegates(recordingView, recording);
 		assertThatGetErrorDelegates(recordingView, recording);
 		assertThatErrorDelegates(recordingView, recording);
 		assertThatGetContextDelegates(listener, recordingView, recording);
@@ -281,10 +283,27 @@ class CompositeRecordingListenerTest {
 		assertThat(actualRecording).isSameAs(recording);
 	}
 
+	private <T> void assertThatStartWithProvidedTimeDelegates(
+			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+			IntervalRecording<CompositeContext> recording) {
+		when(recording.start(1, 1)).thenReturn(recording);
+
+		IntervalRecording<T> actualRecording = recordingView.start(1, 1);
+		verify(recording).start(1, 1);
+		assertThat(actualRecording).isSameAs(recording);
+	}
+
 	private <T> void assertThatStopDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		recordingView.stop();
 		verify(recording).stop();
+	}
+
+	private <T> void assertThatStopWithProvidedTimeDelegates(
+			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+			IntervalRecording<CompositeContext> recording) {
+		recordingView.stop(1);
+		verify(recording).stop(1);
 	}
 
 	private <T> void assertThatGetErrorDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,

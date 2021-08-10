@@ -36,14 +36,15 @@ public interface InstantRecording extends Recording<InstantEvent, InstantRecordi
 
 	/**
 	 * Signals that an {@link InstantEvent} happened at a given time.
-	 * @param nanos time in nanos when the event happened
+	 * @param wallTime The wall time (system time) in nanoseconds since the epoch at the
+	 * time the event happened.
 	 */
-	void record(long nanos);
+	void record(long wallTime);
 
 	/**
-	 * @return time in nanos when the event happened. Might be null in which case the time
-	 * will be calculated from the Clock.
+	 * @return The wall time (system time) in nanoseconds since the epoch at the time the
+	 * event happened.
 	 */
-	Long eventNanos();
+	long getWallTime();
 
 }

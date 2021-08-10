@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.time.MockClock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -33,17 +34,20 @@ import static org.springframework.observability.test.TestInstantEvent.INSTANT_EV
  */
 class SimpleInstantRecordingTest {
 
-	private final RecordingListener<Void> listener = mock(RecordingListener.class);
+	private final MockClock clock = new MockClock();
 
-	private final InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener);
+	private final RecordingListener<Void> listener = mock(RecordingListener.class);
 
 	@Test
 	void shouldReturnThePassedEvent() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
 		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
 	}
 
 	@Test
 	void shouldReturnTheRecordingWithHighCardinalityName() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
+
 		assertThat(recording.getHighCardinalityName()).isSameAs(INSTANT_EVENT.getLowCardinalityName());
 		String highCardinalityName = INSTANT_EVENT.getLowCardinalityName() + "-123456";
 		recording.highCardinalityName(highCardinalityName);
@@ -52,6 +56,8 @@ class SimpleInstantRecordingTest {
 
 	@Test
 	void shouldHaveTagsWhenAdded() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
+
 		assertThat(recording.getTags()).isEmpty();
 
 		Tag tag1 = Tag.of("testKey1", "testValue1", LOW);
@@ -69,22 +75,38 @@ class SimpleInstantRecordingTest {
 	}
 
 	@Test
+	void wallTimeShouldBeRecorded() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
+		recording.record();
+		assertThat(recording.getWallTime()).isEqualTo(clock.wallTime());
+	}
+
+	@Test
+	void providedWallTimeShouldBeRecorded() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
+		recording.record(42);
+		assertThat(recording.getWallTime()).isEqualTo(42);
+	}
+
+	@Test
 	void listenerShouldBeNotified() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
 		recording.record();
 		verify(listener).record(recording);
 	}
 
 	@Test
 	void listenerShouldBeNotifiedAndEventTimeShouldBeStored() {
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, null);
 		recording.record(1000L);
 
 		verify(listener).record(recording);
-		assertThat(recording.eventNanos()).isEqualTo(1000L);
+		assertThat(recording.getWallTime()).isEqualTo(1000L);
 	}
 
 	@Test
 	void toStringShouldWork() {
-		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener)
+		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-123")
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
 				.tag(Tag.of("testKey3", "testValue3", LOW));

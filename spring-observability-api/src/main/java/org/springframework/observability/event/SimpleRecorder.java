@@ -57,7 +57,7 @@ public class SimpleRecorder<T> implements Recorder<T> {
 
 	@Override
 	public InstantRecording recordingFor(InstantEvent event) {
-		return enabled ? new SimpleInstantRecording(event, listener) : new NoOpInstantRecording();
+		return enabled ? new SimpleInstantRecording(event, listener, clock) : new NoOpInstantRecording();
 	}
 
 	@Override

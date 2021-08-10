@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.time.Clock;
 
 /**
  * @author Jonatan Ivanov
@@ -35,18 +36,22 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final RecordingListener<?> listener;
 
-	private final Set<Tag> tags = new LinkedHashSet<>();
+	private final Clock clock;
 
-	private Long nanos;
+	private long wallTime = 0;
+
+	private final Set<Tag> tags = new LinkedHashSet<>();
 
 	/**
 	 * @param event The event this recording belongs to.
 	 * @param listener The listener that needs to be notified about the recordings.
+	 * @param clock The clock to be used.
 	 */
-	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener) {
+	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener, Clock clock) {
 		this.event = event;
 		this.highCardinalityName = event.getLowCardinalityName();
 		this.listener = listener;
+		this.clock = clock;
 	}
 
 	@Override
@@ -78,18 +83,18 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public void record() {
+		record(clock.wallTime());
+	}
+
+	@Override
+	public void record(long wallTime) {
+		this.wallTime = wallTime;
 		this.listener.record(this);
 	}
 
 	@Override
-	public void record(long nanos) {
-		this.nanos = nanos;
-		record();
-	}
-
-	@Override
-	public Long eventNanos() {
-		return this.nanos;
+	public long getWallTime() {
+		return this.wallTime;
 	}
 
 	@Override
