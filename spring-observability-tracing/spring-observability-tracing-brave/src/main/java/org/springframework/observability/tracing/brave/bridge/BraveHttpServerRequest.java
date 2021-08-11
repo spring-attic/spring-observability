@@ -23,8 +23,8 @@ import java.util.Collections;
 import javax.servlet.ServletRequest;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.http.HttpServerRequest;
+import org.springframework.observability.core.Kind;
+import org.springframework.observability.core.http.HttpServerRequest;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -134,8 +134,8 @@ class BraveHttpServerRequest implements HttpServerRequest {
 	}
 
 	@Override
-	public Span.Kind spanKind() {
-		return Span.Kind.valueOf(this.delegate.spanKind().name());
+	public Kind kind() {
+		return Kind.valueOf(this.delegate.spanKind().name());
 	}
 
 	@Override

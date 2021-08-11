@@ -19,9 +19,9 @@ package org.springframework.observability.tracing.brave.bridge;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.http.HttpClientRequest;
-import org.springframework.observability.tracing.http.HttpClientResponse;
+import org.springframework.observability.core.Kind;
+import org.springframework.observability.core.http.HttpClientRequest;
+import org.springframework.observability.core.http.HttpClientResponse;
 
 /**
  * Brave implementation of a {@link HttpClientResponse}.
@@ -104,8 +104,8 @@ class BraveHttpClientResponse implements HttpClientResponse {
 	}
 
 	@Override
-	public Span.Kind spanKind() {
-		return Span.Kind.valueOf(this.delegate.spanKind().name());
+	public Kind kind() {
+		return Kind.valueOf(this.delegate.spanKind().name());
 	}
 
 	@Override

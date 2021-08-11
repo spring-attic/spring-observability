@@ -16,15 +16,26 @@
 
 package org.springframework.observability.tracing.listener;
 
-import org.springframework.observability.event.listener.RecordingListener;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Marker interface for tracing listeners.
- *
- * @param <T> Context Type
- * @author Jonatan Ivanov
- * @since 1.0.0
- */
-public interface TracingRecordingListener<T> extends RecordingListener<T> {
+import org.springframework.observability.event.instant.InstantRecording;
+import org.springframework.observability.tracing.Span;
+import org.springframework.observability.tracing.Tracer;
+
+class TracingInstantRecorder {
+
+	private final Tracer tracer;
+
+	TracingInstantRecorder(Tracer tracer) {
+		this.tracer = tracer;
+	}
+
+	void record(InstantRecording instantRecording) {
+		Span span = this.tracer.currentSpan();
+		if (span != null) {
+			span.event(TimeUnit.NANOSECONDS.toMicros(instantRecording.getWallTime()),
+					instantRecording.getHighCardinalityName());
+		}
+	}
 
 }

@@ -36,6 +36,7 @@ import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.test.TestContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -47,7 +48,7 @@ import static org.springframework.observability.test.TestIntervalEvent.INTERVAL_
  * @author Jonatan Ivanov
  */
 @ExtendWith(MockitoExtension.class)
-class CompositeRecordingListenerTest {
+class RunAllCompositeRecordingListenerTest {
 
 	@Mock
 	private RecordingListener<TestContext> listener1;
@@ -59,13 +60,13 @@ class CompositeRecordingListenerTest {
 	private RecordingListener<Void> listener3;
 
 	@Captor
-	private ArgumentCaptor<CompositeRecordingListener.IntervalRecordingView<TestContext>> captor1;
+	private ArgumentCaptor<IntervalRecordingView<TestContext>> captor1;
 
 	@Captor
-	private ArgumentCaptor<CompositeRecordingListener.IntervalRecordingView<String>> captor2;
+	private ArgumentCaptor<IntervalRecordingView<String>> captor2;
 
 	@Captor
-	private ArgumentCaptor<CompositeRecordingListener.IntervalRecordingView<Void>> captor3;
+	private ArgumentCaptor<IntervalRecordingView<Void>> captor3;
 
 	private final TestContext context1 = new TestContext();
 
@@ -83,11 +84,19 @@ class CompositeRecordingListenerTest {
 
 	@BeforeEach
 	void setUp() {
-		compositeListener = new CompositeRecordingListener(listener1, listener2, listener3);
+		compositeListener = new RunAllCompositeRecordingListener(listener1, listener2, listener3);
+	}
+
+	private void setupListeners() {
+		when(listener1.isApplicable(any())).thenReturn(true);
+		when(listener2.isApplicable(any())).thenReturn(true);
+		when(listener3.isApplicable(any())).thenReturn(true);
 	}
 
 	@Test
 	void recordShouldDelegate() {
+		setupListeners();
+
 		compositeListener.record(instantRecording);
 
 		verify(listener1).record(instantRecording);
@@ -97,6 +106,7 @@ class CompositeRecordingListenerTest {
 
 	@Test
 	void onStartShouldDelegate() {
+		setupListeners();
 		when(listener1.createContext()).thenReturn(context1);
 		when(listener2.createContext()).thenReturn(context2);
 		when(listener3.createContext()).thenReturn(context3);
@@ -114,6 +124,7 @@ class CompositeRecordingListenerTest {
 
 	@Test
 	void onErrorShouldDelegate() {
+		setupListeners();
 		when(listener1.createContext()).thenReturn(context1);
 		when(listener2.createContext()).thenReturn(context2);
 		when(listener3.createContext()).thenReturn(context3);
@@ -131,6 +142,7 @@ class CompositeRecordingListenerTest {
 
 	@Test
 	void onStopShouldDelegate() {
+		setupListeners();
 		when(listener1.createContext()).thenReturn(context1);
 		when(listener2.createContext()).thenReturn(context2);
 		when(listener3.createContext()).thenReturn(context3);
@@ -159,8 +171,7 @@ class CompositeRecordingListenerTest {
 		assertThat(context.byListener(listener3)).isSameAs(context3);
 	}
 
-	private <T> void assertThatViewWrapsRecording(RecordingListener<T> listener,
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatViewWrapsRecording(RecordingListener<T> listener, IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		assertThatGetEventDelegates(recordingView, recording);
 		assertThatGetHighCardinalityNameDelegates(recordingView, recording);
@@ -183,7 +194,7 @@ class CompositeRecordingListenerTest {
 		reset(recording);
 	}
 
-	private <T> void assertThatGetEventDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetEventDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		when(recording.getEvent()).thenReturn(INTERVAL_EVENT);
 		IntervalEvent actualEvent = recordingView.getEvent();
@@ -192,8 +203,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualEvent).isSameAs(recording.getEvent());
 	}
 
-	private <T> void assertThatGetHighCardinalityNameDelegates(
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetHighCardinalityNameDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		when(recording.getHighCardinalityName()).thenReturn("12345");
 		String actualHighCardinalityName = recordingView.getHighCardinalityName();
@@ -202,8 +212,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualHighCardinalityName).isEqualTo("12345");
 	}
 
-	private <T> void assertThatHighCardinalityNameDelegates(
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatHighCardinalityNameDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		String highCardinalityName = "12345";
 		when(recording.highCardinalityName(highCardinalityName)).thenReturn(recording);
@@ -213,7 +222,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualRecording).isSameAs(recording);
 	}
 
-	private <T> void assertThatGetTagsDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetTagsDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		Tag tag = Tag.of("a", "b", HIGH);
 		when(recording.getTags()).thenReturn(Collections.singletonList(tag));
@@ -223,7 +232,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualTags).containsExactly(tag);
 	}
 
-	private <T> void assertThatTagsDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatTagsDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		Tag tag = Tag.of("a", "b", HIGH);
 		when(recording.tag(tag)).thenReturn(recording);
@@ -233,7 +242,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualRecording).isSameAs(recording);
 	}
 
-	private <T> void assertThatGetDurationDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetDurationDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		Duration duration = Duration.ofMillis(42);
 		when(recording.getDuration()).thenReturn(duration);
@@ -243,7 +252,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualDuration).isSameAs(duration);
 	}
 
-	private <T> void assertThatGetStartNanosDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetStartNanosDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		long startNanos = 12;
 		when(recording.getStartNanos()).thenReturn(startNanos);
@@ -253,7 +262,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualStartNanos).isEqualTo(startNanos);
 	}
 
-	private <T> void assertThatGetStopNanosDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetStopNanosDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		long stopNanos = 42;
 		when(recording.getStopNanos()).thenReturn(stopNanos);
@@ -263,8 +272,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualStopNanos).isEqualTo(stopNanos);
 	}
 
-	private <T> void assertThatGetStartWallTimeDelegates(
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetStartWallTimeDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		long startWallTime = 12;
 		when(recording.getStartWallTime()).thenReturn(startWallTime);
@@ -274,7 +282,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualStartWallTime).isEqualTo(startWallTime);
 	}
 
-	private <T> void assertThatStartDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatStartDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		when(recording.start()).thenReturn(recording);
 
@@ -283,8 +291,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualRecording).isSameAs(recording);
 	}
 
-	private <T> void assertThatStartWithProvidedTimeDelegates(
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatStartWithProvidedTimeDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		when(recording.start(1, 1)).thenReturn(recording);
 
@@ -293,20 +300,19 @@ class CompositeRecordingListenerTest {
 		assertThat(actualRecording).isSameAs(recording);
 	}
 
-	private <T> void assertThatStopDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatStopDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		recordingView.stop();
 		verify(recording).stop();
 	}
 
-	private <T> void assertThatStopWithProvidedTimeDelegates(
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatStopWithProvidedTimeDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		recordingView.stop(1);
 		verify(recording).stop(1);
 	}
 
-	private <T> void assertThatGetErrorDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatGetErrorDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		Throwable error = new IOException("simulated");
 		when(recording.getError()).thenReturn(error);
@@ -316,7 +322,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualError).isSameAs(error);
 	}
 
-	private <T> void assertThatErrorDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatErrorDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		Throwable error = new IOException("simulated");
 		when(recording.error(error)).thenReturn(recording);
@@ -327,8 +333,7 @@ class CompositeRecordingListenerTest {
 	}
 
 	private <T> void assertThatGetContextDelegates(RecordingListener<T> listener,
-			CompositeRecordingListener.IntervalRecordingView<T> recordingView,
-			IntervalRecording<CompositeContext> recording) {
+			IntervalRecordingView<T> recordingView, IntervalRecording<CompositeContext> recording) {
 		T context = listener.createContext();
 		CompositeContext compositeContext = mock(CompositeContext.class);
 		when(recording.getContext()).thenReturn(compositeContext);
@@ -339,7 +344,7 @@ class CompositeRecordingListenerTest {
 		assertThat(actualContext).isSameAs(context);
 	}
 
-	private <T> void assertThatToStringDelegates(CompositeRecordingListener.IntervalRecordingView<T> recordingView,
+	private <T> void assertThatToStringDelegates(IntervalRecordingView<T> recordingView,
 			IntervalRecording<CompositeContext> recording) {
 		String toString = "{test}";
 		when(recording.toString()).thenReturn(toString);

@@ -34,13 +34,15 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	private final IntervalEvent event;
 
-	private String highCardinalityName;
-
 	private final RecordingListener<T> listener;
 
 	private final T context;
 
 	private final Clock clock;
+
+	private final Set<Tag> tags = new LinkedHashSet<>();
+
+	private String highCardinalityName;
 
 	private Duration duration = Duration.ZERO;
 
@@ -49,8 +51,6 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	private long stopped = 0;
 
 	private long startWallTime = 0;
-
-	private final Set<Tag> tags = new LinkedHashSet<>();
 
 	private Throwable error = null;
 

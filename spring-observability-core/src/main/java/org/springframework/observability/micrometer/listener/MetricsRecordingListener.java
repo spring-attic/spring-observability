@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2021-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.test.simple;
+package org.springframework.observability.micrometer.listener;
 
-import org.springframework.observability.tracing.Tracer;
+import org.springframework.observability.event.listener.RecordingListener;
 
 /**
- * A noop implementation. Does nothing.
+ * Marker interface for metrics listeners.
  *
- * @author Marcin Grzejszczak
+ * @param <T> Context Type
+ * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public class NoOpSpanInScope implements Tracer.SpanInScope {
-
-	@Override
-	public void close() {
-
-	}
+public interface MetricsRecordingListener<T> extends RecordingListener<T> {
 
 }

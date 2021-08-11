@@ -30,7 +30,7 @@ import org.springframework.observability.event.listener.RecordingListener;
  *
  * @author Jonatan Ivanov
  * @since 1.0.0
- * @see CompositeRecordingListener
+ * @see RunAllCompositeRecordingListener
  */
 public class CompositeContext {
 
@@ -40,7 +40,7 @@ public class CompositeContext {
 		this(Arrays.asList(listeners));
 	}
 
-	CompositeContext(List<RecordingListener<?>> listeners) {
+	CompositeContext(List<? extends RecordingListener<?>> listeners) {
 		// Could be a .stream().collect(toMap(...)) but toMap fails on null values:
 		// https://bugs.openjdk.java.net/browse/JDK-8148463
 		for (RecordingListener<?> listener : listeners) {

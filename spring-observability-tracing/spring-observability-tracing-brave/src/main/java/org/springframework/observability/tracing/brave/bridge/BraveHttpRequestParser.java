@@ -16,9 +16,9 @@
 
 package org.springframework.observability.tracing.brave.bridge;
 
+import org.springframework.observability.core.http.HttpRequest;
 import org.springframework.observability.tracing.SpanCustomizer;
 import org.springframework.observability.tracing.TraceContext;
-import org.springframework.observability.tracing.http.HttpRequest;
 import org.springframework.observability.tracing.http.HttpRequestParser;
 
 /**
