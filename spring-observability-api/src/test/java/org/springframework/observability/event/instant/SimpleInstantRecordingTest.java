@@ -111,8 +111,9 @@ class SimpleInstantRecordingTest {
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
 				.tag(Tag.of("testKey3", "testValue3", LOW));
 
-		assertThat(recording).hasToString(
-				"{event=test-instant-event, highCardinalityName=test-instant-event-123, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]}");
+		assertThat(recording.toString()).contains("event=test-instant-event")
+				.contains("highCardinalityName=test-instant-event-123")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]");
 	}
 
 }

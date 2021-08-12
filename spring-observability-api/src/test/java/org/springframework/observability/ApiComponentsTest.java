@@ -71,8 +71,9 @@ class ApiComponentsTest {
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", HIGH));
 		assertThat(recording.getWallTime()).isEqualTo(clock.wallTime());
-		assertThat(recording).hasToString(
-				"{event=test-instant-event, highCardinalityName=test-instant-event-12345, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
+		assertThat(recording.toString()).contains("event=test-instant-event")
+				.contains("highCardinalityName=test-instant-event-12345")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]");
 	}
 
 	@Test
@@ -87,8 +88,9 @@ class ApiComponentsTest {
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", HIGH));
 		assertThat(recording.getWallTime()).isEqualTo(100);
-		assertThat(recording).hasToString(
-				"{event=test-instant-event, highCardinalityName=test-instant-event-12345, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]}");
+		assertThat(recording.toString()).contains("event=test-instant-event")
+				.contains("highCardinalityName=test-instant-event-12345")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]");
 	}
 
 	@Test
@@ -261,8 +263,10 @@ class ApiComponentsTest {
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
-		assertThat(recording).hasToString(
-				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}], error=null}");
+		assertThat(recording.toString()).contains("event=test-interval-event")
+				.contains("highCardinalityName=test-interval-event")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]").contains("duration=0ms")
+				.contains("error=null");
 	}
 
 	private void verifyOnError() {
@@ -286,8 +290,10 @@ class ApiComponentsTest {
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
-		assertThat(recording).hasToString(
-				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+		assertThat(recording.toString()).contains("event=test-interval-event")
+				.contains("highCardinalityName=test-interval-event")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
+				.contains("duration=0ms").contains("error=java.io.IOException: simulated");
 	}
 
 	private void verifyOnStop() {
@@ -313,10 +319,10 @@ class ApiComponentsTest {
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
 		assertThat(recording.getContext()).isSameAs(listener.getContext());
-		assertThat(recording)
-				.hasToString("{event=test-interval-event, highCardinalityName=test-interval-event-12345, duration="
-						+ duration.toMillis()
-						+ "ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+		assertThat(recording.toString()).contains("event=test-interval-event")
+				.contains("highCardinalityName=test-interval-event-12345")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
+				.contains("duration=" + duration.toMillis() + "ms").contains("error=java.io.IOException: simulated");
 	}
 
 }

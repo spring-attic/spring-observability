@@ -109,12 +109,16 @@ class SimpleIntervalRecordingTest {
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
 				.tag(Tag.of("testKey3", "testValue3", LOW)).start().error(new IOException("simulated"));
 
-		assertThat(recording).hasToString(
-				"{event=test-interval-event, highCardinalityName=test-interval-event, duration=0ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+		assertThat(recording.toString()).contains("event=test-interval-event")
+				.contains("highCardinalityName=test-interval-event").contains("duration=0ms")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
+				.contains("error=java.io.IOException: simulated");
 		clock.addSeconds(1);
 		recording.highCardinalityName(INTERVAL_EVENT.getLowCardinalityName() + "-123").stop();
-		assertThat(recording).hasToString(
-				"{event=test-interval-event, highCardinalityName=test-interval-event-123, duration=1000ms, tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}], error=java.io.IOException: simulated}");
+		assertThat(recording.toString()).contains("event=test-interval-event")
+				.contains("highCardinalityName=test-interval-event-123").contains("duration=1000ms")
+				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
+				.contains("error=java.io.IOException: simulated");
 	}
 
 	@Test
