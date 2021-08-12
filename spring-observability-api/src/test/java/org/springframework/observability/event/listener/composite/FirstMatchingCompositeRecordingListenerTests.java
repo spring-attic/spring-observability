@@ -25,46 +25,46 @@ import org.springframework.observability.event.listener.RecordingListener;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-class FirstMatchingRecordingListenerTests {
+class FirstMatchingCompositeRecordingListenerTests {
 
 	MatchingListener matchingListener = new MatchingListener();
 
 	@Test
 	void should_run_on_start_only_for_first_matching_listener() {
-		FirstMatchingRecordingListener firstMatchingRecordingListener = new FirstMatchingRecordingListener(
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
 				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
 
-		firstMatchingRecordingListener.onStart(null);
+		firstMatchingCompositeRecordingListener.onStart(null);
 
 		then(this.matchingListener.started).isTrue();
 	}
 
 	@Test
 	void should_run_on_stop_only_for_first_matching_listener() {
-		FirstMatchingRecordingListener firstMatchingRecordingListener = new FirstMatchingRecordingListener(
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
 				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
 
-		firstMatchingRecordingListener.onStop(null);
+		firstMatchingCompositeRecordingListener.onStop(null);
 
 		then(this.matchingListener.stopped).isTrue();
 	}
 
 	@Test
 	void should_run_on_error_only_for_first_matching_listener() {
-		FirstMatchingRecordingListener firstMatchingRecordingListener = new FirstMatchingRecordingListener(
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
 				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
 
-		firstMatchingRecordingListener.onError(null);
+		firstMatchingCompositeRecordingListener.onError(null);
 
 		then(this.matchingListener.errored).isTrue();
 	}
 
 	@Test
 	void should_run_record_only_for_first_matching_listener() {
-		FirstMatchingRecordingListener firstMatchingRecordingListener = new FirstMatchingRecordingListener(
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
 				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
 
-		firstMatchingRecordingListener.record(null);
+		firstMatchingCompositeRecordingListener.record(null);
 
 		then(this.matchingListener.recorded).isTrue();
 	}
