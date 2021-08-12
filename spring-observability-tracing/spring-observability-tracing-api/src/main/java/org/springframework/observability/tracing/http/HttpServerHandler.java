@@ -16,6 +16,8 @@
 
 package org.springframework.observability.tracing.http;
 
+import org.springframework.observability.core.http.HttpServerRequest;
+import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.tracing.Span;
 
 /**

@@ -14,36 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.http;
+package org.springframework.observability.tracing.test.simple;
 
-import org.springframework.lang.Nullable;
-import org.springframework.observability.tracing.Span;
+import org.springframework.observability.tracing.Tracer;
 
 /**
- * This API is taken from OpenZipkin Brave.
+ * A noop implementation. Does nothing.
  *
- * Abstract response type used for parsing and sampling. Represents an HTTP Server
- * response.
- *
- * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface HttpServerResponse extends HttpResponse {
+public class SimpleSpanInScope implements Tracer.SpanInScope {
+
+	/**
+	 * Was scoped closed?
+	 */
+	public boolean closed;
 
 	@Override
-	default Span.Kind spanKind() {
-		return Span.Kind.SERVER;
-	}
-
-	@Nullable
-	default HttpServerRequest request() {
-		return null;
-	}
-
-	@Override
-	default Throwable error() {
-		return null;
+	public void close() {
+		this.closed = true;
 	}
 
 }

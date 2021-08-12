@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.http;
+package org.springframework.observability.core.http;
 
 import java.util.Collection;
 
-import org.springframework.lang.Nullable;
-import org.springframework.observability.tracing.Span;
+import org.springframework.observability.core.Kind;
+import org.springframework.observability.lang.Nullable;
 
 /**
  * This API is taken from OpenZipkin Brave.
@@ -38,12 +38,6 @@ public interface Response {
 	Collection<String> headerNames();
 
 	/**
-	 * @return The remote {@link Span.Kind} describing the direction and type of the
-	 * request.
-	 */
-	Span.Kind spanKind();
-
-	/**
 	 * @return corresponding request
 	 */
 	@Nullable
@@ -59,5 +53,10 @@ public interface Response {
 	 * @return the underlying request object or {@code null} if there is none.
 	 */
 	Object unwrap();
+
+	/**
+	 * @return The remote kind describing the direction and type of the request.
+	 */
+	Kind kind();
 
 }

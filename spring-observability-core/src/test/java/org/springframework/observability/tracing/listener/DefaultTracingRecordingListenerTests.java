@@ -45,11 +45,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.observability.event.tag.Cardinality.HIGH;
 import static org.springframework.observability.event.tag.Cardinality.LOW;
-import static org.springframework.observability.tracing.listener.TracingRecordingListenerTests.TestInstantEvent.INSTANT_EVENT;
-import static org.springframework.observability.tracing.listener.TracingRecordingListenerTests.TestIntervalEvent.INTERVAL_EVENT;
+import static org.springframework.observability.tracing.listener.DefaultTracingRecordingListenerTests.TestInstantEvent.INSTANT_EVENT;
+import static org.springframework.observability.tracing.listener.DefaultTracingRecordingListenerTests.TestIntervalEvent.INTERVAL_EVENT;
 
 @ExtendWith(MockitoExtension.class)
-class TracingRecordingListenerTests {
+class DefaultTracingRecordingListenerTests {
 
 	private static final MockClock CLOCK = new MockClock();
 
@@ -62,12 +62,12 @@ class TracingRecordingListenerTests {
 	@Mock
 	private Tracer.SpanInScope spanInScope;
 
-	private IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording;
+	private IntervalRecording<DefaultTracingRecordingListener.TracingContext> intervalRecording;
 
 	private InstantRecording instantRecording;
 
 	@InjectMocks
-	private TracingRecordingListener listener;
+	private DefaultTracingRecordingListener listener;
 
 	@BeforeEach
 	void setUp() {

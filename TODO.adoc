@@ -1,1 +1,10 @@
-- Change `org.apache.commons.logging.Log` to `LogAccessor` ? For sure to `Slf4j`
+== Production code
+
+- Unify the API (in some places we use getters and in others we don't - like `listeners()` but `getContext()`)
+- Update Javadocs
+- Write the docs
+
+== Test code
+
+- In some places we use `BDDAssertions.then()` in some we use `Assertions.assertThat()`
+- We use `BDDMockito` and `Mockito`

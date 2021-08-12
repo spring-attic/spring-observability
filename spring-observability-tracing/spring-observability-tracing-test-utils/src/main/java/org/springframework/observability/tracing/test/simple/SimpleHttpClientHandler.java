@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.brave.bridge;
+package org.springframework.observability.tracing.test.simple;
 
-import org.springframework.core.log.LogAccessor;
 import org.springframework.observability.core.http.HttpClientRequest;
 import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.tracing.Span;
@@ -24,47 +23,41 @@ import org.springframework.observability.tracing.TraceContext;
 import org.springframework.observability.tracing.http.HttpClientHandler;
 
 /**
- * Brave implementation of a {@link HttpClientHandler}.
+ * A test http client handler implementation.
  *
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public class BraveHttpClientHandler implements HttpClientHandler {
+public class SimpleHttpClientHandler implements HttpClientHandler {
 
-	private static final LogAccessor log = new LogAccessor(BraveHttpClientHandler.class);
-
-	final brave.http.HttpClientHandler<brave.http.HttpClientRequest, brave.http.HttpClientResponse> delegate;
+	private final SimpleTracer simpleTracer;
 
 	/**
-	 * @param delegate Brave delegate
+	 * Was the handle receive method called?
 	 */
-	public BraveHttpClientHandler(
-			brave.http.HttpClientHandler<brave.http.HttpClientRequest, brave.http.HttpClientResponse> delegate) {
-		this.delegate = delegate;
+	public boolean receiveHandled;
+
+	/**
+	 * @param simpleTracer simple tracer
+	 */
+	public SimpleHttpClientHandler(SimpleTracer simpleTracer) {
+		this.simpleTracer = simpleTracer;
 	}
 
 	@Override
 	public Span handleSend(HttpClientRequest request) {
-		return BraveSpan.fromBrave(this.delegate.handleSend(BraveHttpClientRequest.toBrave(request)));
+		return this.simpleTracer.nextSpan().start();
 	}
 
 	@Override
 	public Span handleSend(HttpClientRequest request, TraceContext parent) {
-		brave.Span span = this.delegate.handleSendWithParent(BraveHttpClientRequest.toBrave(request),
-				BraveTraceContext.toBrave(parent));
-		if (!span.isNoop()) {
-			span.remoteIpAndPort(request.remoteIp(), request.remotePort());
-		}
-		return BraveSpan.fromBrave(span);
+		return this.simpleTracer.nextSpan().start();
 	}
 
 	@Override
 	public void handleReceive(HttpClientResponse response, Span span) {
-		if (response == null) {
-			log.debug(() -> "Response is null, will not handle receiving of span [" + span + "]");
-			return;
-		}
-		this.delegate.handleReceive(BraveHttpClientResponse.toBrave(response), BraveSpan.toBrave(span));
+		span.end();
+		this.receiveHandled = true;
 	}
 
 }

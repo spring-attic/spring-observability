@@ -20,7 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.springframework.observability.time.Clock;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
 
@@ -80,7 +83,7 @@ public class SimpleSpan implements Span {
 	/**
 	 * List of events.
 	 */
-	public List<String> events = new ArrayList<>();
+	public List<Event> events = new ArrayList<>();
 
 	/**
 	 * Span name.
@@ -101,6 +104,11 @@ public class SimpleSpan implements Span {
 	 * Is span no op.
 	 */
 	public boolean noOp;
+
+	/**
+	 * Clock used for time measurements.
+	 */
+	public Clock clock = Clock.SYSTEM;
 
 	@Override
 	public boolean isNoop() {
@@ -133,13 +141,14 @@ public class SimpleSpan implements Span {
 
 	@Override
 	public SimpleSpan event(String value) {
-		this.events.add(value);
+		this.events.add(new Event(value, this.clock.wallTime()));
 		return this;
 	}
 
 	@Override
 	public Span event(long micros, String value) {
-		return null;
+		this.events.add(new Event(value, micros));
+		return this;
 	}
 
 	@Override
@@ -183,13 +192,63 @@ public class SimpleSpan implements Span {
 		return this;
 	}
 
+	/**
+	 * @return list of event names
+	 */
+	public List<String> eventNames() {
+		return this.events.stream().map(event -> event.name).collect(Collectors.toList());
+	}
+
 	@Override
 	public String toString() {
 		return "SimpleSpan{" + "tags=" + this.tags + ", started=" + this.started + ", ended=" + this.ended
 				+ ", abandoned=" + this.abandoned + ", startMicros=" + this.startMicros + ", endMicros="
-				+ this.endMicros + ", throwable=" + this.throwable + ", remoteServiceName='" + remoteServiceName + '\''
-				+ ", spanKind=" + this.spanKind + ", events=" + this.events + ", name='" + this.name + '\'' + ", ip='"
-				+ this.ip + '\'' + ", port=" + this.port + ", noOp=" + this.noOp + '}';
+				+ this.endMicros + ", throwable=" + this.throwable + ", remoteServiceName='" + this.remoteServiceName
+				+ '\'' + ", spanKind=" + this.spanKind + ", events=" + this.events + ", name='" + this.name + '\''
+				+ ", ip='" + this.ip + '\'' + ", port=" + this.port + ", noOp=" + this.noOp + '}';
+	}
+
+	/**
+	 * Event annotated on a span.
+	 */
+	public static class Event {
+
+		/**
+		 * Name of the event.
+		 */
+		public final String name;
+
+		/**
+		 * Timestamp of the event.
+		 */
+		public final long timestamp;
+
+		/**
+		 * @param name event name
+		 * @param timestamp event timestamp
+		 */
+		public Event(String name, long timestamp) {
+			this.name = name;
+			this.timestamp = timestamp;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+			Event event = (Event) o;
+			return this.timestamp == event.timestamp && Objects.equals(this.name, event.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.name, this.timestamp);
+		}
+
 	}
 
 }

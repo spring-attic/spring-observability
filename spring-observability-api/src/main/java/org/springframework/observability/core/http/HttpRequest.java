@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.http;
+package org.springframework.observability.core.http;
 
-import org.springframework.lang.Nullable;
+import org.springframework.observability.lang.Nullable;
 
 /**
  * This API is taken from OpenZipkin Brave.

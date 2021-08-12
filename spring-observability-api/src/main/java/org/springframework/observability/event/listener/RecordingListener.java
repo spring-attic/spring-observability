@@ -33,6 +33,14 @@ import org.springframework.observability.event.interval.IntervalRecording;
 public interface RecordingListener<T> extends ContextFactory<T> {
 
 	/**
+	 * @param recording recording
+	 * @return {@code true} when this listener is applicable
+	 */
+	default boolean isApplicable(Recording<?, ?> recording) {
+		return true;
+	}
+
+	/**
 	 * Called after the recording was started.
 	 * @param intervalRecording The recording that was started.
 	 */

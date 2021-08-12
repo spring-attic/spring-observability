@@ -19,8 +19,8 @@ package org.springframework.observability.tracing.brave.bridge;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.http.HttpRequest;
+import org.springframework.observability.core.Kind;
+import org.springframework.observability.core.http.HttpRequest;
 
 /**
  * Brave implementation of a {@link HttpRequest}.
@@ -71,8 +71,8 @@ class BraveHttpRequest implements HttpRequest {
 	}
 
 	@Override
-	public Span.Kind spanKind() {
-		return Span.Kind.valueOf(this.delegate.spanKind().name());
+	public Kind kind() {
+		return Kind.valueOf(this.delegate.spanKind().name());
 	}
 
 	@Override

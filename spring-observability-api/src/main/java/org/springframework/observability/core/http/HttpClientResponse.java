@@ -14,40 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.http;
+package org.springframework.observability.core.http;
 
-import org.springframework.observability.tracing.Span;
+import org.springframework.observability.core.Kind;
+import org.springframework.observability.lang.Nullable;
 
 /**
  * This API is taken from OpenZipkin Brave.
  *
- * Abstract request type used for parsing and sampling. Represents an HTTP Server request.
+ * Abstract response type used for parsing and sampling. Represents an HTTP Client
+ * response.
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface HttpServerRequest extends HttpRequest {
+public interface HttpClientResponse extends HttpResponse {
 
-	@Override
-	default Span.Kind spanKind() {
-		return Span.Kind.SERVER;
-	}
-
-	/**
-	 * @param key attribute key
-	 * @return attribute with the given key or {@code null} if not set
-	 */
-	default Object getAttribute(String key) {
+	@Nullable
+	default HttpClientRequest request() {
 		return null;
 	}
 
-	/**
-	 * @param key attribute key
-	 * @param value attribute value
-	 */
-	default void setAttribute(String key, Object value) {
+	@Override
+	default Throwable error() {
+		return null;
+	}
 
+	@Override
+	default Kind kind() {
+		return Kind.CLIENT;
 	}
 
 }

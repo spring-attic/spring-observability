@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2021 the original author or authors.
+ * Copyright 2013-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.listener;
+package org.springframework.observability.core.http;
 
-import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.core.Kind;
 
 /**
- * Marker interface for tracing listeners.
+ * This API is taken from OpenZipkin Brave.
  *
- * @param <T> Context Type
- * @author Jonatan Ivanov
+ * Abstract request type used for parsing and sampling. Represents an HTTP Client request.
+ *
+ * @author OpenZipkin Brave Authors
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface TracingRecordingListener<T> extends RecordingListener<T> {
+public interface HttpClientRequest extends HttpRequest {
+
+	/**
+	 * @param name header name
+	 * @param value header value
+	 */
+	void header(String name, String value);
+
+	@Override
+	default Kind kind() {
+		return Kind.CLIENT;
+	}
 
 }

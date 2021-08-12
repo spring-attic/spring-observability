@@ -75,7 +75,7 @@ public class SimpleTracer implements Tracer {
 
 	@Override
 	public SpanInScope withSpan(Span span) {
-		return new NoOpSpanInScope();
+		return new SimpleSpanInScope();
 	}
 
 	@Override
