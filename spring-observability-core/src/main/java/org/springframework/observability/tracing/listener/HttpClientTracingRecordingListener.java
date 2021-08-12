@@ -33,6 +33,9 @@ import org.springframework.observability.tracing.http.HttpClientHandler;
 /**
  * {@link RecordingListener} that uses the Tracing API to record events for HTTP client
  * side.
+ *
+ * @author Marcin Grzejszczak
+ * @since 1.0.0
  */
 public class HttpClientTracingRecordingListener
 		implements TracingRecordingListener<HttpClientTracingRecordingListener.TracingContext> {
@@ -64,7 +67,7 @@ public class HttpClientTracingRecordingListener
 	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
 		IntervalEvent event = intervalRecording.getEvent();
 		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
-		HttpClientRequest request = clientEvent.request();
+		HttpClientRequest request = clientEvent.getRequest();
 		Span span = this.handler.handleSend(request);
 		CurrentTraceContext.Scope scope = this.currentTraceContext.newScope(span.context());
 		intervalRecording.getContext().setSpan(span);
@@ -75,10 +78,10 @@ public class HttpClientTracingRecordingListener
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
 		IntervalEvent event = intervalRecording.getEvent();
 		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
-		HttpClientResponse response = clientEvent.response();
+		HttpClientResponse response = clientEvent.getResponse();
 		Span span = intervalRecording.getContext().getSpan();
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
-		span.name(clientEvent.request().method());
+		span.name(clientEvent.getRequest().method());
 		this.handler.handleReceive(response, span);
 		intervalRecording.getContext().getScope().close();
 	}

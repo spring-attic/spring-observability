@@ -18,7 +18,9 @@ package org.springframework.observability.event.listener.composite;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.observability.event.Recording;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
@@ -50,26 +52,29 @@ public class FirstMatchingCompositeRecordingListener implements CompositeRecordi
 
 	@Override
 	public void onStart(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording)).findFirst()
+		getFirstApplicableListener(intervalRecording)
 				.ifPresent(listener -> listener.onStart(new IntervalRecordingView<>(listener, intervalRecording)));
 	}
 
 	@Override
 	public void onStop(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording)).findFirst()
+		getFirstApplicableListener(intervalRecording)
 				.ifPresent(listener -> listener.onStop(new IntervalRecordingView<>(listener, intervalRecording)));
+	}
+
+	private Optional<? extends RecordingListener<?>> getFirstApplicableListener(Recording recording) {
+		return this.listeners.stream().filter(listener -> listener.isApplicable(recording)).findFirst();
 	}
 
 	@Override
 	public void onError(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording)).findFirst()
+		getFirstApplicableListener(intervalRecording)
 				.ifPresent(listener -> listener.onError(new IntervalRecordingView<>(listener, intervalRecording)));
 	}
 
 	@Override
 	public void record(InstantRecording instantRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(instantRecording)).findFirst()
-				.ifPresent(listener -> listener.record(instantRecording));
+		getFirstApplicableListener(instantRecording).ifPresent(listener -> listener.record(instantRecording));
 	}
 
 	@Override
@@ -78,7 +83,7 @@ public class FirstMatchingCompositeRecordingListener implements CompositeRecordi
 	}
 
 	@Override
-	public List<? extends RecordingListener<?>> listeners() {
+	public List<? extends RecordingListener<?>> getListeners() {
 		return this.listeners;
 	}
 

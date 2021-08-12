@@ -35,7 +35,7 @@ public interface IntervalHttpEvent<REQ extends Request, RES extends Response> ex
 	 * @return HTTP request
 	 */
 	@NonNull
-	REQ request();
+	REQ getRequest();
 
 	/**
 	 * Sets the given HTTP response on the event. Might be {@code null} when an exception
@@ -43,12 +43,12 @@ public interface IntervalHttpEvent<REQ extends Request, RES extends Response> ex
 	 * @param response HTTP response
 	 * @return this
 	 */
-	IntervalHttpEvent<REQ, RES> response(RES response);
+	IntervalHttpEvent<REQ, RES> setResponse(RES response);
 
 	/**
 	 * @return HTTP response
 	 */
 	@Nullable
-	RES response();
+	RES getResponse();
 
 }

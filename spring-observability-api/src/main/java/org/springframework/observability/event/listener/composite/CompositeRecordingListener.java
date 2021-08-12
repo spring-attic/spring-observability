@@ -32,6 +32,6 @@ public interface CompositeRecordingListener extends RecordingListener<CompositeC
 	/**
 	 * @return registered listeners
 	 */
-	List<? extends RecordingListener<?>> listeners();
+	List<? extends RecordingListener<?>> getListeners();
 
 }

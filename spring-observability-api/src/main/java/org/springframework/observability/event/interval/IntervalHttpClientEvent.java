@@ -41,18 +41,18 @@ public abstract class IntervalHttpClientEvent implements IntervalHttpEvent<HttpC
 
 	@NonNull
 	@Override
-	public HttpClientRequest request() {
+	public HttpClientRequest getRequest() {
 		return request;
 	}
 
 	@Override
-	public IntervalHttpClientEvent response(HttpClientResponse response) {
+	public IntervalHttpClientEvent setResponse(HttpClientResponse response) {
 		this.response = response;
 		return this;
 	}
 
 	@Override
-	public HttpClientResponse response() {
+	public HttpClientResponse getResponse() {
 		return this.response;
 	}
 

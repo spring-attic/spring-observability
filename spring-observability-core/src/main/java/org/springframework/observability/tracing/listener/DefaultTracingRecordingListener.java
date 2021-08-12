@@ -27,6 +27,9 @@ import org.springframework.observability.tracing.Tracer;
 
 /**
  * {@link RecordingListener} that uses the Tracing API to record events.
+ *
+ * @author Marcin Grzejszczak
+ * @since 1.0.0
  */
 public class DefaultTracingRecordingListener
 		implements TracingRecordingListener<DefaultTracingRecordingListener.TracingContext> {

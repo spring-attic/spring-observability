@@ -132,12 +132,12 @@ class HttpClientTracingRecordingListenerTests {
 			}
 
 			@Override
-			public HttpClientRequest request() {
+			public HttpClientRequest getRequest() {
 				return BDDMockito.mock(HttpClientRequest.class);
 			}
 
 			@Override
-			public HttpClientResponse response() {
+			public HttpClientResponse getResponse() {
 				return BDDMockito.mock(HttpClientResponse.class);
 			}
 		};

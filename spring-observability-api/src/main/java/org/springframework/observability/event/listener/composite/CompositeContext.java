@@ -30,7 +30,7 @@ import org.springframework.observability.event.listener.RecordingListener;
  *
  * @author Jonatan Ivanov
  * @since 1.0.0
- * @see RunAllCompositeRecordingListener
+ * @see AllMatchingRecordingListener
  */
 public class CompositeContext {
 
