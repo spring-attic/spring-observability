@@ -32,6 +32,8 @@ public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpS
 
 	private HttpServerResponse response;
 
+	private Object handler;
+
 	/**
 	 * @param request http server request
 	 */
@@ -48,6 +50,15 @@ public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpS
 	@Override
 	public IntervalHttpServerEvent setResponse(HttpServerResponse response) {
 		this.response = response;
+		return this;
+	}
+
+	/**
+	 * @param handler handler for this request
+	 * @return this
+	 */
+	public IntervalHttpServerEvent setHandler(Object handler) {
+		this.handler = handler;
 		return this;
 	}
 

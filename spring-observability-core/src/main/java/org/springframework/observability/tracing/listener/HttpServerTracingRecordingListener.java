@@ -16,12 +16,12 @@
 
 package org.springframework.observability.tracing.listener;
 
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
+import org.springframework.observability.core.http.HttpServerRequest;
+import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.event.Recording;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
-import org.springframework.observability.event.interval.IntervalHttpClientEvent;
+import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.lang.NonNull;
@@ -29,31 +29,31 @@ import org.springframework.observability.lang.Nullable;
 import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.Tracer;
-import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.tracing.http.HttpServerHandler;
 
 /**
- * {@link RecordingListener} that uses the Tracing API to record events for HTTP client
+ * {@link RecordingListener} that uses the Tracing API to record events for HTTP server
  * side.
  *
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public class HttpClientTracingRecordingListener
-		implements TracingRecordingListener<HttpClientTracingRecordingListener.TracingContext> {
+public class HttpServerTracingRecordingListener
+		implements TracingRecordingListener<HttpServerTracingRecordingListener.TracingContext> {
 
 	private final TracingInstantRecorder tracingInstantRecorder;
 
 	private final CurrentTraceContext currentTraceContext;
 
-	private final HttpClientHandler handler;
+	private final HttpServerHandler handler;
 
 	/**
 	 * @param tracer tracer
 	 * @param currentTraceContext current trace context
-	 * @param handler http client handler
+	 * @param handler http server handler
 	 */
-	public HttpClientTracingRecordingListener(Tracer tracer, CurrentTraceContext currentTraceContext,
-			HttpClientHandler handler) {
+	public HttpServerTracingRecordingListener(Tracer tracer, CurrentTraceContext currentTraceContext,
+			HttpServerHandler handler) {
 		this.tracingInstantRecorder = new TracingInstantRecorder(tracer);
 		this.currentTraceContext = currentTraceContext;
 		this.handler = handler;
@@ -61,15 +61,15 @@ public class HttpClientTracingRecordingListener
 
 	@Override
 	public boolean isApplicable(Recording<?, ?> recording) {
-		return recording.getEvent() instanceof IntervalHttpClientEvent;
+		return recording.getEvent() instanceof IntervalHttpServerEvent;
 	}
 
 	@Override
 	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
 		IntervalEvent event = intervalRecording.getEvent();
-		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
-		HttpClientRequest request = clientEvent.getRequest();
-		Span span = this.handler.handleSend(request);
+		IntervalHttpServerEvent clientEvent = (IntervalHttpServerEvent) event;
+		HttpServerRequest request = clientEvent.getRequest();
+		Span span = this.handler.handleReceive(request);
 		CurrentTraceContext.Scope scope = this.currentTraceContext.newScope(span.context());
 		intervalRecording.getContext().setSpan(span);
 		intervalRecording.getContext().setScope(scope);
@@ -78,17 +78,17 @@ public class HttpClientTracingRecordingListener
 	@Override
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
 		IntervalEvent event = intervalRecording.getEvent();
-		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
+		IntervalHttpServerEvent clientEvent = (IntervalHttpServerEvent) event;
 		Span span = intervalRecording.getContext().getSpan();
 		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
 		span.name(clientEvent.getRequest().method());
-		HttpClientResponse response = clientEvent.getResponse();
+		HttpServerResponse response = clientEvent.getResponse();
 		error(response, span);
-		this.handler.handleReceive(response, span);
+		this.handler.handleSend(response, span);
 		intervalRecording.getContext().getScope().close();
 	}
 
-	private void error(@Nullable HttpClientResponse response, Span span) {
+	private void error(@Nullable HttpServerResponse response, Span span) {
 		if (response == null) {
 			return;
 		}
