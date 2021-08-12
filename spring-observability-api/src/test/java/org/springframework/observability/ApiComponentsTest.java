@@ -29,7 +29,7 @@ import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.instant.NoOpInstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.NoOpIntervalRecording;
-import org.springframework.observability.event.listener.composite.AllMatchingRecordingListener;
+import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
 import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.test.TestContext;
@@ -51,7 +51,7 @@ class ApiComponentsTest {
 
 	private final TestRecordingListener listener = new TestRecordingListener(clock);
 
-	private final Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingRecordingListener(listener),
+	private final Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener),
 			clock);
 
 	@BeforeEach
@@ -78,7 +78,7 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldRecordInstantEventWithProvidedTime() {
-		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingRecordingListener(listener), null);
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener), null);
 		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record(100);
 
@@ -115,7 +115,7 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldNotRecordInstantEventWithProvidedTimeIfRecordingIsDisabled() {
-		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingRecordingListener(listener), null);
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener), null);
 		recorder.setEnabled(false);
 		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
@@ -156,7 +156,7 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldRecordIntervalEventWithProvidedTime() {
-		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingRecordingListener(listener), null);
+		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener), null);
 		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
 				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", LOW)).start(1, 2);
 

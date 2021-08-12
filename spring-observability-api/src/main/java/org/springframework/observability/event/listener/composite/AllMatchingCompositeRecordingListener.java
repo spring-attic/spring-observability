@@ -31,21 +31,21 @@ import org.springframework.observability.event.listener.RecordingListener;
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public class AllMatchingRecordingListener implements CompositeRecordingListener {
+public class AllMatchingCompositeRecordingListener implements CompositeRecordingListener {
 
 	private final List<RecordingListener<?>> listeners;
 
 	/**
 	 * @param listeners The listeners that are registered under the composite.
 	 */
-	public AllMatchingRecordingListener(RecordingListener<?>... listeners) {
+	public AllMatchingCompositeRecordingListener(RecordingListener<?>... listeners) {
 		this(Arrays.asList(listeners));
 	}
 
 	/**
 	 * @param listeners The listeners that are registered under the composite.
 	 */
-	public AllMatchingRecordingListener(List<RecordingListener<?>> listeners) {
+	public AllMatchingCompositeRecordingListener(List<RecordingListener<?>> listeners) {
 		this.listeners = listeners;
 	}
 

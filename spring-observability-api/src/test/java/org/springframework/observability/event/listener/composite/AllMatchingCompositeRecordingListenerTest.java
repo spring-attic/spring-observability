@@ -48,7 +48,7 @@ import static org.springframework.observability.test.TestIntervalEvent.INTERVAL_
  * @author Jonatan Ivanov
  */
 @ExtendWith(MockitoExtension.class)
-class AllMatchingRecordingListenerTest {
+class AllMatchingCompositeRecordingListenerTest {
 
 	@Mock
 	private RecordingListener<TestContext> listener1;
@@ -84,7 +84,7 @@ class AllMatchingRecordingListenerTest {
 
 	@BeforeEach
 	void setUp() {
-		compositeListener = new AllMatchingRecordingListener(listener1, listener2, listener3);
+		compositeListener = new AllMatchingCompositeRecordingListener(listener1, listener2, listener3);
 	}
 
 	private void setupListeners() {
