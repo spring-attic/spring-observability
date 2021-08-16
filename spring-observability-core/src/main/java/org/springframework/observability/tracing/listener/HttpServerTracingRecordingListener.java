@@ -80,7 +80,13 @@ public class HttpServerTracingRecordingListener
 		IntervalEvent event = intervalRecording.getEvent();
 		IntervalHttpServerEvent clientEvent = (IntervalHttpServerEvent) event;
 		Span span = intervalRecording.getContext().getSpan();
-		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
+		// TODO: Abstract this and reuse it
+		intervalRecording.getTags().forEach(tag -> {
+			if (tag.getKey().equalsIgnoreCase("error") && tag.getValue().equalsIgnoreCase("none")) {
+				return;
+			}
+			span.tag(tag.getKey(), tag.getValue());
+		});
 		span.name(clientEvent.getRequest().method());
 		HttpServerResponse response = clientEvent.getResponse();
 		error(response, span);
