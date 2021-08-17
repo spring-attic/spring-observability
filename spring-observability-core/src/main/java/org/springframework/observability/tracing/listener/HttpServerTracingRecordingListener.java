@@ -98,8 +98,7 @@ public class HttpServerTracingRecordingListener extends
 
 	@Override
 	String requestMethod(IntervalEvent event) {
-		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
-		return serverEvent.getRequest().method();
+		return input(event).method();
 	}
 
 	@Override
