@@ -3,6 +3,10 @@
 - Unify the API (in some places we use getters and in others we don't - like `listeners()` but `getContext()`)
 - Update Javadocs
 - Write the docs
+- LongTaskTimer, Gauge?
+- `record(runnable)`,  record(callable)?
+- throw exceptions vs. log warn (or first warn then debug log)?
+- `NamingConvention`? (see Micrometer)
 
 == Test code
 
