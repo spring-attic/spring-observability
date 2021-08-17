@@ -70,6 +70,7 @@ public class MicrometerLongRunningTaskRecordingListener
 
 	@Override
 	public void onError(IntervalRecording<LongRunningTaskContext> intervalRecording) {
+		// TODO: If error add a tag
 	}
 
 	@Override

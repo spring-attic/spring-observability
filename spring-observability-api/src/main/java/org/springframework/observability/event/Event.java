@@ -34,6 +34,8 @@ public interface Event {
 	/**
 	 * @return The description of the event, the method shouldn't return null.
 	 */
-	String getDescription();
+	default String getDescription() {
+		return "";
+	}
 
 }

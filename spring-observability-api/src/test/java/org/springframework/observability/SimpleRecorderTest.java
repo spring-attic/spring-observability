@@ -26,10 +26,13 @@ import org.springframework.observability.event.SimpleRecorder;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.instant.NoOpInstantRecording;
 import org.springframework.observability.event.instant.SimpleInstantRecording;
+import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.NoOpIntervalRecording;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.event.tag.Cardinality;
+import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.Clock;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,4 +98,30 @@ class SimpleRecorderTest {
 		assertThat(recorder.recordingFor(INSTANT_EVENT)).isExactlyInstanceOf(SimpleInstantRecording.class);
 	}
 
+	// Used in presentation slides
+	@Test
+	void shouldShowSimpleUsageScenario() {
+		String userId = "1";
+		CalculationService calculationService = new CalculationService();
+		SimpleRecorder<Void> recorder = new SimpleRecorder<>(this.listener, Clock.SYSTEM);
+
+		IntervalRecording recording = recorder.recordingFor((IntervalEvent) () -> "important-calculation")
+				.tag(Tag.of("calculation-type", "tax", Cardinality.LOW))
+				.tag(Tag.of("user-id", userId, Cardinality.HIGH))
+				.start();
+		try {
+			calculationService.calculate();
+		} catch (Exception exception) {
+			recording.error(exception);
+			throw exception;
+		} finally {
+			recording.stop();
+		}
+	}
+
+	class CalculationService {
+		void calculate() {
+
+		};
+	}
 }
