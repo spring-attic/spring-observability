@@ -107,21 +107,25 @@ class SimpleRecorderTest {
 
 		IntervalRecording recording = recorder.recordingFor((IntervalEvent) () -> "important-calculation")
 				.tag(Tag.of("calculation-type", "tax", Cardinality.LOW))
-				.tag(Tag.of("user-id", userId, Cardinality.HIGH))
-				.start();
+				.tag(Tag.of("user-id", userId, Cardinality.HIGH)).start();
 		try {
 			calculationService.calculate();
-		} catch (Exception exception) {
+		}
+		catch (Exception exception) {
 			recording.error(exception);
 			throw exception;
-		} finally {
+		}
+		finally {
 			recording.stop();
 		}
 	}
 
 	class CalculationService {
+
 		void calculate() {
 
 		};
+
 	}
+
 }

@@ -25,7 +25,6 @@ import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.lang.NonNull;
-import org.springframework.observability.lang.Nullable;
 import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.Tracer;
@@ -38,14 +37,11 @@ import org.springframework.observability.tracing.http.HttpServerHandler;
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public class HttpServerTracingRecordingListener
+public class HttpServerTracingRecordingListener extends
+		HttpTracingRecordingListener<HttpServerTracingRecordingListener.TracingContext, HttpServerRequest, HttpServerResponse>
 		implements TracingRecordingListener<HttpServerTracingRecordingListener.TracingContext> {
 
 	private final TracingInstantRecorder tracingInstantRecorder;
-
-	private final CurrentTraceContext currentTraceContext;
-
-	private final HttpServerHandler handler;
 
 	/**
 	 * @param tracer tracer
@@ -54,9 +50,8 @@ public class HttpServerTracingRecordingListener
 	 */
 	public HttpServerTracingRecordingListener(Tracer tracer, CurrentTraceContext currentTraceContext,
 			HttpServerHandler handler) {
+		super(currentTraceContext, handler::handleReceive, handler::handleSend);
 		this.tracingInstantRecorder = new TracingInstantRecorder(tracer);
-		this.currentTraceContext = currentTraceContext;
-		this.handler = handler;
 	}
 
 	@Override
@@ -66,49 +61,12 @@ public class HttpServerTracingRecordingListener
 
 	@Override
 	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
-		IntervalEvent event = intervalRecording.getEvent();
-		IntervalHttpServerEvent clientEvent = (IntervalHttpServerEvent) event;
-		HttpServerRequest request = clientEvent.getRequest();
-		Span span = this.handler.handleReceive(request);
-		CurrentTraceContext.Scope scope = this.currentTraceContext.newScope(span.context());
-		intervalRecording.getContext().setSpan(span);
-		intervalRecording.getContext().setScope(scope);
+		doOnStart(intervalRecording);
 	}
 
 	@Override
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
-		IntervalEvent event = intervalRecording.getEvent();
-		IntervalHttpServerEvent clientEvent = (IntervalHttpServerEvent) event;
-		Span span = intervalRecording.getContext().getSpan();
-		// TODO: Abstract this and reuse it
-		intervalRecording.getTags().forEach(tag -> {
-			if (tag.getKey().equalsIgnoreCase("error") && tag.getValue().equalsIgnoreCase("none")) {
-				return;
-			}
-			span.tag(tag.getKey(), tag.getValue());
-		});
-		span.name(clientEvent.getRequest().method());
-		HttpServerResponse response = clientEvent.getResponse();
-		error(response, span);
-		this.handler.handleSend(response, span);
-		intervalRecording.getContext().getScope().close();
-	}
-
-	private void error(@Nullable HttpServerResponse response, Span span) {
-		if (response == null) {
-			return;
-		}
-		int httpStatus = response.statusCode();
-		Throwable error = response.error();
-		if (error != null) {
-			return;
-		}
-		if (httpStatus == 0) {
-			return;
-		}
-		if (httpStatus < 100 || httpStatus > 399) {
-			span.tag("error", String.valueOf(httpStatus));
-		}
+		doOnStop(intervalRecording);
 	}
 
 	@Override
@@ -124,6 +82,40 @@ public class HttpServerTracingRecordingListener
 	@Override
 	public TracingContext createContext() {
 		return new TracingContext();
+	}
+
+	@Override
+	HttpServerRequest input(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getRequest();
+	}
+
+	@Override
+	void setSpanAndScope(TracingContext tracingContext, Span span, CurrentTraceContext.Scope scope) {
+		tracingContext.setSpan(span);
+		tracingContext.setScope(scope);
+	}
+
+	@Override
+	String requestMethod(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getRequest().method();
+	}
+
+	@Override
+	Span getSpanFromContext(TracingContext context) {
+		return context.getSpan();
+	}
+
+	@Override
+	HttpServerResponse response(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getResponse();
+	}
+
+	@Override
+	void cleanup(TracingContext tracingContext) {
+		tracingContext.getScope().close();
 	}
 
 	static class TracingContext {

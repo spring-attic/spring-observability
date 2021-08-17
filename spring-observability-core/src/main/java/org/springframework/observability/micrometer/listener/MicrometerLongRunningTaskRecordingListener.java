@@ -59,7 +59,7 @@ public class MicrometerLongRunningTaskRecordingListener
 	public void onStart(IntervalRecording<LongRunningTaskContext> intervalRecording) {
 		LongTaskTimer.Sample sample = LongTaskTimer.builder(intervalRecording.getEvent().getLowCardinalityName())
 				.description(intervalRecording.getEvent().getDescription()).tags(toTags(intervalRecording))
-				.tags(toTags(intervalRecording)).register(this.registry).start();
+				.register(this.registry).start();
 		intervalRecording.getContext().addSample(sample);
 	}
 

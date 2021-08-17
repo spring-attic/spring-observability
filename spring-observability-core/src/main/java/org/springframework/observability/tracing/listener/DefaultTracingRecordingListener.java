@@ -38,6 +38,8 @@ public class DefaultTracingRecordingListener
 
 	private final TracingInstantRecorder tracingInstantRecorder;
 
+	private final TracingTagFilter tracingTagFilter = new TracingTagFilter();
+
 	/**
 	 * @param tracer The tracer to use to record events.
 	 */
@@ -57,7 +59,7 @@ public class DefaultTracingRecordingListener
 	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
 		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
 		Span span = spanAndScope.getSpan().name(intervalRecording.getHighCardinalityName());
-		intervalRecording.getTags().forEach(tag -> span.tag(tag.getKey(), tag.getValue()));
+		this.tracingTagFilter.tagSpan(span, intervalRecording.getTags());
 		spanAndScope.getScope().close();
 		span.end(getStopTimeInMicros(intervalRecording));
 	}
