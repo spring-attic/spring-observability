@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.event;
+package org.springframework.observability.event.interval;
+
+import org.springframework.observability.core.http.HttpServerRequest;
 
 /**
- * An Event represents that something happened. You must always name your events and
- * should provide a meaningful description if you can.
+ * An IntervalEvent that takes long to run and represents an HTTP server event.
  *
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public interface Event {
+public abstract class IntervalLongRunningHttpServerEvent extends IntervalHttpServerEvent {
 
 	/**
-	 * @return The name of the event, the method mustn't return null. The method must
-	 * return values with low cardinality.
+	 * @param request http server request
 	 */
-	String getLowCardinalityName();
-
-	/**
-	 * @return The description of the event, the method shouldn't return null.
-	 */
-	default String getDescription() {
-		return "";
+	public IntervalLongRunningHttpServerEvent(HttpServerRequest request) {
+		super(request);
 	}
 
 }

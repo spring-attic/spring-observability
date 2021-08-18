@@ -16,39 +16,39 @@
 
 package org.springframework.observability.tracing.listener;
 
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
+import org.springframework.observability.core.http.HttpServerRequest;
+import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.event.Recording;
 import org.springframework.observability.event.interval.IntervalEvent;
-import org.springframework.observability.event.interval.IntervalHttpClientEvent;
+import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.lang.NonNull;
 import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.tracing.http.HttpServerHandler;
 
 /**
- * {@link RecordingListener} that uses the Tracing API to record events for HTTP client
+ * {@link RecordingListener} that uses the Tracing API to record events for HTTP server
  * side.
  *
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public class HttpClientTracingRecordingListener extends
-		HttpTracingRecordingListener<HttpClientTracingRecordingListener.TracingContext, HttpClientRequest, HttpClientResponse>
-		implements TracingRecordingListener<HttpClientTracingRecordingListener.TracingContext> {
+public class HttpServerTracingRecordingListener extends
+		HttpTracingRecordingListener<HttpServerTracingRecordingListener.TracingContext, HttpServerRequest, HttpServerResponse>
+		implements TracingRecordingListener<HttpServerTracingRecordingListener.TracingContext> {
 
 	/**
 	 * @param currentTraceContext current trace context
-	 * @param handler http client handler
+	 * @param handler http server handler
 	 */
-	public HttpClientTracingRecordingListener(CurrentTraceContext currentTraceContext, HttpClientHandler handler) {
-		super(currentTraceContext, handler::handleSend, handler::handleReceive);
+	public HttpServerTracingRecordingListener(CurrentTraceContext currentTraceContext, HttpServerHandler handler) {
+		super(currentTraceContext, handler::handleReceive, handler::handleSend);
 	}
 
 	@Override
 	public boolean isApplicable(Recording<?, ?> recording) {
-		return recording.getEvent() instanceof IntervalHttpClientEvent;
+		return recording.getEvent() instanceof IntervalHttpServerEvent;
 	}
 
 	@Override
@@ -57,9 +57,9 @@ public class HttpClientTracingRecordingListener extends
 	}
 
 	@Override
-	HttpClientRequest getRequest(IntervalEvent event) {
-		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
-		return clientEvent.getRequest();
+	HttpServerRequest getRequest(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getRequest();
 	}
 
 	@Override
@@ -70,7 +70,8 @@ public class HttpClientTracingRecordingListener extends
 
 	@Override
 	String getRequestMethod(IntervalEvent event) {
-		return getRequest(event).method();
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getRequest().method();
 	}
 
 	@Override
@@ -79,9 +80,9 @@ public class HttpClientTracingRecordingListener extends
 	}
 
 	@Override
-	HttpClientResponse getResponse(IntervalEvent event) {
-		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
-		return clientEvent.getResponse();
+	HttpServerResponse getResponse(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getResponse();
 	}
 
 	@Override

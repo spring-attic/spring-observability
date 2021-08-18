@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.event;
+package org.springframework.observability.tracing.listener;
 
-/**
- * An Event represents that something happened. You must always name your events and
- * should provide a meaningful description if you can.
- *
- * @author Jonatan Ivanov
- * @since 1.0.0
- */
-public interface Event {
+import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.tracing.Span;
 
-	/**
-	 * @return The name of the event, the method mustn't return null. The method must
-	 * return values with low cardinality.
-	 */
-	String getLowCardinalityName();
+class TracingTagFilter {
 
-	/**
-	 * @return The description of the event, the method shouldn't return null.
-	 */
-	default String getDescription() {
-		return "";
+	void tagSpan(Span span, Iterable<Tag> tags) {
+		// TODO: This is the default behaviour in Boot
+		tags.forEach(tag -> {
+			if (tag.getKey().equalsIgnoreCase("error") && tag.getValue().equalsIgnoreCase("none")) {
+				return;
+			}
+			span.tag(tag.getKey(), tag.getValue());
+		});
 	}
 
 }
