@@ -21,8 +21,6 @@ import org.mockito.BDDMockito;
 
 import org.springframework.observability.core.http.HttpServerRequest;
 import org.springframework.observability.core.http.HttpServerResponse;
-import org.springframework.observability.event.instant.InstantEvent;
-import org.springframework.observability.event.instant.SimpleInstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
@@ -44,7 +42,7 @@ class HttpServerTracingRecordingListenerTests {
 
 	@Test
 	void should_be_applicable_for_http_server_events() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 
 		boolean applicable = listener
@@ -55,7 +53,7 @@ class HttpServerTracingRecordingListenerTests {
 
 	@Test
 	void should_be_not_applicable_for_non_http_server_events() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 
 		boolean applicable = listener.isApplicable(new SimpleIntervalRecording<>(event(), listener, new MockClock()));
@@ -65,7 +63,7 @@ class HttpServerTracingRecordingListenerTests {
 
 	@Test
 	void should_put_span_and_scope_in_context_when_started() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
 				intervalHttpServerEvent(), listener, new MockClock());
@@ -78,7 +76,7 @@ class HttpServerTracingRecordingListenerTests {
 
 	@Test
 	void should_close_span_and_scope_when_stopped() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
 				intervalHttpServerEvent(), listener, new MockClock());
@@ -90,19 +88,6 @@ class HttpServerTracingRecordingListenerTests {
 
 		then(this.simpleHttpServerHandler.receiveHandled).as("HTTP server handler must handle received").isTrue();
 		then(this.simpleTracer.getOnlySpan()).isSameAs(span);
-	}
-
-	@Test
-	void should_annotate_instant_record() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
-				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
-		SimpleInstantRecording recording = new SimpleInstantRecording(instantEvent(), listener, new MockClock());
-		recording.highCardinalityName("some-event");
-		this.simpleTracer.nextSpan().start();
-
-		listener.record(recording);
-
-		then(this.simpleTracer.getLastSpan().eventNames()).containsOnly("some-event");
 	}
 
 	private IntervalEvent event() {
@@ -139,20 +124,6 @@ class HttpServerTracingRecordingListenerTests {
 			@Override
 			public HttpServerResponse getResponse() {
 				return BDDMockito.mock(HttpServerResponse.class);
-			}
-		};
-	}
-
-	private InstantEvent instantEvent() {
-		return new InstantEvent() {
-			@Override
-			public String getLowCardinalityName() {
-				return "name";
-			}
-
-			@Override
-			public String getDescription() {
-				return "description";
 			}
 		};
 	}

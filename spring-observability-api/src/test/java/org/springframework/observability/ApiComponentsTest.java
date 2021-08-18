@@ -27,13 +27,16 @@ import org.springframework.observability.event.Recorder;
 import org.springframework.observability.event.SimpleRecorder;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.instant.NoOpInstantRecording;
+import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.NoOpIntervalRecording;
 import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
 import org.springframework.observability.event.listener.composite.CompositeContext;
+import org.springframework.observability.event.tag.Cardinality;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.test.TestContext;
 import org.springframework.observability.test.TestRecordingListener;
+import org.springframework.observability.time.Clock;
 import org.springframework.observability.time.MockClock;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -245,6 +248,28 @@ class ApiComponentsTest {
 		assertThat(recording).hasToString("NoOpIntervalRecording");
 	}
 
+	// Used in presentation slides
+	@Test
+	void shouldShowSimpleUsageScenario() {
+		String userId = "1";
+		CalculationService calculationService = new CalculationService();
+		SimpleRecorder<?> recorder = new SimpleRecorder<>(this.listener, Clock.SYSTEM);
+
+		IntervalRecording recording = recorder.recordingFor((IntervalEvent) () -> "important-calculation")
+				.tag(Tag.of("calculation-type", "tax", Cardinality.LOW))
+				.tag(Tag.of("user-id", userId, Cardinality.HIGH)).start();
+		try {
+			calculationService.calculate();
+		}
+		catch (Exception exception) {
+			recording.error(exception);
+			throw exception;
+		}
+		finally {
+			recording.stop();
+		}
+	}
+
 	private void verifyOnStart() {
 		verifyOnStart(listener.getOnStartSnapshot().wallTime(), listener.getOnStartSnapshot().monotonicTime());
 	}
@@ -326,6 +351,14 @@ class ApiComponentsTest {
 				.contains("highCardinalityName=test-interval-event-12345")
 				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
 				.contains("duration=" + duration.toMillis() + "ms").contains("error=java.io.IOException: simulated");
+	}
+
+	class CalculationService {
+
+		void calculate() {
+
+		};
+
 	}
 
 }

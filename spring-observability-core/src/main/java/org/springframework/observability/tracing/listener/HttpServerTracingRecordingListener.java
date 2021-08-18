@@ -19,15 +19,12 @@ package org.springframework.observability.tracing.listener;
 import org.springframework.observability.core.http.HttpServerRequest;
 import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.event.Recording;
-import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalHttpServerEvent;
-import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.lang.NonNull;
 import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.Tracer;
 import org.springframework.observability.tracing.http.HttpServerHandler;
 
 /**
@@ -41,17 +38,12 @@ public class HttpServerTracingRecordingListener extends
 		HttpTracingRecordingListener<HttpServerTracingRecordingListener.TracingContext, HttpServerRequest, HttpServerResponse>
 		implements TracingRecordingListener<HttpServerTracingRecordingListener.TracingContext> {
 
-	private final TracingInstantRecorder tracingInstantRecorder;
-
 	/**
-	 * @param tracer tracer
 	 * @param currentTraceContext current trace context
 	 * @param handler http server handler
 	 */
-	public HttpServerTracingRecordingListener(Tracer tracer, CurrentTraceContext currentTraceContext,
-			HttpServerHandler handler) {
+	public HttpServerTracingRecordingListener(CurrentTraceContext currentTraceContext, HttpServerHandler handler) {
 		super(currentTraceContext, handler::handleReceive, handler::handleSend);
-		this.tracingInstantRecorder = new TracingInstantRecorder(tracer);
 	}
 
 	@Override
@@ -60,32 +52,12 @@ public class HttpServerTracingRecordingListener extends
 	}
 
 	@Override
-	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
-		doOnStart(intervalRecording);
-	}
-
-	@Override
-	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
-		doOnStop(intervalRecording);
-	}
-
-	@Override
-	public void onError(IntervalRecording<TracingContext> intervalRecording) {
-
-	}
-
-	@Override
-	public void record(InstantRecording instantRecording) {
-		this.tracingInstantRecorder.record(instantRecording);
-	}
-
-	@Override
 	public TracingContext createContext() {
 		return new TracingContext();
 	}
 
 	@Override
-	HttpServerRequest input(IntervalEvent event) {
+	HttpServerRequest getRequest(IntervalEvent event) {
 		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
 		return serverEvent.getRequest();
 	}
@@ -97,8 +69,9 @@ public class HttpServerTracingRecordingListener extends
 	}
 
 	@Override
-	String requestMethod(IntervalEvent event) {
-		return input(event).method();
+	String getRequestMethod(IntervalEvent event) {
+		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
+		return serverEvent.getRequest().method();
 	}
 
 	@Override
@@ -107,7 +80,7 @@ public class HttpServerTracingRecordingListener extends
 	}
 
 	@Override
-	HttpServerResponse response(IntervalEvent event) {
+	HttpServerResponse getResponse(IntervalEvent event) {
 		IntervalHttpServerEvent serverEvent = (IntervalHttpServerEvent) event;
 		return serverEvent.getResponse();
 	}

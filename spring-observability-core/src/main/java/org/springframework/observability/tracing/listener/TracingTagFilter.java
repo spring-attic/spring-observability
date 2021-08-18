@@ -22,6 +22,7 @@ import org.springframework.observability.tracing.Span;
 class TracingTagFilter {
 
 	void tagSpan(Span span, Iterable<Tag> tags) {
+		// TODO: This is the default behaviour in Boot
 		tags.forEach(tag -> {
 			if (tag.getKey().equalsIgnoreCase("error") && tag.getValue().equalsIgnoreCase("none")) {
 				return;

@@ -16,7 +16,6 @@
 
 package org.springframework.observability.micrometer.listener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -65,7 +64,7 @@ public class MicrometerLongRunningTaskRecordingListener
 
 	@Override
 	public void onStop(IntervalRecording<LongRunningTaskContext> intervalRecording) {
-		intervalRecording.getContext().getSamples().forEach(LongTaskTimer.Sample::stop);
+		intervalRecording.getContext().getSample().stop();
 	}
 
 	@Override
@@ -91,14 +90,14 @@ public class MicrometerLongRunningTaskRecordingListener
 
 	static class LongRunningTaskContext {
 
-		private final List<LongTaskTimer.Sample> samples = new ArrayList<>();
+		private LongTaskTimer.Sample sample;
 
 		void addSample(LongTaskTimer.Sample sample) {
-			this.samples.add(sample);
+			this.sample = sample;
 		}
 
-		List<LongTaskTimer.Sample> getSamples() {
-			return this.samples;
+		LongTaskTimer.Sample getSample() {
+			return this.sample;
 		}
 
 	}

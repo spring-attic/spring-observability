@@ -21,13 +21,15 @@ import java.util.function.Function;
 
 import org.springframework.observability.core.http.HttpRequest;
 import org.springframework.observability.core.http.HttpResponse;
+import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.lang.Nullable;
 import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.Span;
 
-abstract class HttpTracingRecordingListener<CONTEXT, REQ extends HttpRequest, RES extends HttpResponse> {
+abstract class HttpTracingRecordingListener<CONTEXT, REQ extends HttpRequest, RES extends HttpResponse>
+		implements TracingRecordingListener<CONTEXT> {
 
 	private final CurrentTraceContext currentTraceContext;
 
@@ -44,33 +46,45 @@ abstract class HttpTracingRecordingListener<CONTEXT, REQ extends HttpRequest, RE
 		this.stopConsumer = stopConsumer;
 	}
 
-	void doOnStart(IntervalRecording<CONTEXT> intervalRecording) {
+	@Override
+	public void onError(IntervalRecording<CONTEXT> intervalRecording) {
+
+	}
+
+	@Override
+	public void onStart(IntervalRecording<CONTEXT> intervalRecording) {
 		IntervalEvent event = intervalRecording.getEvent();
-		REQ request = input(event);
+		REQ request = getRequest(event);
 		Span span = this.startFunction.apply(request);
 		CurrentTraceContext.Scope scope = this.currentTraceContext.newScope(span.context());
 		setSpanAndScope(intervalRecording.getContext(), span, scope);
 	}
 
-	abstract REQ input(IntervalEvent event);
+	abstract REQ getRequest(IntervalEvent event);
 
 	abstract void setSpanAndScope(CONTEXT context, Span span, CurrentTraceContext.Scope scope);
 
-	void doOnStop(IntervalRecording<CONTEXT> intervalRecording) {
+	@Override
+	public void onStop(IntervalRecording<CONTEXT> intervalRecording) {
 		Span span = getSpanFromContext(intervalRecording.getContext());
 		this.tracingTagFilter.tagSpan(span, intervalRecording.getTags());
-		span.name(requestMethod(intervalRecording.getEvent()));
-		RES response = response(intervalRecording.getEvent());
+		span.name(getRequestMethod(intervalRecording.getEvent()));
+		RES response = getResponse(intervalRecording.getEvent());
 		error(response, span);
 		this.stopConsumer.accept(response, span);
 		cleanup(intervalRecording.getContext());
 	}
 
-	abstract String requestMethod(IntervalEvent event);
+	@Override
+	public void record(InstantRecording instantRecording) {
+
+	}
+
+	abstract String getRequestMethod(IntervalEvent event);
 
 	abstract Span getSpanFromContext(CONTEXT context);
 
-	abstract RES response(IntervalEvent event);
+	abstract RES getResponse(IntervalEvent event);
 
 	abstract void cleanup(CONTEXT context);
 
