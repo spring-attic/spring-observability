@@ -18,24 +18,24 @@ package org.springframework.observability.tracing.listener;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.observability.event.instant.InstantRecording;
-import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.Tracer;
+import io.micrometer.api.event.instant.InstantRecording;
+import io.micrometer.api.instrument.tracing.Span;
+import io.micrometer.api.instrument.tracing.Tracer;
 
 class TracingInstantRecorder {
 
-	private final Tracer tracer;
+    private final Tracer tracer;
 
-	TracingInstantRecorder(Tracer tracer) {
-		this.tracer = tracer;
-	}
+    TracingInstantRecorder(Tracer tracer) {
+        this.tracer = tracer;
+    }
 
-	void record(InstantRecording instantRecording) {
-		Span span = this.tracer.currentSpan();
-		if (span != null) {
-			span.event(TimeUnit.NANOSECONDS.toMicros(instantRecording.getWallTime()),
-					instantRecording.getHighCardinalityName());
-		}
-	}
+    void record(InstantRecording instantRecording) {
+        Span span = this.tracer.currentSpan();
+        if (span != null) {
+            span.event(TimeUnit.NANOSECONDS.toMicros(instantRecording.getWallTime()),
+                    instantRecording.getHighCardinalityName());
+        }
+    }
 
 }

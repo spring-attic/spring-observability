@@ -16,10 +16,10 @@
 
 package org.springframework.observability.tracing.test.simple;
 
-import org.springframework.observability.core.http.HttpServerRequest;
-import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.http.HttpServerHandler;
+import org.springframework.observability.transport.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerResponse;
 
 /**
  * A test http server handler implementation.

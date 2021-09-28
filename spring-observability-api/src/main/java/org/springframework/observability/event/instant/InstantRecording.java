@@ -21,8 +21,8 @@ import org.springframework.observability.event.listener.RecordingListener;
 
 /**
  * Represents the recording of an {@link InstantEvent}. Calling the
- * {@link InstantRecording#record()} method should result in a call of
- * {@link RecordingListener#record(InstantRecording)}.
+ * {@link InstantRecording#recordInstant()} method should result in a call of
+ * {@link RecordingListener#recordInstant(InstantRecording)}.
  *
  * @author Jonatan Ivanov
  * @since 1.0.0
@@ -32,18 +32,19 @@ public interface InstantRecording extends Recording<InstantEvent, InstantRecordi
 	/**
 	 * Signals that an {@link InstantEvent} happened.
 	 */
-	void record();
+	void recordInstant();
 
 	/**
 	 * Signals that an {@link InstantEvent} happened at a given time.
-	 * @param wallTime The wall time (system time) in nanoseconds since the epoch at the
-	 * time the event happened.
+	 * @param wallTime the wall time (system time) in nanoseconds since the epoch at the
+	 * time the event happened
 	 */
-	void record(long wallTime);
+	void recordInstant(long wallTime);
 
 	/**
-	 * @return The wall time (system time) in nanoseconds since the epoch at the time the
-	 * event happened.
+	 * The wall time (system time) in nanoseconds since the epoch at the time the event
+	 * happened.
+	 * @return the wall time (system time)
 	 */
 	long getWallTime();
 

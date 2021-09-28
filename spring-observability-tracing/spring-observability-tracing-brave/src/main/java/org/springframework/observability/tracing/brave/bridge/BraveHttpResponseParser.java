@@ -16,10 +16,10 @@
 
 package org.springframework.observability.tracing.brave.bridge;
 
-import org.springframework.observability.core.http.HttpResponse;
 import org.springframework.observability.tracing.SpanCustomizer;
 import org.springframework.observability.tracing.TraceContext;
 import org.springframework.observability.tracing.http.HttpResponseParser;
+import org.springframework.observability.transport.http.HttpResponse;
 
 /**
  * Brave implementation of a {@link HttpResponseParser}.

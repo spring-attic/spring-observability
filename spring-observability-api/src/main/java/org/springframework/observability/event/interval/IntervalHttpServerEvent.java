@@ -16,14 +16,14 @@
 
 package org.springframework.observability.event.interval;
 
-import org.springframework.observability.core.http.HttpServerRequest;
-import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.lang.NonNull;
+import org.springframework.observability.transport.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerResponse;
 
 /**
  * An IntervalEvent that represents an HTTP server event.
  *
- * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
 public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpServerRequest, HttpServerResponse> {
@@ -35,6 +35,7 @@ public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpS
 	private Object handler;
 
 	/**
+	 * Creates a new {@link IntervalHttpServerEvent}.
 	 * @param request http server request
 	 */
 	public IntervalHttpServerEvent(HttpServerRequest request) {
@@ -44,16 +45,11 @@ public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpS
 	@NonNull
 	@Override
 	public HttpServerRequest getRequest() {
-		return request;
-	}
-
-	@Override
-	public IntervalHttpServerEvent setResponse(HttpServerResponse response) {
-		this.response = response;
-		return this;
+		return this.request;
 	}
 
 	/**
+	 * Sets a request handler.
 	 * @param handler handler for this request
 	 * @return this
 	 */
@@ -65,6 +61,12 @@ public abstract class IntervalHttpServerEvent implements IntervalHttpEvent<HttpS
 	@Override
 	public HttpServerResponse getResponse() {
 		return this.response;
+	}
+
+	@Override
+	public IntervalHttpServerEvent setResponse(HttpServerResponse response) {
+		this.response = response;
+		return this;
 	}
 
 }

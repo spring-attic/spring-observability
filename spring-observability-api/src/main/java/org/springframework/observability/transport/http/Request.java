@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
+package org.springframework.observability.transport.http;
 
 import java.util.Collection;
 
-import org.springframework.observability.core.Kind;
-import org.springframework.observability.lang.Nullable;
+import org.springframework.observability.transport.Kind;
 
 /**
  * This API is taken from OpenZipkin Brave.
  *
- * Abstract response type used for parsing and sampling.
+ * Abstract request type used for parsing and sampling.
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface Response {
+public interface Request {
 
 	/**
 	 * @return list of header names.
@@ -38,25 +37,13 @@ public interface Response {
 	Collection<String> headerNames();
 
 	/**
-	 * @return corresponding request
+	 * @return The remote kind describing the direction and type of the request.
 	 */
-	@Nullable
-	Request request();
-
-	/**
-	 * @return exception that occurred or {@code null} if there was none.
-	 */
-	@Nullable
-	Throwable error();
+	Kind kind();
 
 	/**
 	 * @return the underlying request object or {@code null} if there is none.
 	 */
 	Object unwrap();
-
-	/**
-	 * @return The remote kind describing the direction and type of the request.
-	 */
-	Kind kind();
 
 }

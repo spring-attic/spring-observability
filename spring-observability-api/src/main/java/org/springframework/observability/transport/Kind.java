@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core;
+package org.springframework.observability.transport;
 
 /**
  * Represents side of communication.

@@ -19,8 +19,6 @@ package org.springframework.observability.tracing.listener;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 
-import org.springframework.observability.core.http.HttpServerRequest;
-import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
@@ -29,6 +27,8 @@ import org.springframework.observability.tracing.test.simple.SimpleCurrentTraceC
 import org.springframework.observability.tracing.test.simple.SimpleHttpServerHandler;
 import org.springframework.observability.tracing.test.simple.SimpleSpan;
 import org.springframework.observability.tracing.test.simple.SimpleTracer;
+import org.springframework.observability.transport.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerResponse;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -46,7 +46,7 @@ class HttpServerTracingRecordingListenerTests {
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 
 		boolean applicable = listener
-				.isApplicable(new SimpleIntervalRecording<>(intervalHttpServerEvent(), listener, new MockClock()));
+				.isApplicable(new SimpleIntervalRecording(intervalHttpServerEvent(), listener, new MockClock()));
 
 		then(applicable).isTrue();
 	}
@@ -56,7 +56,7 @@ class HttpServerTracingRecordingListenerTests {
 		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
 
-		boolean applicable = listener.isApplicable(new SimpleIntervalRecording<>(event(), listener, new MockClock()));
+		boolean applicable = listener.isApplicable(new SimpleIntervalRecording(event(), listener, new MockClock()));
 
 		then(applicable).isFalse();
 	}
@@ -65,7 +65,7 @@ class HttpServerTracingRecordingListenerTests {
 	void should_put_span_and_scope_in_context_when_started() {
 		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
-		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
+		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording(
 				intervalHttpServerEvent(), listener, new MockClock());
 
 		listener.onStart(recording);
@@ -78,7 +78,7 @@ class HttpServerTracingRecordingListenerTests {
 	void should_close_span_and_scope_when_stopped() {
 		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
 				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
-		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
+		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording(
 				intervalHttpServerEvent(), listener, new MockClock());
 		SimpleSpan span = this.simpleTracer.nextSpan().start();
 		recording.getContext().setSpan(span);

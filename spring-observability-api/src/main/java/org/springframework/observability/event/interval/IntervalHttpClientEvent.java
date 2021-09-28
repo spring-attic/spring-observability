@@ -16,14 +16,15 @@
 
 package org.springframework.observability.event.interval;
 
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.lang.NonNull;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * An IntervalEvent that represents an HTTP client event.
  *
  * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
 public abstract class IntervalHttpClientEvent implements IntervalHttpEvent<HttpClientRequest, HttpClientResponse> {
@@ -33,6 +34,7 @@ public abstract class IntervalHttpClientEvent implements IntervalHttpEvent<HttpC
 	private HttpClientResponse response;
 
 	/**
+	 * Crates a new {@link IntervalHttpClientEvent}.
 	 * @param request http client request
 	 */
 	public IntervalHttpClientEvent(HttpClientRequest request) {
@@ -42,18 +44,18 @@ public abstract class IntervalHttpClientEvent implements IntervalHttpEvent<HttpC
 	@NonNull
 	@Override
 	public HttpClientRequest getRequest() {
-		return request;
+		return this.request;
+	}
+
+	@Override
+	public HttpClientResponse getResponse() {
+		return this.response;
 	}
 
 	@Override
 	public IntervalHttpClientEvent setResponse(HttpClientResponse response) {
 		this.response = response;
 		return this;
-	}
-
-	@Override
-	public HttpClientResponse getResponse() {
-		return this.response;
 	}
 
 }

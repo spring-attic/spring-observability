@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
+package org.springframework.observability.transport.http;
 
-import org.springframework.observability.core.Kind;
 import org.springframework.observability.lang.Nullable;
+import org.springframework.observability.transport.Kind;
 
 /**
  * This API is taken from OpenZipkin Brave.

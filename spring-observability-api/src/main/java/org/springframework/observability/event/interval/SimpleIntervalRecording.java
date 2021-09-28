@@ -21,24 +21,30 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.observability.event.instant.InstantEvent;
+import org.springframework.observability.event.instant.SimpleInstantRecording;
 import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.Clock;
 
 /**
- * @param <T> Context Type
+ * A simple implementation of {@link IntervalRecording}.
+ *
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
+public class SimpleIntervalRecording implements IntervalRecording {
 
 	private final IntervalEvent event;
 
-	private final RecordingListener<T> listener;
+	private final RecordingListener<CompositeContext> listener;
 
-	private final T context;
+	private final CompositeContext context;
 
 	private final Clock clock;
+
+	private final Runnable closingCallback;
 
 	private final Set<Tag> tags = new LinkedHashSet<>();
 
@@ -55,16 +61,32 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	private Throwable error = null;
 
 	/**
-	 * @param event The event this recording belongs to.
-	 * @param listener The listener that needs to be notified about the recordings.
-	 * @param clock The clock to be used.
+	 * Creates a new instance of {@link SimpleIntervalRecording}.
+	 * @param event the event this recording belongs to
+	 * @param listener the listener that needs to be notified about the recordings
+	 * @param clock the clock to be used
+	 * @param closingCallback callback to be called upon closing of the recording
 	 */
-	public SimpleIntervalRecording(IntervalEvent event, RecordingListener<T> listener, Clock clock) {
+	public SimpleIntervalRecording(IntervalEvent event, RecordingListener<CompositeContext> listener, Clock clock,
+			Runnable closingCallback) {
 		this.event = event;
 		this.highCardinalityName = event.getLowCardinalityName();
 		this.listener = listener;
 		this.context = listener.createContext();
 		this.clock = clock;
+		this.listener.onCreate(this);
+		this.closingCallback = closingCallback;
+	}
+
+	/**
+	 * Creates a new instance of {@link SimpleIntervalRecording}.
+	 * @param event the event this recording belongs to
+	 * @param listener the listener that needs to be notified about the recordings
+	 * @param clock the clock to be used
+	 */
+	SimpleIntervalRecording(IntervalEvent event, RecordingListener<CompositeContext> listener, Clock clock) {
+		this(event, listener, clock, () -> {
+		});
 	}
 
 	@Override
@@ -78,7 +100,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public IntervalRecording<T> highCardinalityName(String highCardinalityName) {
+	public IntervalRecording highCardinalityName(String highCardinalityName) {
 		this.highCardinalityName = highCardinalityName;
 		return this;
 	}
@@ -94,15 +116,18 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public IntervalRecording<T> start() {
-		return start(clock.wallTime(), clock.monotonicTime());
+	public IntervalRecording start() {
+		return start(this.clock.wallTime(), this.clock.monotonicTime());
 	}
 
 	@Override
-	public IntervalRecording<T> start(long wallTime, long monotonicTime) {
-		if (this.started != 0) {
-			throw new IllegalStateException("IntervalRecording has already been started");
-		}
+	public IntervalRecording restore() {
+		this.listener.onRestore(this);
+		return this;
+	}
+
+	@Override
+	public IntervalRecording start(long wallTime, long monotonicTime) {
 		this.startWallTime = wallTime;
 		this.started = monotonicTime;
 		this.listener.onStart(this);
@@ -121,13 +146,11 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 
 	@Override
 	public void stop() {
-		stop(clock.monotonicTime());
+		stop(this.clock.monotonicTime());
 	}
 
 	@Override
 	public void stop(long monotonicTime) {
-		verifyIfHasStarted();
-		verifyIfHasNotStopped();
 		this.stopped = monotonicTime;
 		this.duration = Duration.ofNanos(this.stopped - this.started);
 		this.listener.onStop(this);
@@ -139,8 +162,7 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public IntervalRecording<T> tag(Tag tag) {
-		verifyIfHasNotStopped();
+	public IntervalRecording tag(Tag tag) {
 		this.tags.add(tag);
 		return this;
 	}
@@ -151,39 +173,30 @@ public class SimpleIntervalRecording<T> implements IntervalRecording<T> {
 	}
 
 	@Override
-	public IntervalRecording<T> error(Throwable error) {
-		verifyIfHasStarted();
-		verifyIfHasNotStopped();
-		if (this.error != null) {
-			throw new IllegalStateException("Only one error can be attached");
-		}
+	public <T> T getContext(RecordingListener<T> listener) {
+		return this.context.byListener(listener);
+	}
 
+	@Override
+	public IntervalRecording error(Throwable error) {
+		if (this.error != null) {
+			return this;
+		}
 		this.error = error;
 		this.listener.onError(this);
 		return this;
 	}
 
 	@Override
-	public T getContext() {
-		return this.context;
+	public String toString() {
+		return "{" + "event=" + this.event.getLowCardinalityName() + ", highCardinalityName=" + this.highCardinalityName
+				+ ", duration=" + this.duration.toMillis() + "ms" + ", tags=" + this.tags + ", error=" + this.error
+				+ '}';
 	}
 
 	@Override
-	public String toString() {
-		return "{" + "event=" + event.getLowCardinalityName() + ", highCardinalityName=" + highCardinalityName
-				+ ", duration=" + duration.toMillis() + "ms" + ", tags=" + tags + ", error=" + error + '}';
-	}
-
-	private void verifyIfHasStarted() {
-		if (this.started == 0) {
-			throw new IllegalStateException("IntervalRecording hasn't been started");
-		}
-	}
-
-	private void verifyIfHasNotStopped() {
-		if (this.stopped != 0) {
-			throw new IllegalStateException("IntervalRecording has already been stopped");
-		}
+	public void recordInstant(InstantEvent event) {
+		new SimpleInstantRecording(event, listener, clock).recordInstant();
 	}
 
 }

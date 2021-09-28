@@ -18,8 +18,8 @@ package org.springframework.observability.tracing.brave.bridge;
 
 import brave.sampler.SamplerFunctions;
 
-import org.springframework.observability.core.http.HttpRequest;
 import org.springframework.observability.tracing.SamplerFunction;
+import org.springframework.observability.transport.http.HttpRequest;
 
 /**
  * Brave implementation of a {@link SamplerFunction}.

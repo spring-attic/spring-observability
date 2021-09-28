@@ -71,7 +71,7 @@ class DefaultTracingRecordingListenerTests {
 
 	@BeforeEach
 	void setUp() {
-		intervalRecording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, CLOCK);
+		intervalRecording = new SimpleIntervalRecording(INTERVAL_EVENT, listener, CLOCK);
 		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener, CLOCK);
 	}
 
@@ -118,7 +118,7 @@ class DefaultTracingRecordingListenerTests {
 	void recordShouldNotDoAnythingWhenThereIsNoSpan() {
 		when(tracer.currentSpan()).thenReturn(null);
 
-		instantRecording.record();
+		instantRecording.recordInstant();
 
 		verifyNoInteractions(span);
 		verifyNoMoreInteractions(tracer);
@@ -132,7 +132,7 @@ class DefaultTracingRecordingListenerTests {
 		when(tracer.currentSpan()).thenReturn(span);
 		intervalRecording.start();
 
-		instantRecording.record();
+		instantRecording.recordInstant();
 
 		verify(span).event(CLOCK.wallTimeIn(MICROSECONDS), instantRecording.getHighCardinalityName());
 	}
@@ -144,7 +144,7 @@ class DefaultTracingRecordingListenerTests {
 		when(tracer.currentSpan()).thenReturn(span);
 		intervalRecording.start();
 
-		instantRecording.record(2_000);
+		instantRecording.recordInstant(2_000);
 
 		verify(span).event(2, instantRecording.getHighCardinalityName());
 	}

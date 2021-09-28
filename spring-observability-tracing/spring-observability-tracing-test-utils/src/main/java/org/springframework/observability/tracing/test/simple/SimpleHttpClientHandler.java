@@ -16,11 +16,11 @@
 
 package org.springframework.observability.tracing.test.simple;
 
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
 import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * A test http client handler implementation.

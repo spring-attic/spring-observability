@@ -77,30 +77,30 @@ class SimpleInstantRecordingTest {
 	@Test
 	void wallTimeShouldBeRecorded() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
-		recording.record();
+		recording.recordInstant();
 		assertThat(recording.getWallTime()).isEqualTo(clock.wallTime());
 	}
 
 	@Test
 	void providedWallTimeShouldBeRecorded() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
-		recording.record(42);
+		recording.recordInstant(42);
 		assertThat(recording.getWallTime()).isEqualTo(42);
 	}
 
 	@Test
 	void listenerShouldBeNotified() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, clock);
-		recording.record();
-		verify(listener).record(recording);
+		recording.recordInstant();
+		verify(listener).recordInstant(recording);
 	}
 
 	@Test
 	void listenerShouldBeNotifiedAndEventTimeShouldBeStored() {
 		InstantRecording recording = new SimpleInstantRecording(INSTANT_EVENT, listener, null);
-		recording.record(1000L);
+		recording.recordInstant(1000L);
 
-		verify(listener).record(recording);
+		verify(listener).recordInstant(recording);
 		assertThat(recording.getWallTime()).isEqualTo(1000L);
 	}
 

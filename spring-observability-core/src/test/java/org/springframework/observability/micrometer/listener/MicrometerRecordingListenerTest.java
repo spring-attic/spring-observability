@@ -56,7 +56,7 @@ public class MicrometerRecordingListenerTest {
 
 	@BeforeEach
 	void setUp() {
-		intervalRecording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, CLOCK);
+		intervalRecording = new SimpleIntervalRecording(INTERVAL_EVENT, listener, CLOCK);
 		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener, CLOCK);
 		registry.forEachMeter(registry::remove);
 	}
@@ -81,7 +81,7 @@ public class MicrometerRecordingListenerTest {
 
 	@Test
 	void recordShouldRegisterCounter() {
-		instantRecording.tag(Tag.of("foo", "bar", LOW)).tag(Tag.of("userId", "12345", HIGH)).record();
+		instantRecording.tag(Tag.of("foo", "bar", LOW)).tag(Tag.of("userId", "12345", HIGH)).recordInstant();
 
 		Counter counter = registry.find(instantRecording.getEvent().getLowCardinalityName()).tag("foo", "bar")
 				.counter();

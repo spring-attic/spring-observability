@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.test;
-
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+package org.springframework.observability.event;
 
 /**
- * A simple, {@link LinkedHashMap} based context for testing.
+ * A filter that can be applied globally to all existing {@link Recording}.
  *
- * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
+ * @since 1.0.0
  */
-public class TestContext {
+public interface RecordingCustomizer {
 
-	private final Map<String, String> map = new LinkedHashMap<>();
-
-	public String get(String key) {
-		return this.map.get(key);
-	}
-
-	public String put(String key, String value) {
-		return this.map.put(key, value);
-	}
-
-	public Map<String, String> toMap() {
-		return Collections.unmodifiableMap(map);
-	}
+	/**
+	 * Customizes the recording.
+	 * @param recording recording to customize
+	 */
+	void customize(Recording<?, ?> recording);
 
 }

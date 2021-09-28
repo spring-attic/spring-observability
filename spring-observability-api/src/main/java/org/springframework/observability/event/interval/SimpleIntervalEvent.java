@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2021 the original author or authors.
+ * Copyright 2021-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
-
-import org.springframework.observability.core.Kind;
-import org.springframework.observability.lang.Nullable;
+package org.springframework.observability.event.interval;
 
 /**
- * This API is taken from OpenZipkin Brave.
+ * A simple implementation of the IntervalEvent.
  *
- * Abstract response type used for parsing and sampling. Represents an HTTP Client
- * response.
- *
- * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface HttpClientResponse extends HttpResponse {
+public class SimpleIntervalEvent implements IntervalEvent {
 
-	@Nullable
-	default HttpClientRequest request() {
-		return null;
+	private String lowCardinalityName;
+
+	private String description;
+
+	@Override
+	public String getLowCardinalityName() {
+		return this.lowCardinalityName;
 	}
 
 	@Override
-	default Throwable error() {
-		return null;
+	public void lowCardinalityName(String name) {
+		this.lowCardinalityName = name;
 	}
 
 	@Override
-	default Kind kind() {
-		return Kind.CLIENT;
+	public String getDescription() {
+		return this.description;
+	}
+
+	@Override
+	public void description(String description) {
+		this.description = description;
 	}
 
 }

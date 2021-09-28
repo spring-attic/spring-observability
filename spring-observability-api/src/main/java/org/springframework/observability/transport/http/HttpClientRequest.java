@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
+package org.springframework.observability.transport.http;
 
-import java.util.Collection;
-
-import org.springframework.observability.core.Kind;
+import org.springframework.observability.transport.Kind;
 
 /**
  * This API is taken from OpenZipkin Brave.
  *
- * Abstract request type used for parsing and sampling.
+ * Abstract request type used for parsing and sampling. Represents an HTTP Client request.
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface Request {
+public interface HttpClientRequest extends HttpRequest {
 
 	/**
-	 * @return list of header names.
+	 * @param name header name
+	 * @param value header value
 	 */
-	Collection<String> headerNames();
+	void header(String name, String value);
 
-	/**
-	 * @return The remote kind describing the direction and type of the request.
-	 */
-	Kind kind();
-
-	/**
-	 * @return the underlying request object or {@code null} if there is none.
-	 */
-	Object unwrap();
+	@Override
+	default Kind kind() {
+		return Kind.CLIENT;
+	}
 
 }

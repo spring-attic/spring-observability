@@ -19,24 +19,31 @@ package org.springframework.observability.test;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.time.Clock;
 
 /**
  * @author Jonatan Ivanov
  */
-public class TestRecordingListener implements RecordingListener<TestContext> {
+public class TestRecordingListener implements RecordingListener<CompositeContext> {
 
 	private final Clock clock;
 
-	private TestContext context;
+	private CompositeContext context;
 
-	private IntervalRecording<TestContext> onStartRecording;
+	private IntervalRecording onStartRecording;
 
-	private IntervalRecording<TestContext> onStopRecording;
+	private IntervalRecording onCreateRecording;
 
-	private IntervalRecording<TestContext> onErrorRecording;
+	private IntervalRecording onStopRecording;
+
+	private IntervalRecording onErrorRecording;
+
+	private IntervalRecording onRestoreRecording;
 
 	private InstantRecording instantRecording;
+
+	private Snapshot onCreateSnapshot;
 
 	private Snapshot onStartSnapshot;
 
@@ -44,48 +51,62 @@ public class TestRecordingListener implements RecordingListener<TestContext> {
 
 	private Snapshot onErrorSnapshot;
 
+	private Snapshot onRestoreSnapshot;
+
 	public TestRecordingListener(Clock clock) {
 		this.clock = clock;
 	}
 
 	@Override
-	public TestContext createContext() {
-		this.context = new TestContext();
+	public CompositeContext createContext() {
+		this.context = new CompositeContext();
 		return this.context;
 	}
 
 	@Override
-	public void onStart(IntervalRecording<TestContext> intervalRecording) {
+	public void onCreate(IntervalRecording intervalRecording) {
+		this.onCreateSnapshot = Snapshot.of(this.clock);
+		this.onCreateRecording = intervalRecording;
+	}
+
+	@Override
+	public void onStart(IntervalRecording intervalRecording) {
 		this.onStartSnapshot = Snapshot.of(this.clock);
 		this.onStartRecording = intervalRecording;
 	}
 
 	@Override
-	public void onStop(IntervalRecording<TestContext> intervalRecording) {
+	public void onStop(IntervalRecording intervalRecording) {
 		this.onStopSnapshot = Snapshot.of(this.clock);
 		this.onStopRecording = intervalRecording;
 	}
 
 	@Override
-	public void onError(IntervalRecording<TestContext> intervalRecording) {
+	public void onError(IntervalRecording intervalRecording) {
 		this.onErrorSnapshot = Snapshot.of(this.clock);
 		this.onErrorRecording = intervalRecording;
 	}
 
 	@Override
-	public void record(InstantRecording instantRecording) {
+	public void onRestore(IntervalRecording intervalRecording) {
+		this.onRestoreSnapshot = Snapshot.of(this.clock);
+		this.onRestoreRecording = intervalRecording;
+	}
+
+	@Override
+	public void recordInstant(InstantRecording instantRecording) {
 		this.instantRecording = instantRecording;
 	}
 
-	public IntervalRecording<TestContext> getOnStartRecording() {
+	public IntervalRecording getOnStartRecording() {
 		return this.onStartRecording;
 	}
 
-	public IntervalRecording<TestContext> getOnStopRecording() {
+	public IntervalRecording getOnStopRecording() {
 		return this.onStopRecording;
 	}
 
-	public IntervalRecording<TestContext> getOnErrorRecording() {
+	public IntervalRecording getOnErrorRecording() {
 		return this.onErrorRecording;
 	}
 
@@ -93,7 +114,7 @@ public class TestRecordingListener implements RecordingListener<TestContext> {
 		return instantRecording;
 	}
 
-	public TestContext getContext() {
+	public CompositeContext getContext() {
 		return this.context;
 	}
 

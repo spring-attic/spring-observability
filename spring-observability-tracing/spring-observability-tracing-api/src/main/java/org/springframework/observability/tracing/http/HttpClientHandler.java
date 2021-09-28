@@ -17,10 +17,10 @@
 package org.springframework.observability.tracing.http;
 
 import org.springframework.lang.Nullable;
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * This API is taken from OpenZipkin Brave.

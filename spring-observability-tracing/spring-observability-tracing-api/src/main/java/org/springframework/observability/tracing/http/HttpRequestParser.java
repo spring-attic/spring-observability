@@ -16,9 +16,9 @@
 
 package org.springframework.observability.tracing.http;
 
-import org.springframework.observability.core.http.HttpRequest;
 import org.springframework.observability.tracing.SpanCustomizer;
 import org.springframework.observability.tracing.TraceContext;
+import org.springframework.observability.transport.http.HttpRequest;
 
 /**
  * This API is taken from OpenZipkin Brave.

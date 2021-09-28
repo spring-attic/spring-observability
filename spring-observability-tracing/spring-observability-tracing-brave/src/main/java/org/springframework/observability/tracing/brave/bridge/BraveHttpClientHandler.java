@@ -17,11 +17,11 @@
 package org.springframework.observability.tracing.brave.bridge;
 
 import org.springframework.core.log.LogAccessor;
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.TraceContext;
 import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * Brave implementation of a {@link HttpClientHandler}.

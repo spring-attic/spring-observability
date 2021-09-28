@@ -19,9 +19,9 @@ package org.springframework.observability.tracing.brave.bridge;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.observability.core.Kind;
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
+import org.springframework.observability.transport.Kind;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * Brave implementation of a {@link HttpClientResponse}.

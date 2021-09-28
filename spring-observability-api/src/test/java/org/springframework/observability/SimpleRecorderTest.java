@@ -53,7 +53,7 @@ class SimpleRecorderTest {
 
 	@Test
 	void shouldReturnSimpleIntervalRecordingByDefault() {
-		IntervalRecording<Void> recording = recorder.recordingFor(INTERVAL_EVENT);
+		IntervalRecording recording = recorder.recordingFor(INTERVAL_EVENT);
 		assertThat(recorder.isEnabled()).isTrue();
 		assertThat(recording).isExactlyInstanceOf(SimpleIntervalRecording.class);
 		assertThat(recording.getEvent()).isSameAs(INTERVAL_EVENT);

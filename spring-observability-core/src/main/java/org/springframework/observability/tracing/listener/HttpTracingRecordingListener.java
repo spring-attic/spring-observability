@@ -19,91 +19,113 @@ package org.springframework.observability.tracing.listener;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.springframework.observability.core.http.HttpRequest;
-import org.springframework.observability.core.http.HttpResponse;
-import org.springframework.observability.event.instant.InstantRecording;
-import org.springframework.observability.event.interval.IntervalEvent;
-import org.springframework.observability.event.interval.IntervalRecording;
-import org.springframework.observability.lang.Nullable;
-import org.springframework.observability.tracing.CurrentTraceContext;
-import org.springframework.observability.tracing.Span;
+import io.micrometer.api.event.instant.InstantRecording;
+import io.micrometer.api.event.interval.IntervalEvent;
+import io.micrometer.api.event.interval.IntervalRecording;
+import io.micrometer.api.instrument.tracing.CurrentTraceContext;
+import io.micrometer.api.instrument.tracing.Span;
+import io.micrometer.api.instrument.tracing.Tracer;
+import io.micrometer.api.instrument.transport.http.HttpRequest;
+import io.micrometer.api.instrument.transport.http.HttpResponse;
+import io.micrometer.api.lang.Nullable;
 
-abstract class HttpTracingRecordingListener<CONTEXT, REQ extends HttpRequest, RES extends HttpResponse>
-		implements TracingRecordingListener<CONTEXT> {
+abstract class HttpTracingRecordingListener<REQ extends HttpRequest, RES extends HttpResponse>
+        implements TracingRecordingListener {
 
-	private final CurrentTraceContext currentTraceContext;
+    private final Tracer tracer;
 
-	private final Function<REQ, Span> startFunction;
+    private final CurrentTraceContext currentTraceContext;
 
-	private final BiConsumer<RES, Span> stopConsumer;
+    private final Function<REQ, Span> startFunction;
 
-	private final TracingTagFilter tracingTagFilter = new TracingTagFilter();
+    private final BiConsumer<RES, Span> stopConsumer;
 
-	HttpTracingRecordingListener(CurrentTraceContext currentTraceContext, Function<REQ, Span> startFunction,
-			BiConsumer<RES, Span> stopConsumer) {
-		this.currentTraceContext = currentTraceContext;
-		this.startFunction = startFunction;
-		this.stopConsumer = stopConsumer;
-	}
+    private final TracingTagFilter tracingTagFilter = new TracingTagFilter();
 
-	@Override
-	public void onError(IntervalRecording<CONTEXT> intervalRecording) {
+    private final TracingInstantRecorder tracingInstantRecorder;
 
-	}
+    HttpTracingRecordingListener(Tracer tracer, Function<REQ, Span> startFunction, BiConsumer<RES, Span> stopConsumer) {
+        this.tracer = tracer;
+        this.currentTraceContext = tracer.currentTraceContext();
+        this.startFunction = startFunction;
+        this.stopConsumer = stopConsumer;
+        this.tracingInstantRecorder = new TracingInstantRecorder(tracer);
+    }
 
-	@Override
-	public void onStart(IntervalRecording<CONTEXT> intervalRecording) {
-		IntervalEvent event = intervalRecording.getEvent();
-		REQ request = getRequest(event);
-		Span span = this.startFunction.apply(request);
-		CurrentTraceContext.Scope scope = this.currentTraceContext.newScope(span.context());
-		setSpanAndScope(intervalRecording.getContext(), span, scope);
-	}
+    @Override
+    public void onError(IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording) {
 
-	abstract REQ getRequest(IntervalEvent event);
+    }
 
-	abstract void setSpanAndScope(CONTEXT context, Span span, CurrentTraceContext.Scope scope);
+    @Override
+    public void onStart(IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording) {
+        Span parentSpan = intervalRecording.getContext().getSpan();
+        CurrentTraceContext.Scope scope = null;
+        if (parentSpan != null) {
+            scope = this.currentTraceContext.maybeScope(parentSpan.context());
+        }
+        IntervalEvent event = intervalRecording.getEvent();
+        REQ request = getRequest(event);
+        Span span = this.startFunction.apply(request);
+        scope = this.currentTraceContext.newScope(span.context());
+        intervalRecording.getContext().setSpanAndScope(span, scope);
+    }
 
-	@Override
-	public void onStop(IntervalRecording<CONTEXT> intervalRecording) {
-		Span span = getSpanFromContext(intervalRecording.getContext());
-		this.tracingTagFilter.tagSpan(span, intervalRecording.getTags());
-		span.name(getRequestMethod(intervalRecording.getEvent()));
-		RES response = getResponse(intervalRecording.getEvent());
-		error(response, span);
-		this.stopConsumer.accept(response, span);
-		cleanup(intervalRecording.getContext());
-	}
+    @Override
+    public void onRestore(IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording) {
+        CurrentTraceContext.Scope scope = this.currentTraceContext
+                .maybeScope(intervalRecording.getContext().getSpan().context());
+        intervalRecording.getContext().setScope(scope);
+    }
 
-	@Override
-	public void record(InstantRecording instantRecording) {
+    @Override
+    public Tracer getTracer() {
+        return this.tracer;
+    }
 
-	}
+    abstract REQ getRequest(IntervalEvent event);
 
-	abstract String getRequestMethod(IntervalEvent event);
+    @Override
+    public void onStop(IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording) {
+        Span span = intervalRecording.getContext().getSpan();
+        this.tracingTagFilter.tagSpan(span, intervalRecording.getTags());
+        span.name(getSpanName(intervalRecording.getEvent()));
+        RES response = getResponse(intervalRecording.getEvent());
+        error(response, span);
+        this.stopConsumer.accept(response, span);
+        cleanup(intervalRecording);
+    }
 
-	abstract Span getSpanFromContext(CONTEXT context);
+//	@Override
+//	public void record(InstantRecording instantRecording) {
+//		// TODO: Throw an exception?
+//	}
 
-	abstract RES getResponse(IntervalEvent event);
+    abstract String getSpanName(IntervalEvent event);
 
-	abstract void cleanup(CONTEXT context);
+    abstract RES getResponse(IntervalEvent event);
 
-	private void error(@Nullable HttpResponse response, Span span) {
-		if (response == null) {
-			return;
-		}
-		int httpStatus = response.statusCode();
-		Throwable error = response.error();
-		if (error != null) {
-			return;
-		}
-		if (httpStatus == 0) {
-			return;
-		}
-		if (httpStatus < 100 || httpStatus > 399) {
-			// TODO: Move to a common place
-			span.tag("error", String.valueOf(httpStatus));
-		}
-	}
+    private void error(@Nullable HttpResponse response, Span span) {
+        if (response == null) {
+            return;
+        }
+        int httpStatus = response.statusCode();
+        Throwable error = response.error();
+        if (error != null) {
+            return;
+        }
+        if (httpStatus == 0) {
+            return;
+        }
+        if (httpStatus < 100 || httpStatus > 399) {
+            // TODO: Move to a common place
+            span.tag("error", String.valueOf(httpStatus));
+        }
+    }
+
+    @Override
+    public void recordInstant(InstantRecording instantRecording) {
+        this.tracingInstantRecorder.record(instantRecording);
+    }
 
 }

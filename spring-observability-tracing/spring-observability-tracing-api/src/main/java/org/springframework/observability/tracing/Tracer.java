@@ -18,6 +18,9 @@ package org.springframework.observability.tracing;
 
 import java.io.Closeable;
 
+import io.micrometer.api.instrument.tracing.CurrentTraceContext;
+import io.micrometer.api.instrument.tracing.TraceContext;
+
 import org.springframework.lang.Nullable;
 import org.springframework.observability.tracing.propagation.Propagator;
 
@@ -133,12 +136,20 @@ public interface Tracer extends BaggageManager {
 	 * @return a span builder
 	 */
 	Span.Builder spanBuilder();
-
+	
 	/**
 	 * Builder for {@link TraceContext}.
+	 *
 	 * @return a trace context builder
 	 */
 	TraceContext.Builder traceContextBuilder();
+
+	/**
+	 * Returns the current trace context.
+	 *
+	 * @return current trace context
+	 */
+	CurrentTraceContext currentTraceContext();
 
 	/**
 	 * Allows to customize the current span in scope.

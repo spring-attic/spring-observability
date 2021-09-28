@@ -26,16 +26,33 @@ package org.springframework.observability.event;
 public interface Event {
 
 	/**
-	 * @return The name of the event, the method mustn't return null. The method must
-	 * return values with low cardinality.
+	 * Low cardinality name of the event. May be used e.g. in a metric name.
+	 * @return the name of the event, the method mustn't return null. The method must
+	 * return values with low cardinality
 	 */
 	String getLowCardinalityName();
 
 	/**
-	 * @return The description of the event, the method shouldn't return null.
+	 * Sets the low cardinality name of the event.
+	 * @param name low cardinality name to set
+	 */
+	default void lowCardinalityName(String name) {
+
+	}
+
+	/**
+	 * Description of the event. May be used e.g. in a metric description.
+	 * @return the description of the event, the method shouldn't return null
 	 */
 	default String getDescription() {
 		return "";
+	}
+
+	/**
+	 * Sets the description of the event. May be used e.g. in a metric description.
+	 * @param description description to set
+	 */
+	default void description(String description) {
 	}
 
 }

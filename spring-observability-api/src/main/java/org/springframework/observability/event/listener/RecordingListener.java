@@ -26,13 +26,14 @@ import org.springframework.observability.event.interval.IntervalRecording;
  * Implementing this interface of this interface make it possible to listen to ongoing or
  * competed {@link Recording Recordings}.
  *
- * @param <T> Context Type
+ * @param <T> context type
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
 public interface RecordingListener<T> extends ContextFactory<T> {
 
 	/**
+	 * Defines whether this listener should be applied.
 	 * @param recording recording
 	 * @return {@code true} when this listener is applicable
 	 */
@@ -41,29 +42,40 @@ public interface RecordingListener<T> extends ContextFactory<T> {
 	}
 
 	/**
-	 * Called after the recording was started.
-	 * @param intervalRecording The recording that was started.
+	 * Called after the recording was created and before it was started.
+	 * @param intervalRecording the recording that was created
 	 */
-	void onStart(IntervalRecording<T> intervalRecording);
+	void onCreate(IntervalRecording intervalRecording);
+
+	/**
+	 * Called after the recording was started.
+	 * @param intervalRecording the recording that was started
+	 */
+	void onStart(IntervalRecording intervalRecording);
 
 	/**
 	 * Called after the recording was stopped.
-	 * @param intervalRecording The recording that was stopped.
+	 * @param intervalRecording the recording that was stopped
 	 */
-	void onStop(IntervalRecording<T> intervalRecording);
+	void onStop(IntervalRecording intervalRecording);
 
 	/**
 	 * Called after a {@link Throwable} was thrown during the recording.
-	 * @param intervalRecording The recording that was in progress when the error
-	 * happened.
+	 * @param intervalRecording the recording that was in progress when the error happened
 	 */
-	void onError(IntervalRecording<T> intervalRecording);
+	void onError(IntervalRecording intervalRecording);
+
+	/**
+	 * Called when the recording is to be restored e.g. in a new thread.
+	 * @param intervalRecording the recording that was started
+	 */
+	void onRestore(IntervalRecording intervalRecording);
 
 	/**
 	 * Signals that an {@link InstantEvent} was recorded.
-	 * @param instantRecording The recording that belongs to the recorded
-	 * {@link InstantEvent}.
+	 * @param instantRecording the recording that belongs to the recorded
+	 * {@link InstantEvent}
 	 */
-	void record(InstantRecording instantRecording);
+	void recordInstant(InstantRecording instantRecording);
 
 }

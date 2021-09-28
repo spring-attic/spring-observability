@@ -16,39 +16,41 @@
 
 package org.springframework.observability.event.interval;
 
-import org.springframework.observability.core.http.Request;
-import org.springframework.observability.core.http.Response;
 import org.springframework.observability.lang.NonNull;
 import org.springframework.observability.lang.Nullable;
+import org.springframework.observability.transport.http.Request;
+import org.springframework.observability.transport.http.Response;
 
 /**
  * An IntervalEvent that represents an HTTP event.
  *
  * @param <REQ> request type
  * @param <RES> response type
- * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
 public interface IntervalHttpEvent<REQ extends Request, RES extends Response> extends IntervalEvent {
 
 	/**
-	 * @return HTTP request
+	 * Returns the HTTP request.
+	 * @return request
 	 */
 	@NonNull
 	REQ getRequest();
 
 	/**
-	 * Sets the given HTTP response on the event. Might be {@code null} when an exception
-	 * occurred and there's no response.
-	 * @param response HTTP response
-	 * @return this
-	 */
-	IntervalHttpEvent<REQ, RES> setResponse(RES response);
-
-	/**
-	 * @return HTTP response
+	 * Returns the HTTP response.
+	 * @return response
 	 */
 	@Nullable
 	RES getResponse();
+
+	/**
+	 * Sets the given HTTP response on the event. Might be {@code null} when an exception
+	 * occurred and there's no response.
+	 * @param response a HTTP response
+	 * @return this
+	 */
+	IntervalHttpEvent<REQ, RES> setResponse(RES response);
 
 }

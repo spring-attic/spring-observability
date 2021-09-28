@@ -14,28 +14,46 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.micrometer.listener;
+package org.springframework.observability.event.listener;
 
+import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
-import org.springframework.observability.event.listener.RecordingListener;
 
 /**
- * Marker interface for metrics listeners.
+ * Listener that does nothing.
  *
- * @param <T> Context Type
- * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface MetricsRecordingListener<T> extends RecordingListener<T> {
+public class NoOpRecordingListener implements RecordingListener<Object> {
 
 	@Override
-	default void onCreate(IntervalRecording intervalRecording) {
-		// TODO: If error add a tag
+	public Object createContext() {
+		return null;
 	}
 
 	@Override
-	default void onRestore(IntervalRecording intervalRecording) {
-		// TODO: If error add a tag
+	public void onCreate(IntervalRecording intervalRecording) {
+	}
+
+	@Override
+	public void onStart(IntervalRecording intervalRecording) {
+	}
+
+	@Override
+	public void onStop(IntervalRecording intervalRecording) {
+	}
+
+	@Override
+	public void onError(IntervalRecording intervalRecording) {
+	}
+
+	@Override
+	public void onRestore(IntervalRecording intervalRecording) {
+	}
+
+	@Override
+	public void recordInstant(InstantRecording instantRecording) {
 	}
 
 }
