@@ -25,8 +25,7 @@
 	</modules>
 	<properties>
 		<javadoc.failOnError>true</javadoc.failOnError>
-		<!-- I've added this cause I have no idea why we started having warnings that we're using modules -->
-		<javadoc.failOnWarnings>false</javadoc.failOnWarnings>
+		<javadoc.failOnWarnings>true</javadoc.failOnWarnings>
 
 		<!-- Use as few imports as possible so as not to have cycles -->
 		<spring.version>5.3.10</spring.version>

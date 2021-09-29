@@ -20,3 +20,4 @@ _site/
 .flattened-pom.xml
 .DS_Store
 .sdkmanrc
+.asciidoctorconfig.adoc
