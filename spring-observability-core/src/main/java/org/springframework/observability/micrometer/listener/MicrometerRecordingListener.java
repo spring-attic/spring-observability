@@ -55,7 +55,7 @@ public class MicrometerRecordingListener implements MetricsRecordingListener {
 				.description(intervalRecording.getEvent().getDescription()).tags(toTags(intervalRecording))
 				.tag("error", intervalRecording.getError() != null
 						? intervalRecording.getError().getClass().getSimpleName() : "none")
-				.register(registry).recordInstant(intervalRecording.getDuration());
+				.register(registry).record(intervalRecording.getDuration());
 	}
 
 	@Override

@@ -81,6 +81,11 @@ class WithMockSpanTracer implements Tracer {
 	}
 
 	@Override
+	public CurrentTraceContext currentTraceContext() {
+		return null;
+	}
+
+	@Override
 	public SpanCustomizer currentSpanCustomizer() {
 		return null;
 	}

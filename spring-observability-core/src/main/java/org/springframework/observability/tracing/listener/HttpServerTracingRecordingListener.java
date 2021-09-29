@@ -16,15 +16,15 @@
 
 package org.springframework.observability.tracing.listener;
 
-import io.micrometer.api.event.Recording;
-import io.micrometer.api.event.interval.IntervalEvent;
-import io.micrometer.api.event.interval.IntervalHttpServerEvent;
-import io.micrometer.api.event.listener.RecordingListener;
-import io.micrometer.api.instrument.tracing.Tracer;
-import io.micrometer.api.instrument.tracing.http.HttpServerHandler;
-import io.micrometer.api.instrument.transport.http.HttpResponse;
-import io.micrometer.api.instrument.transport.http.HttpServerRequest;
-import io.micrometer.api.instrument.transport.http.HttpServerResponse;
+import org.springframework.observability.event.Recording;
+import org.springframework.observability.event.interval.IntervalEvent;
+import org.springframework.observability.event.interval.IntervalHttpServerEvent;
+import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.tracing.Tracer;
+import org.springframework.observability.tracing.http.HttpServerHandler;
+import org.springframework.observability.transport.http.HttpResponse;
+import org.springframework.observability.transport.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerResponse;
 
 /**
  * {@link RecordingListener} that uses the Tracing API to record events for HTTP server
@@ -38,7 +38,6 @@ public class HttpServerTracingRecordingListener extends
 
 	/**
 	 * Creates a new instance of {@link HttpServerTracingRecordingListener}.
-	 *
 	 * @param tracer tracer
 	 * @param handler http server handler
 	 */
@@ -86,18 +85,18 @@ public class HttpServerTracingRecordingListener extends
 	// taken from Brave
 	private String catchAllName(String method, int statusCode) {
 		switch (statusCode) {
-			// from https://tools.ietf.org/html/rfc7231#section-6.4
-			case 301:
-			case 302:
-			case 303:
-			case 305:
-			case 306:
-			case 307:
-				return method + " redirected";
-			case 404:
-				return method + " not_found";
-			default:
-				return null;
+		// from https://tools.ietf.org/html/rfc7231#section-6.4
+		case 301:
+		case 302:
+		case 303:
+		case 305:
+		case 306:
+		case 307:
+			return method + " redirected";
+		case 404:
+			return method + " not_found";
+		default:
+			return null;
 		}
 	}
 

@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.springframework.observability.tracing.BaggageInScope;
+import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.ScopedSpan;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.SpanCustomizer;
@@ -110,6 +111,11 @@ public class SimpleTracer implements Tracer {
 
 	@Override
 	public TraceContext.Builder traceContextBuilder() {
+		return null;
+	}
+
+	@Override
+	public CurrentTraceContext currentTraceContext() {
 		return null;
 	}
 

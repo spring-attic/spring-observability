@@ -31,7 +31,7 @@ import org.springframework.observability.tracing.Tracer;
 public interface TracingRecordingListener extends RecordingListener<TracingRecordingListener.TracingContext> {
 
 	@Override
-    default void onCreate(IntervalRecording intervalRecording) {
+	default void onCreate(IntervalRecording intervalRecording) {
 		Span span = getTracer().currentSpan();
 		if (span != null) {
 			setSpanAndScope(intervalRecording, span);
@@ -40,25 +40,23 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 	/**
 	 * Sets span and a scope for that span in context.
-	 *
 	 * @param intervalRecording recording with context to mutate
 	 * @param span span to put in context
 	 */
-    default void setSpanAndScope(IntervalRecording intervalRecording, Span span) {
+	default void setSpanAndScope(IntervalRecording intervalRecording, Span span) {
 		if (span == null) {
 			return;
 		}
 		CurrentTraceContext.Scope scope = getTracer().currentTraceContext().maybeScope(span.context());
-        intervalRecording.getContext(this).setSpanAndScope(span, scope);
+		intervalRecording.getContext(this).setSpanAndScope(span, scope);
 	}
 
 	/**
 	 * Cleans the scope present in the context.
-	 *
 	 * @param intervalRecording recording with context containing scope
 	 */
-    default void cleanup(IntervalRecording<TracingRecordingListener.TracingContext> intervalRecording) {
-        TracingContext context = intervalRecording.getContext();
+	default void cleanup(IntervalRecording intervalRecording) {
+		TracingContext context = intervalRecording.getContext(this);
 		context.getScope().close();
 	}
 
@@ -68,14 +66,13 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 	}
 
 	@Override
-    default void onRestore(IntervalRecording intervalRecording) {
-        Span span = intervalRecording.getContext(this).getSpan();
+	default void onRestore(IntervalRecording intervalRecording) {
+		Span span = intervalRecording.getContext(this).getSpan();
 		setSpanAndScope(intervalRecording, span);
 	}
 
 	/**
 	 * Returns the {@link Tracer}.
-	 *
 	 * @return tracer
 	 */
 	Tracer getTracer();
@@ -94,7 +91,6 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 		/**
 		 * Returns the span.
-		 *
 		 * @return span
 		 */
 		Span getSpan() {
@@ -103,7 +99,6 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 		/**
 		 * Sets the span.
-		 *
 		 * @param span span to set
 		 */
 		void setSpan(Span span) {
@@ -112,7 +107,6 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 		/**
 		 * Returns the scope of the span.
-		 *
 		 * @return scope of the span
 		 */
 		CurrentTraceContext.Scope getScope() {
@@ -121,7 +115,6 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 		/**
 		 * Sets the current trace context scope.
-		 *
 		 * @param scope scope to set
 		 */
 		void setScope(CurrentTraceContext.Scope scope) {
@@ -130,7 +123,6 @@ public interface TracingRecordingListener extends RecordingListener<TracingRecor
 
 		/**
 		 * Convenience method to set both span and scope.
-		 *
 		 * @param span span to set
 		 * @param scope scope to set
 		 */

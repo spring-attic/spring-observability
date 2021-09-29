@@ -16,8 +16,8 @@
 
 package org.springframework.observability.tracing.listener;
 
-import io.micrometer.api.instrument.Tag;
-import io.micrometer.api.instrument.tracing.Span;
+import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.tracing.Span;
 
 class TracingTagFilter {
 

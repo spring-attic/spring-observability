@@ -16,14 +16,14 @@
 
 package org.springframework.observability.tracing.listener;
 
-import io.micrometer.api.event.Recording;
-import io.micrometer.api.event.interval.IntervalEvent;
-import io.micrometer.api.event.interval.IntervalHttpClientEvent;
-import io.micrometer.api.event.listener.RecordingListener;
-import io.micrometer.api.instrument.tracing.Tracer;
-import io.micrometer.api.instrument.tracing.http.HttpClientHandler;
-import io.micrometer.api.instrument.transport.http.HttpClientRequest;
-import io.micrometer.api.instrument.transport.http.HttpClientResponse;
+import org.springframework.observability.event.Recording;
+import org.springframework.observability.event.interval.IntervalEvent;
+import org.springframework.observability.event.interval.IntervalHttpClientEvent;
+import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.tracing.Tracer;
+import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * {@link RecordingListener} that uses the Tracing API to record events for HTTP client
@@ -37,7 +37,6 @@ public class HttpClientTracingRecordingListener extends
 
 	/**
 	 * Creates a new instance of {@link HttpClientTracingRecordingListener}.
-	 *
 	 * @param tracer tracer
 	 * @param handler http client handler
 	 */
