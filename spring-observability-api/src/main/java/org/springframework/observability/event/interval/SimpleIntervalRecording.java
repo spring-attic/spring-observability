@@ -84,7 +84,7 @@ public class SimpleIntervalRecording implements IntervalRecording {
 	 * @param listener the listener that needs to be notified about the recordings
 	 * @param clock the clock to be used
 	 */
-	SimpleIntervalRecording(IntervalEvent event, RecordingListener<CompositeContext> listener, Clock clock) {
+	public SimpleIntervalRecording(IntervalEvent event, RecordingListener<CompositeContext> listener, Clock clock) {
 		this(event, listener, clock, () -> {
 		});
 	}
@@ -154,6 +154,7 @@ public class SimpleIntervalRecording implements IntervalRecording {
 		this.stopped = monotonicTime;
 		this.duration = Duration.ofNanos(this.stopped - this.started);
 		this.listener.onStop(this);
+		this.closingCallback.run();
 	}
 
 	@Override

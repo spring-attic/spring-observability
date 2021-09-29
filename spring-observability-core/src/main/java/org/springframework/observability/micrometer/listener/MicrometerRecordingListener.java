@@ -34,7 +34,7 @@ import org.springframework.observability.event.tag.Cardinality;
 /**
  * {@link RecordingListener} that uses Micrometer's API to record events.
  */
-public class MicrometerRecordingListener implements MetricsRecordingListener {
+public class MicrometerRecordingListener implements MetricsRecordingListener<Void> {
 
 	private final MeterRegistry registry;
 

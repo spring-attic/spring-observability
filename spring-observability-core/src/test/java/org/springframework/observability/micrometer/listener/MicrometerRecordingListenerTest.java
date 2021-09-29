@@ -18,6 +18,7 @@ package org.springframework.observability.micrometer.listener;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -32,6 +33,9 @@ import org.springframework.observability.event.instant.SimpleInstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
+import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
+import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.MockClock;
 
@@ -48,9 +52,12 @@ public class MicrometerRecordingListenerTest {
 
 	private final MeterRegistry registry = new SimpleMeterRegistry();
 
-	private final MicrometerRecordingListener listener = new MicrometerRecordingListener(registry);
+	private final MicrometerRecordingListener micrometerListener = new MicrometerRecordingListener(registry);
 
-	private IntervalRecording<Void> intervalRecording;
+	private final RecordingListener<CompositeContext> listener = new AllMatchingCompositeRecordingListener(
+			Collections.singletonList(micrometerListener));
+
+	private IntervalRecording intervalRecording;
 
 	private InstantRecording instantRecording;
 

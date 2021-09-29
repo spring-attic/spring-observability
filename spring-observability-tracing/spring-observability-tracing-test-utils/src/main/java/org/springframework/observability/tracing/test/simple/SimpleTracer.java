@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.springframework.observability.tracing.BaggageInScope;
-import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.ScopedSpan;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.SpanCustomizer;
@@ -37,10 +36,19 @@ import org.springframework.observability.tracing.Tracer;
  */
 public class SimpleTracer implements Tracer {
 
+	private final SimpleCurrentTraceContext currentTraceContext;
+
 	/**
 	 * Recorded spans.
 	 */
 	public Deque<SimpleSpan> spans = new LinkedList<>();
+
+	/**
+	 * Creates a new instance.
+	 */
+	public SimpleTracer() {
+		this.currentTraceContext = SimpleCurrentTraceContext.withTracer(this);
+	}
 
 	@Override
 	public Span nextSpan(Span parent) {
@@ -115,8 +123,8 @@ public class SimpleTracer implements Tracer {
 	}
 
 	@Override
-	public CurrentTraceContext currentTraceContext() {
-		return null;
+	public SimpleCurrentTraceContext currentTraceContext() {
+		return this.currentTraceContext;
 	}
 
 	@Override
