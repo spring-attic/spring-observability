@@ -1,0 +1,65 @@
+= WHERE SHOULD I LIVE?
+
+This doc contains a quick intro to Spring Observability and 2 samples of usage.
+1 simulating code being in Micrometer and 1 when the Spring Observability's Recorder API 
+is used directly without any abstractions.
+
+== Spring Observability API - Quick Intro
+
+The most important module is the `spring-observability-api` that contains the API of
+Spring Observability. It has 0 dependencies.
+
+The point of entry is the `Recorder<?>` interface that creates a `Recording`. 
+A `Recording` can be either 
+
+* `IntervalRecording` if it has a duration
+* `InstantRecording` if it's instantaneous
+
+A `Recording` can be created for a given `Event`. An `Event` by default has a low cardinality name,
+description but for e.g. HTTP based communication will carry the HTTP request and response that can
+be later processed by a `RecordingListener`. The `Recording` can be tagged with key, value pairs and can
+be updated at runtime with a high cardinality name.
+
+```java
+IntervalRecording interval = recorder.recordingFor((IntervalEvent) -> "some low cardinality name");
+InstantRecording instant = recorder.recordingFor((InstantEvent) -> "some other low cardinality name");
+```
+
+Each `Recording` has a number of attached `RecordingListener` implementations that react to methods such as
+`start()`, `stop()`, `restore()` etc. with their respective `onStart(...)`, `onStop(...)`, `onRestore(...)`
+listener methods. That means we can react to situations when a `Recording` got e.g. started and stopped.
+
+From the most important listeners we supply 
+
+* `MicrometerRecordingListener` that will create a Micrometer `Timer`
+and register its duration.
+* `DefaultTracingRecordingListener` that will wrap the recording with a span.
+
+The module provides also the whole tracing abstraction but it's almost entirely hidden away from the user 
+in the listeners.
+
+=== Micrometer Sample Class
+
+For the sake of readability in this module we've provided the `io.micrometer.core.instrument.Sample` class in the 
+`spring-observability-api` module. Normally, it could live in a module related to Micrometer. Either in a separate
+repository under the Micrometer umbrella or in some form of an API module within the `micrometer-metrics` repository. 
+
+== Usage Examples
+
+In this section we describe usage examples of either the Recording API directly or via the new Micrometer `Sample` class.
+
+=== Original Spring Boot RestTemplate Instrumentation
+
+We've copied over from Boot an example of `RestTemplate` instrumentation using the `AutoTimer` and Micrometer's `Timer`.
+You can find the original under `samples/spring-observability-original-sample`.
+
+=== Recorder API Based RestTemplate Instrumentation
+
+Under `samples/spring-observability-recordingapi-sample` you can find the code modified to use the Recording API
+that sets up metrics and tracing around the HTTP client call. 
+
+=== Micrometer Based RestTemplate Instrumentation
+
+Under `samples/spring-observability-micrometer-sample` you can find the code modified to use a `Sample` class 
+that delegates work to the Recording API that sets up metrics and tracing around the HTTP client call. We imagine
+that this class would live somewhere in the Micrometer world.

@@ -108,6 +108,7 @@ public interface AutoTimer {
 		if (!CollectionUtils.isEmpty(annotations)) {
 			IntervalRecording recording = recorder.recordingFor(event);
 			for (Timed annotation : annotations) {
+				// TODO: We need to provide support for passing of histograms and percentiles to metrics
 				recording.tags(annotation.extraTags());
 				if (StringUtils.hasText(annotation.description())) {
 					recording.getEvent().description(annotation.description());

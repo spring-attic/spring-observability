@@ -7,6 +7,10 @@
 - `record(runnable)`,  record(callable)?
 - throw exceptions vs. log warn (or first warn then debug log)?
 - `NamingConvention`? (see Micrometer)
+- Consider renaming events to something else
+- Events should be interfaces cause we could have events that require both
+metrics and tracing custom information (HTTP req / res for tracing + 
+info on histograms for metrics) - currently we don't support it
 
 == Test code
 

@@ -106,6 +106,7 @@ public interface AutoTimer {
 		if (!CollectionUtils.isEmpty(annotations)) {
 			Sample sample = Sample.sample(metricName, recorder);
 			for (Timed annotation : annotations) {
+				// TODO: We need to provide support for passing of histograms and percentiles to metrics
 				sample.tags(annotation.extraTags());
 				if (StringUtils.hasText(annotation.description())) {
 					sample.getEvent().description(annotation.description());
