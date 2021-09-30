@@ -16,6 +16,8 @@
 
 package org.springframework.observability.event;
 
+import java.util.List;
+
 import org.springframework.observability.event.instant.InstantEvent;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
@@ -26,32 +28,54 @@ import org.springframework.observability.event.interval.IntervalRecording;
  * {@link Event Events}. Implementations must make sure that none of the methods return
  * null.
  *
- * @param <T> Context Type
+ * @param <T> context type
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
 public interface Recorder<T> {
 
 	/**
-	 * @param event An {@link IntervalEvent} to create a recording for.
-	 * @return An {@link IntervalRecording} for the provided {@link IntervalEvent}.
+	 * Creates a recording for an {@link IntervalEvent}.
+	 * @param event an {@link IntervalEvent} to create a recording for
+	 * @return an {@link IntervalRecording} for the provided {@link IntervalEvent}
 	 */
-	IntervalRecording<T> recordingFor(IntervalEvent event);
+	IntervalRecording recordingFor(IntervalEvent event);
 
 	/**
-	 * @param event An {@link InstantEvent} to create a recording for.
-	 * @return An {@link InstantRecording} for the provided {@link InstantEvent}.
+	 * Creates a recording for an {@link InstantEvent}.
+	 * @param event an {@link InstantEvent} to create a recording for
+	 * @return an {@link InstantRecording} for the provided {@link InstantEvent}
 	 */
 	InstantRecording recordingFor(InstantEvent event);
 
 	/**
-	 * @return An indicator whether the recording is on/off.
+	 * An indicator whether the recording is on/off.
+	 * @return {@code true} when recording is enabled.
 	 */
 	boolean isEnabled();
 
 	/**
-	 * @param enabled Turns the recording on/off.
+	 * Turns the recording on/off.
+	 * @param enabled {@code true} to enable recording.
 	 */
 	void setEnabled(boolean enabled);
+
+	/**
+	 * Returns the current recording.
+	 * @return current recording or {@code null} when not present
+	 */
+	IntervalRecording getCurrentRecording();
+
+	/**
+	 * Sets the current recording.
+	 * @param recording current recording to set
+	 */
+	void setCurrentRecording(IntervalRecording recording);
+
+	/**
+	 * Returns all registered recording customizers.
+	 * @return recording customizers
+	 */
+	List<RecordingCustomizer> getRecordingCustomizers();
 
 }

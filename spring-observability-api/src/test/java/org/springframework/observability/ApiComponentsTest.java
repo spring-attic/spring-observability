@@ -18,6 +18,7 @@ package org.springframework.observability;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,6 @@ import org.springframework.observability.event.listener.composite.AllMatchingCom
 import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.event.tag.Cardinality;
 import org.springframework.observability.event.tag.Tag;
-import org.springframework.observability.test.TestContext;
 import org.springframework.observability.test.TestRecordingListener;
 import org.springframework.observability.time.Clock;
 import org.springframework.observability.time.MockClock;
@@ -55,7 +55,7 @@ class ApiComponentsTest {
 	private final TestRecordingListener listener = new TestRecordingListener(clock);
 
 	private final Recorder<CompositeContext> recorder = new SimpleRecorder<>(
-			new AllMatchingCompositeRecordingListener(listener), clock);
+			new AllMatchingCompositeRecordingListener(listener), clock, Collections.emptyList());
 
 	@BeforeEach
 	void setUp() {
@@ -66,7 +66,7 @@ class ApiComponentsTest {
 	@Test
 	void shouldRecordInstantEvent() {
 		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
-				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record();
+				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).recordInstant();
 
 		InstantRecording recording = listener.getInstantRecording();
 		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
@@ -82,9 +82,10 @@ class ApiComponentsTest {
 	@Test
 	void shouldRecordInstantEventWithProvidedTime() {
 		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener),
-				null);
+				null, Collections.emptyList());
 		recorder.recordingFor(INSTANT_EVENT).highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
-				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH)).record(100);
+				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", HIGH))
+				.recordInstant(100);
 
 		InstantRecording recording = listener.getInstantRecording();
 		assertThat(recording.getEvent()).isSameAs(INSTANT_EVENT);
@@ -103,7 +104,7 @@ class ApiComponentsTest {
 		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
 				.tag(Tag.of("testKey1", "testValue1", LOW));
-		recording.record();
+		recording.recordInstant();
 
 		assertThat(recorder.isEnabled()).isFalse();
 		assertThat(recording).isExactlyInstanceOf(NoOpInstantRecording.class);
@@ -120,12 +121,12 @@ class ApiComponentsTest {
 	@Test
 	void shouldNotRecordInstantEventWithProvidedTimeIfRecordingIsDisabled() {
 		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener),
-				null);
+				null, Collections.emptyList());
 		recorder.setEnabled(false);
 		InstantRecording recording = recorder.recordingFor(INSTANT_EVENT)
 				.highCardinalityName(INSTANT_EVENT.getLowCardinalityName() + "-12345")
 				.tag(Tag.of("testKey1", "testValue1", LOW));
-		recording.record(100);
+		recording.recordInstant(100);
 
 		assertThat(recorder.isEnabled()).isFalse();
 		assertThat(recording).isExactlyInstanceOf(NoOpInstantRecording.class);
@@ -141,8 +142,8 @@ class ApiComponentsTest {
 
 	@Test
 	void shouldRecordIntervalEvent() {
-		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
-				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", LOW)).start();
+		IntervalRecording recording = recorder.recordingFor(INTERVAL_EVENT).tag(Tag.of("testKey1", "testValue1", LOW))
+				.tag(Tag.of("testKey2", "testValue2", LOW)).start();
 
 		verifyOnStart();
 
@@ -162,9 +163,9 @@ class ApiComponentsTest {
 	@Test
 	void shouldRecordIntervalEventWithProvidedTime() {
 		Recorder<CompositeContext> recorder = new SimpleRecorder<>(new AllMatchingCompositeRecordingListener(listener),
-				null);
-		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
-				.tag(Tag.of("testKey1", "testValue1", LOW)).tag(Tag.of("testKey2", "testValue2", LOW)).start(1, 2);
+				null, Collections.emptyList());
+		IntervalRecording recording = recorder.recordingFor(INTERVAL_EVENT).tag(Tag.of("testKey1", "testValue1", LOW))
+				.tag(Tag.of("testKey2", "testValue2", LOW)).start(1, 2);
 
 		verifyOnStart(1, 2);
 
@@ -184,8 +185,8 @@ class ApiComponentsTest {
 	@Test
 	void shouldNotRecordIntervalEventIfRecordingIsDisabled() {
 		recorder.setEnabled(false);
-		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
-				.tag(Tag.of("testKey1", "testValue1", LOW)).start();
+		IntervalRecording recording = recorder.recordingFor(INTERVAL_EVENT).tag(Tag.of("testKey1", "testValue1", LOW))
+				.start();
 
 		try {
 			clock.addSeconds(5);
@@ -211,15 +212,15 @@ class ApiComponentsTest {
 
 		assertThat(recording.getError()).isNull();
 		assertThat(recording.getTags()).isEmpty();
-		assertThat(recording.getContext()).isNull();
+		assertThat(recording.getContext(listener)).isNull();
 		assertThat(recording).hasToString("NoOpIntervalRecording");
 	}
 
 	@Test
 	void shouldNotRecordIntervalEventWithProvidedTimeIfRecordingIsDisabled() {
 		recorder.setEnabled(false);
-		IntervalRecording<CompositeContext> recording = recorder.recordingFor(INTERVAL_EVENT)
-				.tag(Tag.of("testKey1", "testValue1", LOW)).start(1, 2);
+		IntervalRecording recording = recorder.recordingFor(INTERVAL_EVENT).tag(Tag.of("testKey1", "testValue1", LOW))
+				.start(1, 2);
 
 		try {
 			recording.error(new IOException("simulated"));
@@ -244,7 +245,7 @@ class ApiComponentsTest {
 
 		assertThat(recording.getError()).isNull();
 		assertThat(recording.getTags()).isEmpty();
-		assertThat(recording.getContext()).isNull();
+		assertThat(recording.getContext(listener)).isNull();
 		assertThat(recording).hasToString("NoOpIntervalRecording");
 	}
 
@@ -253,7 +254,7 @@ class ApiComponentsTest {
 	void shouldShowSimpleUsageScenario() {
 		String userId = "1";
 		CalculationService calculationService = new CalculationService();
-		SimpleRecorder<?> recorder = new SimpleRecorder<>(this.listener, Clock.SYSTEM);
+		SimpleRecorder<?> recorder = new SimpleRecorder(this.listener, Clock.SYSTEM, Collections.emptyList());
 
 		IntervalRecording recording = recorder.recordingFor((IntervalEvent) () -> "important-calculation")
 				.tag(Tag.of("calculation-type", "tax", Cardinality.LOW))
@@ -275,7 +276,7 @@ class ApiComponentsTest {
 	}
 
 	private void verifyOnStart(long startWallTime, long startNanos) {
-		IntervalRecording<TestContext> recording = listener.getOnStartRecording();
+		IntervalRecording recording = listener.getOnStartRecording();
 
 		assertThat(listener.getOnErrorRecording()).isNull();
 		assertThat(listener.getOnStopRecording()).isNull();
@@ -290,7 +291,7 @@ class ApiComponentsTest {
 		assertThat(recording.getError()).isNull();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW));
-		assertThat(recording.getContext()).isSameAs(listener.getContext());
+		assertThat(recording.getContext(listener)).isSameAs(listener.getContext());
 		assertThat(recording.toString()).contains("event=test-interval-event")
 				.contains("highCardinalityName=test-interval-event")
 				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}]").contains("duration=0ms")
@@ -302,7 +303,7 @@ class ApiComponentsTest {
 	}
 
 	private void verifyOnError(long startWallTime, long startNanos) {
-		IntervalRecording<TestContext> recording = listener.getOnErrorRecording();
+		IntervalRecording recording = listener.getOnErrorRecording();
 
 		assertThat(listener.getOnStartRecording()).isNotNull();
 		assertThat(listener.getOnStopRecording()).isNull();
@@ -317,7 +318,7 @@ class ApiComponentsTest {
 		assertThat(recording.getError()).isExactlyInstanceOf(IOException.class).hasMessage("simulated").hasNoCause();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
-		assertThat(recording.getContext()).isSameAs(listener.getContext());
+		assertThat(recording.getContext(listener)).isSameAs(listener.getContext());
 		assertThat(recording.toString()).contains("event=test-interval-event")
 				.contains("highCardinalityName=test-interval-event")
 				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")
@@ -330,7 +331,7 @@ class ApiComponentsTest {
 	}
 
 	private void verifyOnStop(long startWallTime, long startNanos, long stopNanos) {
-		IntervalRecording<TestContext> recording = listener.getOnStopRecording();
+		IntervalRecording recording = listener.getOnStopRecording();
 		Duration duration = Duration.ofNanos(stopNanos - startNanos);
 
 		assertThat(listener.getOnStartRecording()).isNotNull();
@@ -346,7 +347,7 @@ class ApiComponentsTest {
 		assertThat(recording.getError()).isExactlyInstanceOf(IOException.class).hasMessage("simulated").hasNoCause();
 		assertThat(recording.getTags()).containsExactly(Tag.of("testKey1", "testValue1", LOW),
 				Tag.of("testKey2", "testValue2", LOW), Tag.of("testKey3", "testValue3", HIGH));
-		assertThat(recording.getContext()).isSameAs(listener.getContext());
+		assertThat(recording.getContext(listener)).isSameAs(listener.getContext());
 		assertThat(recording.toString()).contains("event=test-interval-event")
 				.contains("highCardinalityName=test-interval-event-12345")
 				.contains("tags=[tag{testKey1=testValue1}, tag{testKey2=testValue2}, tag{testKey3=testValue3}]")

@@ -16,6 +16,11 @@
 
 package org.springframework.observability.event;
 
+import java.util.Deque;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import org.springframework.observability.event.instant.InstantEvent;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.instant.NoOpInstantRecording;
@@ -25,39 +30,56 @@ import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.NoOpIntervalRecording;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.event.listener.composite.CompositeContext;
 import org.springframework.observability.time.Clock;
 
 /**
- * @param <T> Context Type
+ * Simple implementation of a {@link Recorder}.
+ *
+ * @param <T> context type
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
 public class SimpleRecorder<T> implements Recorder<T> {
 
-	private final RecordingListener<T> listener;
+	private final RecordingListener<CompositeContext> listener;
 
 	private final Clock clock;
 
+	private final List<RecordingCustomizer> customizers;
+
 	private volatile boolean enabled;
 
+	private final ThreadLocal<IntervalRecording> threadLocal = new ThreadLocal<>();
+
+	private final Deque<IntervalRecording> recordings = new LinkedBlockingDeque<>();
+
 	/**
-	 * @param listener The listener that needs to be notified about the recordings.
-	 * @param clock The clock to be used.
+	 * Create a new {@link SimpleRecorder}.
+	 * @param listener the listener that needs to be notified about the recordings
+	 * @param clock the clock to be used
+	 * @param customizers recording customizers to be used
 	 */
-	public SimpleRecorder(RecordingListener<T> listener, Clock clock) {
+	public SimpleRecorder(RecordingListener<CompositeContext> listener, Clock clock,
+			List<RecordingCustomizer> customizers) {
 		this.listener = listener;
 		this.clock = clock;
 		this.enabled = true;
+		this.customizers = customizers;
 	}
 
 	@Override
-	public IntervalRecording<T> recordingFor(IntervalEvent event) {
-		return enabled ? new SimpleIntervalRecording<>(event, listener, clock) : new NoOpIntervalRecording<>();
+	public IntervalRecording recordingFor(IntervalEvent event) {
+		IntervalRecording recording = this.enabled
+				? new SimpleIntervalRecording(event, this.listener, this.clock, this::remove)
+				: new NoOpIntervalRecording();
+		setCurrentRecording(recording);
+		return recording;
 	}
 
 	@Override
 	public InstantRecording recordingFor(InstantEvent event) {
-		return enabled ? new SimpleInstantRecording(event, listener, clock) : new NoOpInstantRecording();
+		return this.enabled ? new SimpleInstantRecording(event, this.listener, this.clock) : new NoOpInstantRecording();
 	}
 
 	@Override
@@ -68,6 +90,56 @@ public class SimpleRecorder<T> implements Recorder<T> {
 	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	@Override
+	public void setCurrentRecording(IntervalRecording recording) {
+		if (!this.enabled) {
+			return;
+		}
+		IntervalRecording old = this.threadLocal.get();
+		if (old != null) {
+			this.recordings.addFirst(old);
+		}
+		this.threadLocal.set(recording);
+	}
+
+	/**
+	 * Returns the current interval recording or {@code null} if there's none.
+	 * @return currently stored recording
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public IntervalRecording getCurrentRecording() {
+		if (!this.enabled) {
+			return null;
+		}
+		return this.threadLocal.get();
+	}
+
+	/**
+	 * Removes the current span from thread local and brings back the previous span to the
+	 * current thread local.
+	 */
+	private void remove() {
+		if (!this.enabled) {
+			return;
+		}
+		this.threadLocal.remove();
+		if (this.recordings.isEmpty()) {
+			return;
+		}
+		try {
+			IntervalRecording first = this.recordings.removeFirst();
+			this.threadLocal.set(first);
+		}
+		catch (NoSuchElementException ex) {
+		}
+	}
+
+	@Override
+	public List<RecordingCustomizer> getRecordingCustomizers() {
+		return this.customizers;
 	}
 
 }

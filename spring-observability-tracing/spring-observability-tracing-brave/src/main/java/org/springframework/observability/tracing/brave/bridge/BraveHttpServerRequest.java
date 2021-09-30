@@ -23,8 +23,8 @@ import java.util.Collections;
 import javax.servlet.ServletRequest;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.observability.core.Kind;
-import org.springframework.observability.core.http.HttpServerRequest;
+import org.springframework.observability.transport.Kind;
+import org.springframework.observability.transport.http.HttpServerRequest;
 import org.springframework.util.ClassUtils;
 
 /**

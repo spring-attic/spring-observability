@@ -17,13 +17,10 @@
 package org.springframework.observability.tracing.listener;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.observability.event.instant.InstantEvent;
 import org.springframework.observability.event.instant.InstantRecording;
@@ -31,128 +28,97 @@ import org.springframework.observability.event.instant.SimpleInstantRecording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
+import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.MockClock;
-import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.Tracer;
+import org.springframework.observability.tracing.test.simple.SimpleSpan;
+import org.springframework.observability.tracing.test.simple.SimpleSpan.Event;
+import org.springframework.observability.tracing.test.simple.SimpleTracer;
 
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.observability.event.tag.Cardinality.HIGH;
 import static org.springframework.observability.event.tag.Cardinality.LOW;
 import static org.springframework.observability.tracing.listener.DefaultTracingRecordingListenerTests.TestInstantEvent.INSTANT_EVENT;
 import static org.springframework.observability.tracing.listener.DefaultTracingRecordingListenerTests.TestIntervalEvent.INTERVAL_EVENT;
 
-@ExtendWith(MockitoExtension.class)
 class DefaultTracingRecordingListenerTests {
 
 	private static final MockClock CLOCK = new MockClock();
 
-	@Mock
-	private Tracer tracer;
+	private SimpleTracer tracer = new SimpleTracer();
 
-	@Mock
-	private Span span;
-
-	@Mock
-	private Tracer.SpanInScope spanInScope;
-
-	private IntervalRecording<DefaultTracingRecordingListener.TracingContext> intervalRecording;
+	private IntervalRecording intervalRecording;
 
 	private InstantRecording instantRecording;
 
-	@InjectMocks
-	private DefaultTracingRecordingListener listener;
+	private DefaultTracingRecordingListener listener = new DefaultTracingRecordingListener(tracer);
 
 	@BeforeEach
 	void setUp() {
-		intervalRecording = new SimpleIntervalRecording<>(INTERVAL_EVENT, listener, CLOCK);
-		instantRecording = new SimpleInstantRecording(INSTANT_EVENT, listener, CLOCK);
+		intervalRecording = new SimpleIntervalRecording(INTERVAL_EVENT,
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), CLOCK);
+		instantRecording = new SimpleInstantRecording(INSTANT_EVENT,
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), CLOCK);
 	}
 
 	@Test
 	void onStartShouldStartTheSpan() {
-		basicTracerAndSpanBehavior();
-		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
 		intervalRecording.start();
 
-		assertThat(intervalRecording.getContext().getSpanAndScope().getScope()).isSameAs(spanInScope);
-		verify(tracer).nextSpan();
-		verify(span).name(INTERVAL_EVENT.getLowCardinalityName());
-		verify(span).start(CLOCK.wallTimeIn(MICROSECONDS));
+		SimpleSpan lastSpan = tracer.getLastSpan();
+		assertThat(lastSpan.name).isEqualTo(INTERVAL_EVENT.getLowCardinalityName());
 	}
 
 	@Test
 	void onStopShouldEndTheSpan() {
-		basicTracerAndSpanBehavior();
-		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
-
 		intervalRecording.start().tag(Tag.of("foo", "bar", LOW)).tag(Tag.of("userId", "12345", HIGH));
 		CLOCK.addSeconds(1);
+
 		intervalRecording.stop();
 
-		verify(span).tag("foo", "bar");
-		verify(span).tag("userId", "12345");
-		verify(intervalRecording.getContext().getSpanAndScope().getScope()).close();
-		verify(span, times(0)).end();
-		verify(span).end(CLOCK.wallTimeIn(MICROSECONDS));
+		SimpleSpan onlySpan = tracer.getOnlySpan();
+		assertThat(onlySpan.name).isEqualTo(INTERVAL_EVENT.getLowCardinalityName());
+		assertThat(onlySpan.tags).containsEntry("foo", "bar").containsEntry("userId", "12345");
+		assertThat(tracer.currentTraceContext().scopeClosed).isTrue();
 	}
 
 	@Test
 	void onErrorShouldAddTheErrorToTheSpan() {
-		basicTracerAndSpanBehavior();
-		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
 		Throwable error = new IOException("simulated");
 
 		intervalRecording.start().error(error);
 
-		verify(span).error(error);
+		assertThat(tracer.getLastSpan().throwable).isSameAs(error);
 	}
 
 	@Test
 	void recordShouldNotDoAnythingWhenThereIsNoSpan() {
-		when(tracer.currentSpan()).thenReturn(null);
+		instantRecording.recordInstant();
 
-		instantRecording.record();
-
-		verifyNoInteractions(span);
-		verifyNoMoreInteractions(tracer);
+		assertThat(tracer.spans).isEmpty();
 	}
 
 	@Test
 	void recordShouldAddEventToTheSpan() {
 		CLOCK.addSeconds(1);
-		basicTracerAndSpanBehavior();
-		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
-		when(tracer.currentSpan()).thenReturn(span);
+		tracer.nextSpan().start();
 		intervalRecording.start();
 
-		instantRecording.record();
+		instantRecording.recordInstant();
 
-		verify(span).event(CLOCK.wallTimeIn(MICROSECONDS), instantRecording.getHighCardinalityName());
+		assertThat(tracer.getLastSpan().events)
+				.containsOnly(new Event(instantRecording.getHighCardinalityName(), CLOCK.wallTimeIn(MICROSECONDS)));
 	}
 
 	@Test
 	void recordShouldAddEventToTheSpanWithFixedTime() {
-		basicTracerAndSpanBehavior();
-		when(span.start(CLOCK.wallTimeIn(MICROSECONDS))).thenReturn(span);
-		when(tracer.currentSpan()).thenReturn(span);
+		tracer.nextSpan().start();
 		intervalRecording.start();
 
-		instantRecording.record(2_000);
+		instantRecording.recordInstant(2_000);
 
-		verify(span).event(2, instantRecording.getHighCardinalityName());
-	}
-
-	private void basicTracerAndSpanBehavior() {
-		when(tracer.nextSpan()).thenReturn(span);
-		when(tracer.withSpan(span)).thenReturn(spanInScope);
-		when(span.name(INTERVAL_EVENT.getLowCardinalityName())).thenReturn(span);
+		assertThat(tracer.getLastSpan().events).containsOnly(new Event(instantRecording.getHighCardinalityName(), 2));
 	}
 
 	enum TestIntervalEvent implements IntervalEvent {

@@ -19,7 +19,6 @@ package org.springframework.observability.event.listener.composite;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.observability.event.listener.RecordingListener;
-import org.springframework.observability.test.TestContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -32,8 +31,8 @@ class CompositeContextTest {
 
 	@Test
 	void shouldGiveTheRightContextToTheRightListener() {
-		RecordingListener<TestContext> listener1 = mock(RecordingListener.class);
-		TestContext context1 = new TestContext();
+		RecordingListener<CompositeContext> listener1 = mock(RecordingListener.class);
+		CompositeContext context1 = new CompositeContext();
 		when(listener1.createContext()).thenReturn(context1);
 
 		RecordingListener<String> listener2 = mock(RecordingListener.class);

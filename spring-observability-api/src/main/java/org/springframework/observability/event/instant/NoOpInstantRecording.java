@@ -61,11 +61,11 @@ public class NoOpInstantRecording implements InstantRecording {
 	}
 
 	@Override
-	public void record() {
+	public void recordInstant() {
 	}
 
 	@Override
-	public void record(long wallTime) {
+	public void recordInstant(long wallTime) {
 	}
 
 	@Override

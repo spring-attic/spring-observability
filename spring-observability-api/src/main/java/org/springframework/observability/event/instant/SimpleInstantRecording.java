@@ -25,6 +25,8 @@ import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.Clock;
 
 /**
+ * Simple implementation of a {@link InstantRecording}.
+ *
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
@@ -32,20 +34,21 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	private final InstantEvent event;
 
-	private String highCardinalityName;
-
 	private final RecordingListener<?> listener;
 
 	private final Clock clock;
 
-	private long wallTime = 0;
-
 	private final Set<Tag> tags = new LinkedHashSet<>();
 
+	private String highCardinalityName;
+
+	private long wallTime = 0;
+
 	/**
-	 * @param event The event this recording belongs to.
-	 * @param listener The listener that needs to be notified about the recordings.
-	 * @param clock The clock to be used.
+	 * Creates a new {@link SimpleInstantRecording}.
+	 * @param event the event this recording belongs to
+	 * @param listener the listener that needs to be notified about the recordings
+	 * @param clock the clock to be used
 	 */
 	public SimpleInstantRecording(InstantEvent event, RecordingListener<?> listener, Clock clock) {
 		this.event = event;
@@ -82,14 +85,14 @@ public class SimpleInstantRecording implements InstantRecording {
 	}
 
 	@Override
-	public void record() {
-		record(clock.wallTime());
+	public void recordInstant() {
+		recordInstant(this.clock.wallTime());
 	}
 
 	@Override
-	public void record(long wallTime) {
+	public void recordInstant(long wallTime) {
 		this.wallTime = wallTime;
-		this.listener.record(this);
+		this.listener.recordInstant(this);
 	}
 
 	@Override
@@ -99,8 +102,8 @@ public class SimpleInstantRecording implements InstantRecording {
 
 	@Override
 	public String toString() {
-		return "{" + "event=" + event.getLowCardinalityName() + ", highCardinalityName=" + highCardinalityName
-				+ ", tags=" + tags + '}';
+		return "{" + "event=" + this.event.getLowCardinalityName() + ", highCardinalityName=" + this.highCardinalityName
+				+ ", tags=" + this.tags + '}';
 	}
 
 }

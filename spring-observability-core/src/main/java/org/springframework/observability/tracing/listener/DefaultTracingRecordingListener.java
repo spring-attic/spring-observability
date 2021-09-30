@@ -22,17 +22,15 @@ import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
 import org.springframework.observability.tracing.Span;
-import org.springframework.observability.tracing.SpanAndScope;
 import org.springframework.observability.tracing.Tracer;
 
 /**
  * {@link RecordingListener} that uses the Tracing API to record events.
  *
  * @author Marcin Grzejszczak
- * @since 1.0.0
+ * @since 6.0.0
  */
-public class DefaultTracingRecordingListener
-		implements TracingRecordingListener<DefaultTracingRecordingListener.TracingContext> {
+public class DefaultTracingRecordingListener implements TracingRecordingListener {
 
 	private final Tracer tracer;
 
@@ -41,7 +39,8 @@ public class DefaultTracingRecordingListener
 	private final TracingTagFilter tracingTagFilter = new TracingTagFilter();
 
 	/**
-	 * @param tracer The tracer to use to record events.
+	 * Creates a new instance of {@link DefaultTracingRecordingListener}.
+	 * @param tracer the tracer to use to record events
 	 */
 	public DefaultTracingRecordingListener(Tracer tracer) {
 		this.tracer = tracer;
@@ -49,57 +48,50 @@ public class DefaultTracingRecordingListener
 	}
 
 	@Override
-	public void onStart(IntervalRecording<TracingContext> intervalRecording) {
-		Span span = this.tracer.nextSpan().name(intervalRecording.getHighCardinalityName())
-				.start(getStartTimeInMicros(intervalRecording));
-		intervalRecording.getContext().setSpanAndScope(span, this.tracer.withSpan(span));
+	public void onCreate(IntervalRecording intervalRecording) {
+		Span span = getTracer().currentSpan();
+		intervalRecording.getContext(this).setSpanAndScope(span, () -> {
+		});
 	}
 
 	@Override
-	public void onStop(IntervalRecording<TracingContext> intervalRecording) {
-		SpanAndScope spanAndScope = intervalRecording.getContext().getSpanAndScope();
-		Span span = spanAndScope.getSpan().name(intervalRecording.getHighCardinalityName());
+	public void onStart(IntervalRecording intervalRecording) {
+		Span parentSpan = intervalRecording.getContext(this).getSpan();
+		Span childSpan = parentSpan != null ? getTracer().nextSpan(parentSpan) : getTracer().nextSpan();
+		childSpan.name(intervalRecording.getHighCardinalityName()).start(getStartTimeInMicros(intervalRecording));
+		setSpanAndScope(intervalRecording, childSpan);
+	}
+
+	@Override
+	public void onStop(IntervalRecording intervalRecording) {
+		Span span = intervalRecording.getContext(this).getSpan().name(intervalRecording.getHighCardinalityName());
 		this.tracingTagFilter.tagSpan(span, intervalRecording.getTags());
-		spanAndScope.getScope().close();
+		cleanup(intervalRecording);
 		span.end(getStopTimeInMicros(intervalRecording));
 	}
 
 	@Override
-	public void onError(IntervalRecording<TracingContext> intervalRecording) {
-		Span span = intervalRecording.getContext().getSpanAndScope().getSpan();
+	public void onError(IntervalRecording intervalRecording) {
+		Span span = intervalRecording.getContext(this).getSpan();
 		span.error(intervalRecording.getError());
 	}
 
 	@Override
-	public void record(InstantRecording instantRecording) {
+	public void recordInstant(InstantRecording instantRecording) {
 		this.tracingInstantRecorder.record(instantRecording);
 	}
 
-	@Override
-	public TracingContext createContext() {
-		return new TracingContext();
-	}
-
-	private long getStartTimeInMicros(IntervalRecording<TracingContext> recording) {
+	long getStartTimeInMicros(IntervalRecording recording) {
 		return TimeUnit.NANOSECONDS.toMicros(recording.getStartWallTime());
 	}
 
-	private long getStopTimeInMicros(IntervalRecording<TracingContext> recording) {
+	long getStopTimeInMicros(IntervalRecording recording) {
 		return TimeUnit.NANOSECONDS.toMicros(recording.getStartWallTime() + recording.getDuration().toNanos());
 	}
 
-	static class TracingContext {
-
-		private SpanAndScope spanAndScope;
-
-		SpanAndScope getSpanAndScope() {
-			return this.spanAndScope;
-		}
-
-		void setSpanAndScope(Span span, Tracer.SpanInScope spanInScope) {
-			this.spanAndScope = new SpanAndScope(span, spanInScope);
-		}
-
+	@Override
+	public Tracer getTracer() {
+		return this.tracer;
 	}
 
 }

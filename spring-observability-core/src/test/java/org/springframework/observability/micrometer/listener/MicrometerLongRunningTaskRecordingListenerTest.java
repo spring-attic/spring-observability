@@ -18,6 +18,7 @@ package org.springframework.observability.micrometer.listener;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -25,12 +26,13 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.observability.core.http.HttpServerRequest;
 import org.springframework.observability.event.interval.IntervalLongRunningHttpServerEvent;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
+import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
 import org.springframework.observability.event.tag.Tag;
 import org.springframework.observability.time.MockClock;
+import org.springframework.observability.transport.http.HttpServerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.observability.event.tag.Cardinality.HIGH;
@@ -45,18 +47,20 @@ public class MicrometerLongRunningTaskRecordingListenerTest {
 	private final MicrometerLongRunningTaskRecordingListener listener = new MicrometerLongRunningTaskRecordingListener(
 			registry);
 
-	private IntervalRecording<MicrometerLongRunningTaskRecordingListener.LongRunningTaskContext> intervalRecording;
+	private IntervalRecording intervalRecording;
 
 	@BeforeEach
 	void setUp() {
-		intervalRecording = new SimpleIntervalRecording<>(new LongRunningEvent(), listener, CLOCK);
+		intervalRecording = new SimpleIntervalRecording(new LongRunningEvent(),
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), CLOCK);
 		registry.forEachMeter(registry::remove);
 	}
 
 	@Test
 	void onIsApplicableShouldReturnTrueOnlyForLongRunningEvents() {
 		assertThat(this.listener.isApplicable(this.intervalRecording)).isTrue();
-		assertThat(this.listener.isApplicable(new SimpleIntervalRecording<>(() -> "", listener, CLOCK))).isFalse();
+		assertThat(this.listener.isApplicable(new SimpleIntervalRecording(() -> "",
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), CLOCK))).isFalse();
 	}
 
 	@Test

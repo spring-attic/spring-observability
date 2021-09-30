@@ -92,7 +92,7 @@ public class BraveTestTracing implements TracerAware, TestTracingAware, TestTrac
 
 	@Override
 	public Tracer tracer() {
-		return BraveAccessor.tracer(this.tracer);
+		return BraveAccessor.tracer(this.tracer, this.tracing.currentTraceContext());
 	}
 
 	@Override

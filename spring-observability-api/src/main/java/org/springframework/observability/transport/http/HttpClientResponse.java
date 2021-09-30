@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
+package org.springframework.observability.transport.http;
 
-import org.springframework.observability.core.Kind;
+import org.springframework.observability.lang.Nullable;
+import org.springframework.observability.transport.Kind;
 
 /**
  * This API is taken from OpenZipkin Brave.
  *
- * Abstract request type used for parsing and sampling. Represents an HTTP Client request.
+ * Abstract response type used for parsing and sampling. Represents an HTTP Client
+ * response.
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface HttpClientRequest extends HttpRequest {
+public interface HttpClientResponse extends HttpResponse {
 
-	/**
-	 * @param name header name
-	 * @param value header value
-	 */
-	void header(String name, String value);
+	@Nullable
+	default HttpClientRequest request() {
+		return null;
+	}
+
+	@Override
+	default Throwable error() {
+		return null;
+	}
 
 	@Override
 	default Kind kind() {

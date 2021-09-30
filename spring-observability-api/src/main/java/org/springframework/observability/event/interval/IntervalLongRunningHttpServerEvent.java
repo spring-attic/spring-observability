@@ -16,17 +16,18 @@
 
 package org.springframework.observability.event.interval;
 
-import org.springframework.observability.core.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerRequest;
 
 /**
- * An IntervalEvent that takes long to run and represents an HTTP server event.
+ * An {@link IntervalEvent} that takes long to run and represents an HTTP server event.
  *
- * @author Jonatan Ivanov
+ * @author Marcin Grzejszczak
  * @since 1.0.0
  */
 public abstract class IntervalLongRunningHttpServerEvent extends IntervalHttpServerEvent {
 
 	/**
+	 * Creates a new {@link IntervalLongRunningHttpServerEvent}.
 	 * @param request http server request
 	 */
 	public IntervalLongRunningHttpServerEvent(HttpServerRequest request) {

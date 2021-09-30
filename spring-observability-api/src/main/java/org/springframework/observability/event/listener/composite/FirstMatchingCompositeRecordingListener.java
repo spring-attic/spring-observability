@@ -37,44 +37,53 @@ public class FirstMatchingCompositeRecordingListener implements CompositeRecordi
 	private final List<? extends RecordingListener<?>> listeners;
 
 	/**
-	 * @param listeners The listeners that are registered under the composite.
+	 * Creates a new instance of {@link FirstMatchingCompositeRecordingListener}.
+	 * @param listeners the listeners that are registered under the composite
 	 */
 	public FirstMatchingCompositeRecordingListener(RecordingListener<?>... listeners) {
 		this(Arrays.asList(listeners));
 	}
 
 	/**
-	 * @param listeners The listeners that are registered under the composite.
+	 * Creates a new instance of {@link FirstMatchingCompositeRecordingListener}.
+	 * @param listeners the listeners that are registered under the composite
 	 */
 	public FirstMatchingCompositeRecordingListener(List<? extends RecordingListener<?>> listeners) {
 		this.listeners = listeners;
 	}
 
 	@Override
-	public void onStart(IntervalRecording<CompositeContext> intervalRecording) {
-		getFirstApplicableListener(intervalRecording)
-				.ifPresent(listener -> listener.onStart(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onCreate(IntervalRecording intervalRecording) {
+		getFirstApplicableListener(intervalRecording).ifPresent(listener -> listener.onCreate(intervalRecording));
 	}
 
 	@Override
-	public void onStop(IntervalRecording<CompositeContext> intervalRecording) {
-		getFirstApplicableListener(intervalRecording)
-				.ifPresent(listener -> listener.onStop(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onStart(IntervalRecording intervalRecording) {
+		getFirstApplicableListener(intervalRecording).ifPresent(listener -> listener.onStart(intervalRecording));
 	}
 
-	private Optional<? extends RecordingListener<?>> getFirstApplicableListener(Recording recording) {
+	@Override
+	public void onStop(IntervalRecording intervalRecording) {
+		getFirstApplicableListener(intervalRecording).ifPresent(listener -> listener.onStop(intervalRecording));
+	}
+
+	private Optional<? extends RecordingListener<?>> getFirstApplicableListener(Recording<?, ?> recording) {
 		return this.listeners.stream().filter(listener -> listener.isApplicable(recording)).findFirst();
 	}
 
 	@Override
-	public void onError(IntervalRecording<CompositeContext> intervalRecording) {
-		getFirstApplicableListener(intervalRecording)
-				.ifPresent(listener -> listener.onError(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onError(IntervalRecording intervalRecording) {
+		getFirstApplicableListener(intervalRecording).ifPresent(listener -> listener.onError(intervalRecording));
 	}
 
 	@Override
-	public void record(InstantRecording instantRecording) {
-		getFirstApplicableListener(instantRecording).ifPresent(listener -> listener.record(instantRecording));
+	public void onRestore(IntervalRecording intervalRecording) {
+		getFirstApplicableListener(intervalRecording).ifPresent(listener -> listener.onRestore(intervalRecording));
+	}
+
+	@Override
+	public void recordInstant(InstantRecording instantRecording) {
+		getFirstApplicableListener(instantRecording).ifPresent(listener -> listener.recordInstant(instantRecording));
 	}
 
 	@Override

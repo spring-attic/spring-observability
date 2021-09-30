@@ -5,7 +5,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spring-observability-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
 	<name>spring-observability-parent</name>
 	<description>Spring Observability pom, managing dependencies for Spring Observability projects</description>
 	<parent>
@@ -29,7 +28,7 @@
 		<javadoc.failOnWarnings>true</javadoc.failOnWarnings>
 
 		<!-- Use as few imports as possible so as not to have cycles -->
-		<spring.version>5.3.8</spring.version>
+		<spring.version>5.3.10</spring.version>
 
 		<!-- Production dependencies -->
 		<jsr305.version>3.0.2</jsr305.version>
@@ -39,16 +38,15 @@
 		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
 		<wavefront-runtime-sdk-jvm.version>1.3.5</wavefront-runtime-sdk-jvm.version>
 		<wavefront-sdk-java.version>2.6.4</wavefront-sdk-java.version>
-		<micrometer.version>1.7.2</micrometer.version>
+		<micrometer.version>1.7.4</micrometer.version>
 
 		<!-- Test dependencies -->
-		<junit-jupiter-engine.version>5.7.2</junit-jupiter-engine.version>
-		<assertj-core.version>3.20.2</assertj-core.version>
+		<junit-jupiter-engine.version>5.8.1</junit-jupiter-engine.version>
+		<assertj-core.version>3.21.0</assertj-core.version>
 		<awaitility.version>4.1.0</awaitility.version>
-		<archunit-junit5.version>0.19.0</archunit-junit5.version>
-		<testcontainers.version>1.15.3</testcontainers.version>
-		<mockito.version>3.11.2</mockito.version>
-		<mockwebserver.version>4.8.0</mockwebserver.version>
+		<archunit-junit5.version>0.21.0</archunit-junit5.version>
+		<mockito.version>3.12.4</mockito.version>
+		<mockwebserver.version>4.9.1</mockwebserver.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

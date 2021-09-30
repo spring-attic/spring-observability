@@ -53,10 +53,11 @@ public final class BraveAccessor {
 
 	/**
 	 * @param braveTracer Brave delegate
+	 * @param context Brave current trace context
 	 * @return Spring Observability version
 	 */
-	public static Tracer tracer(brave.Tracer braveTracer) {
-		return new BraveTracer(braveTracer, new BraveBaggageManager());
+	public static Tracer tracer(brave.Tracer braveTracer, brave.propagation.CurrentTraceContext context) {
+		return new BraveTracer(braveTracer, context, new BraveBaggageManager());
 	}
 
 	/**

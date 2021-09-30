@@ -18,10 +18,12 @@ package org.springframework.observability.event.listener.composite;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.lang.NonNull;
 
 /**
  * Using this {@link RecordingListener} implementation, you can register multiple
@@ -36,41 +38,55 @@ public class AllMatchingCompositeRecordingListener implements CompositeRecording
 	private final List<RecordingListener<?>> listeners;
 
 	/**
-	 * @param listeners The listeners that are registered under the composite.
+	 * Creates a new instance of {@link AllMatchingCompositeRecordingListener}.
+	 * @param listeners the listeners that are registered under the composite
 	 */
 	public AllMatchingCompositeRecordingListener(RecordingListener<?>... listeners) {
 		this(Arrays.asList(listeners));
 	}
 
 	/**
-	 * @param listeners The listeners that are registered under the composite.
+	 * Creates a new instance of {@link AllMatchingCompositeRecordingListener}.
+	 * @param listeners the listeners that are registered under the composite
 	 */
 	public AllMatchingCompositeRecordingListener(List<RecordingListener<?>> listeners) {
 		this.listeners = listeners;
 	}
 
 	@Override
-	public void onStart(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording))
-				.forEach(listener -> listener.onStart(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onCreate(IntervalRecording intervalRecording) {
+		getAllApplicableListeners(intervalRecording).forEach(listener -> listener.onCreate(intervalRecording));
 	}
 
 	@Override
-	public void onStop(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording))
-				.forEach(listener -> listener.onStop(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onStart(IntervalRecording intervalRecording) {
+		getAllApplicableListeners(intervalRecording).forEach(listener -> listener.onStart(intervalRecording));
+	}
+
+	@NonNull
+	private Stream<RecordingListener<?>> getAllApplicableListeners(IntervalRecording intervalRecording) {
+		return this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording));
 	}
 
 	@Override
-	public void onError(IntervalRecording<CompositeContext> intervalRecording) {
-		this.listeners.stream().filter(listener -> listener.isApplicable(intervalRecording))
-				.forEach(listener -> listener.onError(new IntervalRecordingView<>(listener, intervalRecording)));
+	public void onStop(IntervalRecording intervalRecording) {
+		getAllApplicableListeners(intervalRecording).forEach(listener -> listener.onStop(intervalRecording));
 	}
 
 	@Override
-	public void record(InstantRecording instantRecording) {
+	public void onError(IntervalRecording intervalRecording) {
+		getAllApplicableListeners(intervalRecording).forEach(listener -> listener.onError(intervalRecording));
+	}
+
+	@Override
+	public void onRestore(IntervalRecording intervalRecording) {
+		getAllApplicableListeners(intervalRecording).forEach(listener -> listener.onRestore(intervalRecording));
+	}
+
+	@Override
+	public void recordInstant(InstantRecording instantRecording) {
 		this.listeners.stream().filter(listener -> listener.isApplicable(instantRecording))
-				.forEach(listener -> listener.record(instantRecording));
+				.forEach(listener -> listener.recordInstant(instantRecording));
 	}
 
 	@Override

@@ -25,31 +25,52 @@ import org.springframework.observability.event.Recording;
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public interface Tag {
+public interface Tag extends Comparable<Tag> {
 
 	/**
-	 * @return The key of the tag, it mustn't be null.
+	 * Tag key.
+	 * @return tag key
 	 */
 	String getKey();
 
 	/**
-	 * @return The value of the tag, it mustn't be null.
+	 * Tag value.
+	 * @return tag value
 	 */
 	String getValue();
 
 	/**
-	 * @return The cardinality of the tag, it mustn't be null.
+	 * Tag cardinality.
+	 * @return tag cardinality
 	 */
-	Cardinality getCardinality();
+	default Cardinality getCardinality() {
+		return Cardinality.LOW;
+	}
 
 	/**
-	 * @param key The key of the tag, it mustn't be null.
-	 * @param value The value of the tag, it mustn't be null.
-	 * @param cardinality The cardinality of the tag, it mustn't be null.
-	 * @return An immutable Tag instance with the given parameters.
+	 * Builds a tag.
+	 * @param key tag key
+	 * @param value tag value
+	 * @return tag
+	 */
+	static Tag of(String key, String value) {
+		return Tag.of(key, value, Cardinality.LOW); // TODO: or HIGH?
+	}
+
+	/**
+	 * Builds a tag.
+	 * @param key tag key
+	 * @param value tag value
+	 * @param cardinality tag cardinality
+	 * @return tag
 	 */
 	static Tag of(String key, String value, Cardinality cardinality) {
 		return new ImmutableTag(key, value, cardinality);
+	}
+
+	@Override
+	default int compareTo(Tag o) {
+		return getKey().compareTo(o.getKey());
 	}
 
 }

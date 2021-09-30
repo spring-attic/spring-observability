@@ -14,30 +14,49 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.tracing.http;
+package org.springframework.observability.transport.http;
 
-import org.springframework.observability.tracing.SpanCustomizer;
-import org.springframework.observability.tracing.TraceContext;
-import org.springframework.observability.transport.http.HttpResponse;
+import java.util.Collection;
+
+import org.springframework.observability.lang.Nullable;
+import org.springframework.observability.transport.Kind;
 
 /**
  * This API is taken from OpenZipkin Brave.
  *
- * Use this to control the response data recorded.
+ * Abstract response type used for parsing and sampling.
  *
  * @author OpenZipkin Brave Authors
  * @author Marcin Grzejszczak
  * @since 1.0.0
  */
-public interface HttpResponseParser {
+public interface Response {
 
 	/**
-	 * Implement to choose what data from the http response are parsed into the span
-	 * representing it.
-	 * @param response current response
-	 * @param context corresponding trace context
-	 * @param span customizer for the current span
+	 * @return list of header names.
 	 */
-	void parse(HttpResponse response, TraceContext context, SpanCustomizer span);
+	Collection<String> headerNames();
+
+	/**
+	 * @return corresponding request
+	 */
+	@Nullable
+	Request request();
+
+	/**
+	 * @return exception that occurred or {@code null} if there was none.
+	 */
+	@Nullable
+	Throwable error();
+
+	/**
+	 * @return the underlying request object or {@code null} if there is none.
+	 */
+	Object unwrap();
+
+	/**
+	 * @return The remote kind describing the direction and type of the request.
+	 */
+	Kind kind();
 
 }

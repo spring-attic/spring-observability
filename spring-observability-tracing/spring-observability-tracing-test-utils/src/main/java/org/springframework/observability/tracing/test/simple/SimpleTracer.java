@@ -36,10 +36,19 @@ import org.springframework.observability.tracing.Tracer;
  */
 public class SimpleTracer implements Tracer {
 
+	private final SimpleCurrentTraceContext currentTraceContext;
+
 	/**
 	 * Recorded spans.
 	 */
 	public Deque<SimpleSpan> spans = new LinkedList<>();
+
+	/**
+	 * Creates a new instance.
+	 */
+	public SimpleTracer() {
+		this.currentTraceContext = SimpleCurrentTraceContext.withTracer(this);
+	}
 
 	@Override
 	public Span nextSpan(Span parent) {
@@ -111,6 +120,11 @@ public class SimpleTracer implements Tracer {
 	@Override
 	public TraceContext.Builder traceContextBuilder() {
 		return null;
+	}
+
+	@Override
+	public SimpleCurrentTraceContext currentTraceContext() {
+		return this.currentTraceContext;
 	}
 
 	@Override

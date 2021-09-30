@@ -16,44 +16,37 @@
 
 package org.springframework.observability.tracing.listener;
 
-import org.springframework.observability.core.http.HttpClientRequest;
-import org.springframework.observability.core.http.HttpClientResponse;
 import org.springframework.observability.event.Recording;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalHttpClientEvent;
 import org.springframework.observability.event.listener.RecordingListener;
-import org.springframework.observability.lang.NonNull;
-import org.springframework.observability.tracing.CurrentTraceContext;
-import org.springframework.observability.tracing.Span;
+import org.springframework.observability.tracing.Tracer;
 import org.springframework.observability.tracing.http.HttpClientHandler;
+import org.springframework.observability.transport.http.HttpClientRequest;
+import org.springframework.observability.transport.http.HttpClientResponse;
 
 /**
  * {@link RecordingListener} that uses the Tracing API to record events for HTTP client
  * side.
  *
  * @author Marcin Grzejszczak
- * @since 1.0.0
+ * @since 6.0.0
  */
 public class HttpClientTracingRecordingListener extends
-		HttpTracingRecordingListener<HttpClientTracingRecordingListener.TracingContext, HttpClientRequest, HttpClientResponse>
-		implements TracingRecordingListener<HttpClientTracingRecordingListener.TracingContext> {
+		HttpTracingRecordingListener<HttpClientRequest, HttpClientResponse> implements TracingRecordingListener {
 
 	/**
-	 * @param currentTraceContext current trace context
+	 * Creates a new instance of {@link HttpClientTracingRecordingListener}.
+	 * @param tracer tracer
 	 * @param handler http client handler
 	 */
-	public HttpClientTracingRecordingListener(CurrentTraceContext currentTraceContext, HttpClientHandler handler) {
-		super(currentTraceContext, handler::handleSend, handler::handleReceive);
+	public HttpClientTracingRecordingListener(Tracer tracer, HttpClientHandler handler) {
+		super(tracer, handler::handleSend, handler::handleReceive);
 	}
 
 	@Override
 	public boolean isApplicable(Recording<?, ?> recording) {
 		return recording.getEvent() instanceof IntervalHttpClientEvent;
-	}
-
-	@Override
-	public TracingContext createContext() {
-		return new TracingContext();
 	}
 
 	@Override
@@ -63,56 +56,14 @@ public class HttpClientTracingRecordingListener extends
 	}
 
 	@Override
-	void setSpanAndScope(TracingContext tracingContext, Span span, CurrentTraceContext.Scope scope) {
-		tracingContext.setSpan(span);
-		tracingContext.setScope(scope);
-	}
-
-	@Override
-	String getRequestMethod(IntervalEvent event) {
+	String getSpanName(IntervalEvent event) {
 		return getRequest(event).method();
-	}
-
-	@Override
-	Span getSpanFromContext(TracingContext context) {
-		return context.getSpan();
 	}
 
 	@Override
 	HttpClientResponse getResponse(IntervalEvent event) {
 		IntervalHttpClientEvent clientEvent = (IntervalHttpClientEvent) event;
 		return clientEvent.getResponse();
-	}
-
-	@Override
-	void cleanup(TracingContext tracingContext) {
-		tracingContext.getScope().close();
-	}
-
-	static class TracingContext {
-
-		private Span span;
-
-		private CurrentTraceContext.Scope scope;
-
-		@NonNull
-		Span getSpan() {
-			return span;
-		}
-
-		void setSpan(Span span) {
-			this.span = span;
-		}
-
-		@NonNull
-		CurrentTraceContext.Scope getScope() {
-			return scope;
-		}
-
-		void setScope(CurrentTraceContext.Scope scope) {
-			this.scope = scope;
-		}
-
 	}
 
 }

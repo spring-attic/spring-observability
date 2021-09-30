@@ -19,6 +19,7 @@ package org.springframework.observability.event;
 import org.springframework.observability.event.instant.InstantRecording;
 import org.springframework.observability.event.interval.IntervalRecording;
 import org.springframework.observability.event.tag.Tag;
+import org.springframework.observability.event.tag.Tags;
 
 /**
  * A Recording represents an observation of an {@link Event}. It can give you details
@@ -26,8 +27,8 @@ import org.springframework.observability.event.tag.Tag;
  *
  * Implementations must make sure that none of the methods return null.
  *
- * @param <E> Event Type
- * @param <R> Recording Type
+ * @param <E> event type
+ * @param <R> recording Type
  * @author Jonatan Ivanov
  * @since 1.0.0
  * @see InstantRecording
@@ -36,33 +37,70 @@ import org.springframework.observability.event.tag.Tag;
 public interface Recording<E extends Event, R extends Recording<E, R>> {
 
 	/**
-	 * @return The {@link Event} this recording belongs to.
+	 * The {@link Event} this recording belongs to.
+	 * @return the event
 	 */
 	E getEvent();
 
 	/**
-	 * @return The high-cardinality (detailed) name of the recording. Unlike
+	 * The high-cardinality (detailed) name of the recording. Unlike
 	 * {@link Event#getLowCardinalityName()}, this method can return high-cardinality
 	 * values and can be overwritten on-the-fly.
+	 * @return the high-cardinality (detailed) name of the recording
 	 */
 	String getHighCardinalityName();
 
 	/**
+	 * Sets the high cardinality name.
 	 * @param highCardinalityName the new high-cardinality (detailed) name of the
-	 * recording.
-	 * @return itself.
+	 * recording
+	 * @return this
 	 */
 	R highCardinalityName(String highCardinalityName);
 
 	/**
-	 * @return The {@link Tag Tags} added to this recording.
+	 * The {@link Tag Tags} added to this recording.
+	 * @return the {@link Tag Tags}
 	 */
 	Iterable<Tag> getTags();
 
 	/**
-	 * @param tag {@link Tag} to be added to the recording.
-	 * @return itself.
+	 * Adds the {@link Tag} to the recording.
+	 * @param tag {@link Tag} to be added to the recording
+	 * @return this
 	 */
 	R tag(Tag tag);
+
+	/**
+	 * Adds the {@link Tag} to the recording with the given key and value.
+	 * @param key tag key
+	 * @param value tag value
+	 * @return this
+	 */
+	default R tag(String key, String value) {
+		return tag(Tag.of(key, value));
+	}
+
+	/**
+	 * Adds the {@link Tag} to the recording with the given key and value pairs.
+	 * @param tags array of tags
+	 * @return this
+	 */
+	default R tags(String... tags) {
+		return tags(Tags.of(tags));
+	}
+
+	/**
+	 * Adds the {@link Tag}s to the recording.
+	 * @param tags {@link Tag}s to be added to the recording
+	 * @return this
+	 */
+	default R tags(Iterable<Tag> tags) {
+		R result = null;
+		for (Tag tag : tags) {
+			result = tag(tag);
+		}
+		return result;
+	}
 
 }

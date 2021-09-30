@@ -46,11 +46,11 @@ public class MicrometerRecordingListener implements MetricsRecordingListener<Voi
 	}
 
 	@Override
-	public void onStart(IntervalRecording<Void> intervalRecording) {
+	public void onStart(IntervalRecording intervalRecording) {
 	}
 
 	@Override
-	public void onStop(IntervalRecording<Void> intervalRecording) {
+	public void onStop(IntervalRecording intervalRecording) {
 		Timer.builder(intervalRecording.getEvent().getLowCardinalityName())
 				.description(intervalRecording.getEvent().getDescription()).tags(toTags(intervalRecording))
 				.tag("error", intervalRecording.getError() != null
@@ -59,11 +59,11 @@ public class MicrometerRecordingListener implements MetricsRecordingListener<Voi
 	}
 
 	@Override
-	public void onError(IntervalRecording<Void> intervalRecording) {
+	public void onError(IntervalRecording intervalRecording) {
 	}
 
 	@Override
-	public void record(InstantRecording instantRecording) {
+	public void recordInstant(InstantRecording instantRecording) {
 		Counter.builder(instantRecording.getEvent().getLowCardinalityName())
 				.description(instantRecording.getEvent().getDescription()).tags(toTags(instantRecording))
 				.register(registry).increment();

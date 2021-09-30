@@ -16,19 +16,21 @@
 
 package org.springframework.observability.tracing.listener;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 
-import org.springframework.observability.core.http.HttpServerRequest;
-import org.springframework.observability.core.http.HttpServerResponse;
 import org.springframework.observability.event.interval.IntervalEvent;
 import org.springframework.observability.event.interval.IntervalHttpServerEvent;
 import org.springframework.observability.event.interval.SimpleIntervalRecording;
+import org.springframework.observability.event.listener.composite.AllMatchingCompositeRecordingListener;
 import org.springframework.observability.time.MockClock;
-import org.springframework.observability.tracing.test.simple.SimpleCurrentTraceContext;
 import org.springframework.observability.tracing.test.simple.SimpleHttpServerHandler;
 import org.springframework.observability.tracing.test.simple.SimpleSpan;
 import org.springframework.observability.tracing.test.simple.SimpleTracer;
+import org.springframework.observability.transport.http.HttpServerRequest;
+import org.springframework.observability.transport.http.HttpServerResponse;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -36,53 +38,52 @@ class HttpServerTracingRecordingListenerTests {
 
 	SimpleTracer simpleTracer = new SimpleTracer();
 
-	SimpleCurrentTraceContext simpleCurrentTraceContext = SimpleCurrentTraceContext.withTracer(this.simpleTracer);
-
 	SimpleHttpServerHandler simpleHttpServerHandler = new SimpleHttpServerHandler(this.simpleTracer);
 
 	@Test
 	void should_be_applicable_for_http_server_events() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
-				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+				this.simpleHttpServerHandler);
 
-		boolean applicable = listener
-				.isApplicable(new SimpleIntervalRecording<>(intervalHttpServerEvent(), listener, new MockClock()));
+		boolean applicable = listener.isApplicable(new SimpleIntervalRecording(intervalHttpServerEvent(),
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), new MockClock()));
 
 		then(applicable).isTrue();
 	}
 
 	@Test
 	void should_be_not_applicable_for_non_http_server_events() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
-				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+				this.simpleHttpServerHandler);
 
-		boolean applicable = listener.isApplicable(new SimpleIntervalRecording<>(event(), listener, new MockClock()));
+		boolean applicable = listener.isApplicable(new SimpleIntervalRecording(event(),
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), new MockClock()));
 
 		then(applicable).isFalse();
 	}
 
 	@Test
 	void should_put_span_and_scope_in_context_when_started() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
-				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
-		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
-				intervalHttpServerEvent(), listener, new MockClock());
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+				this.simpleHttpServerHandler);
+		SimpleIntervalRecording recording = new SimpleIntervalRecording(intervalHttpServerEvent(),
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), new MockClock());
 
 		listener.onStart(recording);
 
-		then(recording.getContext().getSpan()).isSameAs(this.simpleTracer.getLastSpan());
-		then(recording.getContext().getScope()).isNotNull();
+		then(recording.getContext(listener).getSpan()).isSameAs(this.simpleTracer.getLastSpan());
+		then(recording.getContext(listener).getScope()).isNotNull();
 	}
 
 	@Test
 	void should_close_span_and_scope_when_stopped() {
-		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(
-				this.simpleCurrentTraceContext, this.simpleHttpServerHandler);
-		SimpleIntervalRecording<HttpServerTracingRecordingListener.TracingContext> recording = new SimpleIntervalRecording<>(
-				intervalHttpServerEvent(), listener, new MockClock());
+		HttpServerTracingRecordingListener listener = new HttpServerTracingRecordingListener(this.simpleTracer,
+				this.simpleHttpServerHandler);
+		SimpleIntervalRecording recording = new SimpleIntervalRecording(intervalHttpServerEvent(),
+				new AllMatchingCompositeRecordingListener(Collections.singletonList(listener)), new MockClock());
 		SimpleSpan span = this.simpleTracer.nextSpan().start();
-		recording.getContext().setSpan(span);
-		recording.getContext().setScope(this.simpleCurrentTraceContext.newScope(span.context()));
+		recording.getContext(listener).setSpan(span);
+		recording.getContext(listener).setScope(this.simpleTracer.currentTraceContext().newScope(span.context()));
 
 		listener.onStop(recording);
 

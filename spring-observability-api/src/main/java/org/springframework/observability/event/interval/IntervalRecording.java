@@ -19,54 +19,72 @@ package org.springframework.observability.event.interval;
 import java.time.Duration;
 
 import org.springframework.observability.event.Recording;
+import org.springframework.observability.event.instant.InstantEvent;
+import org.springframework.observability.event.listener.RecordingListener;
+import org.springframework.observability.lang.Nullable;
 
 /**
  * Represents the recording of an {@link IntervalEvent}.
  *
- * @param <T> Context Type
  * @author Jonatan Ivanov
  * @since 1.0.0
  */
-public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalRecording<T>> {
+public interface IntervalRecording extends Recording<IntervalEvent, IntervalRecording>, AutoCloseable {
 
 	/**
-	 * @return The duration of the event.
+	 * The duration of the event.
+	 * @return the duration
 	 */
 	Duration getDuration();
 
 	/**
-	 * @return The start time in nanos. The value is only meaningful when compared with
-	 * another value to determine the elapsed time.
+	 * The start time in nanos. The value is only meaningful when compared with another
+	 * value to determine the elapsed time.
+	 * @return the start time in nanos
 	 */
 	long getStartNanos();
 
 	/**
-	 * @return The stop time in nanos. The value is only meaningful when compared with
-	 * another value to determine the elapsed time.
+	 * The stop time in nanos. The value is only meaningful when compared with another
+	 * value to determine the elapsed time.
+	 * @return the stop time in nanos
 	 */
 	long getStopNanos();
 
 	/**
-	 * @return The wall time (system time) in nanoseconds since the epoch at the time the
-	 * event started. Should not be used to determine durations.
+	 * The wall time (system time) in nanoseconds since the epoch at the time the event
+	 * started. Should not be used to determine durations.
+	 * @return the wall time (system time) in nanoseconds
 	 */
 	long getStartWallTime();
 
 	/**
 	 * Signals the beginning of an {@link IntervalEvent}.
-	 * @return itself.
+	 * @return this
 	 */
-	IntervalRecording<T> start();
+	IntervalRecording start();
+
+	/**
+	 * Restores the recording (e.g. puts objects in scope in a new thread).
+	 * @return this
+	 */
+	IntervalRecording restore();
 
 	/**
 	 * Signals the beginning of an {@link IntervalEvent} at a given time.
-	 * @param wallTime The wall time (system time) in nanoseconds since the epoch at the
-	 * time the event started.
-	 * @param monotonicTime The start time in nanos. The value is only meaningful when
-	 * compared with another value to determine the elapsed time.
-	 * @return itself.
+	 * @param wallTime the wall time (system time) in nanoseconds since the epoch at the
+	 * time the event started
+	 * @param monotonicTime the start time in nanos. The value is only meaningful when
+	 * compared with another value to determine the elapsed time
+	 * @return itself
 	 */
-	IntervalRecording<T> start(long wallTime, long monotonicTime);
+	IntervalRecording start(long wallTime, long monotonicTime);
+
+	/**
+	 * Signals that an {@link InstantEvent} happened.
+	 * @param event instant event that happened
+	 */
+	void recordInstant(InstantEvent event);
 
 	/**
 	 * Signals the end of an {@link IntervalEvent}.
@@ -75,26 +93,37 @@ public interface IntervalRecording<T> extends Recording<IntervalEvent, IntervalR
 
 	/**
 	 * Signals the end of an {@link IntervalEvent} at a given time.
-	 * @param monotonicTime The stop time in nanos. The value is only meaningful when
-	 * compared with another value to determine the elapsed time.
+	 * @param monotonicTime the stop time in nanos. The value is only meaningful when
+	 * compared with another value to determine the elapsed time
 	 */
 	void stop(long monotonicTime);
 
 	/**
-	 * @return The {@link Throwable} instance in case there was an error.
+	 * Returns an error.
+	 * @return the {@link Throwable} instance in case there was an error
 	 */
+	@Nullable
 	Throwable getError();
 
 	/**
 	 * Sets the error to the recording.
-	 * @param error The {@link Throwable} to set.
-	 * @return itself.
+	 * @param error the {@link Throwable} to set
+	 * @return this
 	 */
-	IntervalRecording<T> error(Throwable error);
+	IntervalRecording error(Throwable error);
 
 	/**
-	 * @return A context object in case you need to pass data between listener methods.
+	 * Returns the context object for the actual listener in case you need to pass data
+	 * between listener methods.
+	 * @param listener the listener that created the context object
+	 * @param <T> type of the context
+	 * @return a context object
 	 */
-	T getContext();
+	<T> T getContext(RecordingListener<T> listener);
+
+	@Override
+	default void close() {
+		stop();
+	}
 
 }

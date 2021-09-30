@@ -21,6 +21,7 @@ import java.util.Map;
 import brave.propagation.TraceContextOrSamplingFlags;
 
 import org.springframework.observability.tracing.BaggageInScope;
+import org.springframework.observability.tracing.CurrentTraceContext;
 import org.springframework.observability.tracing.ScopedSpan;
 import org.springframework.observability.tracing.Span;
 import org.springframework.observability.tracing.SpanCustomizer;
@@ -38,23 +39,20 @@ public class BraveTracer implements Tracer {
 
 	private final brave.Tracer tracer;
 
+	private final brave.propagation.CurrentTraceContext currentTraceContext;
+
 	private final BraveBaggageManager braveBaggageManager;
 
 	/**
 	 * @param tracer Brave delegate
+	 * @param currentTraceContext Brave current trace context
 	 * @param braveBaggageManager baggage manager
 	 */
-	public BraveTracer(brave.Tracer tracer, BraveBaggageManager braveBaggageManager) {
+	public BraveTracer(brave.Tracer tracer, brave.propagation.CurrentTraceContext currentTraceContext,
+			BraveBaggageManager braveBaggageManager) {
 		this.tracer = tracer;
+		this.currentTraceContext = currentTraceContext;
 		this.braveBaggageManager = braveBaggageManager;
-	}
-
-	/**
-	 * @param tracer Brave delegate
-	 */
-	public BraveTracer(brave.Tracer tracer) {
-		this.tracer = tracer;
-		this.braveBaggageManager = new BraveBaggageManager();
 	}
 
 	@Override
@@ -107,6 +105,11 @@ public class BraveTracer implements Tracer {
 	@Override
 	public TraceContext.Builder traceContextBuilder() {
 		return new BraveTraceContextBuilder();
+	}
+
+	@Override
+	public CurrentTraceContext currentTraceContext() {
+		return new BraveCurrentTraceContext(this.currentTraceContext);
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import org.springframework.observability.event.listener.RecordingListener;
 public interface CompositeRecordingListener extends RecordingListener<CompositeContext> {
 
 	/**
+	 * Returns the registered recording listeners.
 	 * @return registered listeners
 	 */
 	List<? extends RecordingListener<?>> getListeners();

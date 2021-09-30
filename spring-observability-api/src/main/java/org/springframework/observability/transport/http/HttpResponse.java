@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.observability.core.http;
+package org.springframework.observability.transport.http;
 
 import org.springframework.observability.lang.Nullable;
 

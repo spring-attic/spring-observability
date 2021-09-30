@@ -17,7 +17,7 @@
 package org.springframework.observability.event.listener.composite;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,26 +30,48 @@ import org.springframework.observability.event.listener.RecordingListener;
  *
  * @author Jonatan Ivanov
  * @since 1.0.0
- * @see AllMatchingCompositeRecordingListener
  */
 public class CompositeContext {
 
-	private final Map<RecordingListener<?>, Object> contexts = new HashMap<>();
+	private final Map<RecordingListener<?>, Object> contexts = new IdentityHashMap<>();
 
-	CompositeContext(RecordingListener<?>... listeners) {
+	/**
+	 * Creates a new composite context.
+	 * @param listeners recording listeners
+	 */
+	public CompositeContext(RecordingListener<?>... listeners) {
 		this(Arrays.asList(listeners));
 	}
 
-	CompositeContext(List<? extends RecordingListener<?>> listeners) {
+	/**
+	 * Creates a new composite context.
+	 * @param listeners recording listeners
+	 */
+	public CompositeContext(List<? extends RecordingListener<?>> listeners) {
 		// Could be a .stream().collect(toMap(...)) but toMap fails on null values:
 		// https://bugs.openjdk.java.net/browse/JDK-8148463
+		addContexts(listeners);
+	}
+
+	private void addContexts(List<? extends RecordingListener<?>> listeners) {
 		for (RecordingListener<?> listener : listeners) {
-			this.contexts.put(listener, listener.createContext());
+			if (listener instanceof CompositeRecordingListener) {
+				addContexts(((CompositeRecordingListener) listener).getListeners());
+			}
+			else {
+				this.contexts.put(listener, listener.createContext());
+			}
 		}
 	}
 
+	/**
+	 * For a given listener returns its corresponding context.
+	 * @param <T> context type
+	 * @param listener registered listener
+	 * @return context found by a given listener
+	 */
 	@SuppressWarnings("unchecked")
-	<T> T byListener(RecordingListener<T> listener) {
+	public <T> T byListener(RecordingListener<T> listener) {
 		return (T) this.contexts.get(listener);
 	}
 

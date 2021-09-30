@@ -64,12 +64,34 @@ class FirstMatchingCompositeRecordingListenerTests {
 		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
 				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
 
-		firstMatchingCompositeRecordingListener.record(null);
+		firstMatchingCompositeRecordingListener.recordInstant(null);
 
 		then(this.matchingListener.recorded).isTrue();
 	}
 
+	@Test
+	void should_run_on_create_only_for_first_matching_listener() {
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
+				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
+
+		firstMatchingCompositeRecordingListener.onCreate(null);
+
+		then(this.matchingListener.created).isTrue();
+	}
+
+	@Test
+	void should_run_on_restore_only_for_first_matching_listener() {
+		FirstMatchingCompositeRecordingListener firstMatchingCompositeRecordingListener = new FirstMatchingCompositeRecordingListener(
+				new NotMatchingListener(), this.matchingListener, new NotMatchingListener());
+
+		firstMatchingCompositeRecordingListener.onRestore(null);
+
+		then(this.matchingListener.restored).isTrue();
+	}
+
 	static class MatchingListener implements RecordingListener {
+
+		boolean created;
 
 		boolean started;
 
@@ -79,9 +101,16 @@ class FirstMatchingCompositeRecordingListenerTests {
 
 		boolean recorded;
 
+		boolean restored;
+
 		@Override
 		public Object createContext() {
 			return null;
+		}
+
+		@Override
+		public void onCreate(IntervalRecording intervalRecording) {
+			this.created = true;
 		}
 
 		@Override
@@ -100,8 +129,13 @@ class FirstMatchingCompositeRecordingListenerTests {
 		}
 
 		@Override
-		public void record(InstantRecording instantRecording) {
+		public void recordInstant(InstantRecording instantRecording) {
 			this.recorded = true;
+		}
+
+		@Override
+		public void onRestore(IntervalRecording intervalRecording) {
+			this.restored = true;
 		}
 
 	}
@@ -111,6 +145,11 @@ class FirstMatchingCompositeRecordingListenerTests {
 		@Override
 		public Object createContext() {
 			return null;
+		}
+
+		@Override
+		public void onCreate(IntervalRecording intervalRecording) {
+			throwAssertionError();
 		}
 
 		@Override
@@ -133,7 +172,12 @@ class FirstMatchingCompositeRecordingListenerTests {
 		}
 
 		@Override
-		public void record(InstantRecording instantRecording) {
+		public void recordInstant(InstantRecording instantRecording) {
+			throwAssertionError();
+		}
+
+		@Override
+		public void onRestore(IntervalRecording intervalRecording) {
 			throwAssertionError();
 		}
 

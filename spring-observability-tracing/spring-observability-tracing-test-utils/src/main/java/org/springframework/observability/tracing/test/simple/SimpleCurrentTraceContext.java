@@ -36,6 +36,11 @@ public class SimpleCurrentTraceContext implements CurrentTraceContext {
 	 */
 	public TraceContext traceContext;
 
+	/**
+	 * Was scope closed.
+	 */
+	public boolean scopeClosed;
+
 	@Override
 	public TraceContext context() {
 		return this.traceContext;
@@ -45,6 +50,7 @@ public class SimpleCurrentTraceContext implements CurrentTraceContext {
 	public Scope newScope(TraceContext context) {
 		this.traceContext = context;
 		return () -> {
+			scopeClosed = true;
 		};
 	}
 
@@ -52,6 +58,7 @@ public class SimpleCurrentTraceContext implements CurrentTraceContext {
 	public Scope maybeScope(TraceContext context) {
 		this.traceContext = context;
 		return () -> {
+			scopeClosed = true;
 		};
 	}
 
