@@ -1,19 +1,21 @@
 == Production code
 
-- Unify the API (in some places we use getters and in others we don't - like `listeners()` but `getContext()`)
-- Update Javadocs
-- Write the docs
-- LongTaskTimer, Gauge?
-- `record(runnable)`,  record(callable)?
-- throw exceptions vs. log warn (or first warn then debug log)?
-- `NamingConvention`? (see Micrometer)
-- Consider renaming events to something else
-- Events should be interfaces cause we could have events that require both
+* Unify the API (in some places we use getters and in others we don't - like `listeners()` but `getContext()`)
+* Update Javadocs
+* Write the docs
+* LongTaskTimer, Gauge?
+* `record(runnable)`,  record(callable)?
+* throw exceptions vs. log warn (or first warn then debug log)?
+* `NamingConvention`? (see Micrometer)
+* Consider renaming events to something else
+* Events should be interfaces cause we could have events that require both
 metrics and tracing custom information (HTTP req / res for tracing + 
 info on histograms for metrics) - currently we don't support it
+** Create an interface e.g. `TimerAware` that will have a `Consumer<Timer.Builder>` that we
+will apply in the listener 
 
 == Test code
 
-- In some places we use `BDDAssertions.then()` in some we use `Assertions.assertThat()`
-- We use `BDDMockito` and `Mockito`
-- different test naming conventions `onXshouldY`, `shouldXWhenY`
+* In some places we use `BDDAssertions.then()` in some we use `Assertions.assertThat()`
+* We use `BDDMockito` and `Mockito`
+* different test naming conventions `onXshouldY`, `shouldXWhenY`
