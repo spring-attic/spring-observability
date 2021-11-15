@@ -4,8 +4,12 @@ Manual changes to this file will be lost when it is generated again.
 Edit the files in the src/main/asciidoc/ directory instead.
 ////
 
-
 image::https://github.com/spring-projects/spring-observability/workflows/Build/badge.svg?branch=main&style=svg["Build",link="https://github.com/spring-projects/spring-observability/actions"]
+
+= THIS PROJECT IS ARCHIVED
+
+It has been moved to https://github.com/micrometer-metrics/micrometer/pull/2856[Micrometer] and https://github.com/micrometer-metrics/tracing[Micrometer Tracing].
+
 
 == Building and Deploying
 
